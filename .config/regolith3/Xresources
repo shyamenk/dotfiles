@@ -1,0 +1,15 @@
+-- Border configuration
+
+wm.window.border.size: 0
+wm.gaps.inner.size: 20
+--Fonts
+gtk.font_name: Roboto Mono Nerd Font 13  
+-- Theme
+wm.bar.position: bottom
+wm.binding.exit_app: q 
+gtk.icon_theme_name: Yaru-dark
+--Wallpaper
+gtk.monospace_font_name: Roboto Mono Nerd Font 13
+regolith.look.path: /usr/share/regolith-look/nord
+
+regolith.wallpaper.file: /usr/share/backgrounds/arco-black-4k.png
