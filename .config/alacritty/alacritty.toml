@@ -1,6 +1,6 @@
-# import = [
-#   "~/.config/alacritty/catppuccin-mocha.toml"
-# ]
+import = [
+  "~/.config/alacritty/catppuccin-mocha.toml"
+]
 
 [env]
 TERM = "xterm-256color"
@@ -12,40 +12,36 @@ duration = 0
 [colors]
 draw_bold_text_with_bright_colors = true
 
-[[colors.indexed_colors]]
-color = "#F8BD96"
-index = 16
-
-[[colors.indexed_colors]]
-color = "#F5E0DC"
-index = 17
-
-[colors.bright]
-black = "#988BA2"
-blue = "#96CDFB"
-cyan = "#89DCEB"
-green = "#ABE9B3"
-magenta = "#F5C2E7"
-red = "#F28FAD"
-white = "#D9E0EE"
-yellow = "#FAE3B0"
-
-[colors.cursor]
-cursor = "#ABE9B3"
-text = "#D9E0EE"
-
-[colors.normal]
-black = "#6E6C7E"
-blue = "#96CDFB"
-cyan = "#89DCEB"
-green = "#ABE9B3"
-magenta = "#F5C2E7"
-red = "#F28FAD"
-white = "#D9E0EE"
-yellow = "#FAE3B0"
-
+# [[colors.indexed_colors]]
+# color = "#F5E0DC"
+# index = 17
+#
+# [colors.bright]
+# black = "#988BA2"
+# blue = "#96CDFB"
+# cyan = "#89DCEB"
+# green = "#ABE9B3"
+# magenta = "#F5C2E7"
+# red = "#F28FAD"
+# white = "#ffffff"
+# yellow = "#FAE3B0"
+#
+# [colors.cursor]
+# cursor = "#ABE9B3"
+# text = "#D9E0EE"
+#
+# [colors.normal]
+# black = "#6E6C7E"
+# blue = "#96CDFB"
+# cyan = "#89DCEB"
+# green = "#ABE9B3"
+# magenta = "#F5C2E7"
+# red = "#F28FAD"
+# white = "#D9E0EE"
+# yellow = "#FAE3B0"
+#
 [colors.primary]
-background = "#1E1D2F"
+background = "#1e1e2e"
 
 [cursor]
 blink_interval = 500
@@ -86,8 +82,8 @@ mouse = "Middle"
 decorations = "full"
 dynamic_title = true
 startup_mode = "Maximized"
-padding.x = 10
-padding.y = 10
+padding.x = 5 
+padding.y = 5
 
 opacity = 0.8
 blur = true

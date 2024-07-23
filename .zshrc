@@ -94,6 +94,7 @@ source ${ZIM_HOME}/init.zsh
 #
 
 zmodload -F zsh/terminfo +p:terminfo
+
 # Bind ^[[A/^[[B manually so up/down works both before and after zle-line-init
 for key ('^[[A' '^P' ${terminfo[kcuu1]}) bindkey ${key} history-substring-search-up
 for key ('^[[B' '^N' ${terminfo[kcud1]}) bindkey ${key} history-substring-search-down
@@ -127,6 +128,7 @@ alias ls="eza --color=always --long --git --no-filesize --icons=always --no-time
 alias bat="batcat"
 alias t="tmux -u"
 alias n="nvim"
+
 # FZF setup
 source /usr/share/doc/fzf/examples/key-bindings.zsh
 source /usr/share/doc/fzf/examples/completion.zsh
