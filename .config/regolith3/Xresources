@@ -9,7 +9,7 @@ wm.bar.position: bottom
 wm.binding.exit_app: q 
 gtk.icon_theme_name: Yaru-dark
 --Wallpaper
-gtk.monospace_font_name: Roboto Mono Nerd Font 13
+gtk.monospace_font_name: JetBrains Mono Nerd Font 13
 regolith.look.path: /usr/share/regolith-look/nord
 
 regolith.wallpaper.file: /usr/share/backgrounds/arco-black-4k.png

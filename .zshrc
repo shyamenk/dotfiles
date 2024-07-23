@@ -1,3 +1,5 @@
+
+export STARSHIP_CONFIG=~/.config/starship.toml
 # Remove older command from the history if a duplicate is to be added.
 setopt HIST_IGNORE_ALL_DUPS
 # Set editor default keymap to emacs (`-e`) or vi (`-v`)

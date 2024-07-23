@@ -1,6 +1,7 @@
-import = [
-   "~/.config/alacritty/catppuccin-mocha.toml"
-]
+# import = [
+#   "~/.config/alacritty/catppuccin-mocha.toml"
+# ]
+
 [env]
 TERM = "xterm-256color"
 
@@ -8,43 +9,43 @@ TERM = "xterm-256color"
 animation = "EaseOutExpo"
 duration = 0
 
-# [colors]
-# draw_bold_text_with_bright_colors = true
+[colors]
+draw_bold_text_with_bright_colors = true
 
-# [[colors.indexed_colors]]
-# color = "0xF8BD96"
-# index = 16
-#
-# [[colors.indexed_colors]]
-# color = "0xF5E0DC"
-# index = 17
-#
-# [colors.bright]
-# black = "0x988BA2"
-# blue = "0x96CDFB"
-# cyan = "0x89DCEB"
-# green = "0xABE9B3"
-# magenta = "0xF5C2E7"
-# red = "0xF28FAD"
-# white = "0xD9E0EE"
-# yellow = "0xFAE3B0"
-#
-# [colors.cursor]
-# cursor = "#ABE9B3"
-# text = "0xD9E0EE"
-# [colors.normal]
-# black = "0x6E6C7E"
-# blue = "0x96CDFB"
-# cyan = "0x89DCEB"
-# green = "0xABE9B3"
-# magenta = "0xF5C2E7"
-# red = "0xF28FAD"
-# white = "0xD9E0EE"
-# yellow = "0xFAE3B0"
-#
-# [colors.primary]
-# background = "0x1E1D2F"
+[[colors.indexed_colors]]
+color = "#F8BD96"
+index = 16
 
+[[colors.indexed_colors]]
+color = "#F5E0DC"
+index = 17
+
+[colors.bright]
+black = "#988BA2"
+blue = "#96CDFB"
+cyan = "#89DCEB"
+green = "#ABE9B3"
+magenta = "#F5C2E7"
+red = "#F28FAD"
+white = "#D9E0EE"
+yellow = "#FAE3B0"
+
+[colors.cursor]
+cursor = "#ABE9B3"
+text = "#D9E0EE"
+
+[colors.normal]
+black = "#6E6C7E"
+blue = "#96CDFB"
+cyan = "#89DCEB"
+green = "#ABE9B3"
+magenta = "#F5C2E7"
+red = "#F28FAD"
+white = "#D9E0EE"
+yellow = "#FAE3B0"
+
+[colors.primary]
+background = "#1E1D2F"
 
 [cursor]
 blink_interval = 500
@@ -55,20 +56,20 @@ unfocused_hollow = false
 blinking = "Off"
 shape = "Block"
 
-[font.bold]
-family = "JetBrainsMono Nerd Font"
-style = "Bold"
-
 [font]
 normal.family = "JetBrainsMono Nerd Font"
 size = 15
 
-[font.glyph_offset]
-x = 0
-y = 0
+[font.bold]
+family = "JetBrainsMono Nerd Font"
+style = "Bold"
 
 [font.italic]
 family = "JetBrainsMono Nerd Font"
+
+[font.glyph_offset]
+x = 0
+y = 0
 
 [font.offset]
 x = 0
@@ -81,9 +82,6 @@ hide_when_typing = true
 action = "PasteSelection"
 mouse = "Middle"
 
-[selection]
-semantic_escape_chars = ",│`|:\"' ()[]{}<>"
-
 [window]
 decorations = "full"
 dynamic_title = true
@@ -91,25 +89,25 @@ startup_mode = "Maximized"
 padding.x = 10
 padding.y = 10
 
-opacity =0.8
+opacity = 0.8
 blur = true
-# option_as_alt = "Both"
-
-
-[[keyboard.bindings]]
-  key = "V"
-  mods = "Control"
-  action = "Paste"
+option_as_alt = "Both"
 
 [[keyboard.bindings]]
-  key = "C"
-  mods = "Control"
-  action = "Copy"
+key = "V"
+mods = "Control"
+action = "Paste"
 
 [[keyboard.bindings]]
-  key = "K"
-  mods = "Control"
-  chars = "\u0003"
+key = "C"
+mods = "Control"
+action = "Copy"
+
+[[keyboard.bindings]]
+key = "K"
+mods = "Control"
+chars = "\u0003"
+
 
 # Dreams of Anatomy
 # live_config_reload = true

@@ -88,6 +88,6 @@ return {
 		keymap.set("n", "<leader>fs", "<cmd>Telescope live_grep<cr>", { desc = "Find String" })
 		keymap.set("n", "<leader>fc", "<cmd>Telescope grep_string<cr>", { desc = "Find String Under Cursor" })
 		keymap.set("n", "<leader>ft", "<cmd>TodoTelescope<cr>", { desc = "Find Todo Comments" })
-		vim.keymap.set("n", "<leader>fk", builtin.keymaps, { desc = "Keymaps" })
+		keymap.set("n", "<leader>fk", builtin.keymaps, { desc = "Keymaps" })
 	end,
 }
