@@ -1,60 +1,14 @@
+
 import = [
   "~/.config/alacritty/catppuccin-mocha.toml"
 ]
 
+live_config_reload = true
+
 [env]
 TERM = "xterm-256color"
-
-[bell]
-animation = "EaseOutExpo"
-duration = 0
-
-[colors]
-draw_bold_text_with_bright_colors = true
-
-# [[colors.indexed_colors]]
-# color = "#F5E0DC"
-# index = 17
-#
-# [colors.bright]
-# black = "#988BA2"
-# blue = "#96CDFB"
-# cyan = "#89DCEB"
-# green = "#ABE9B3"
-# magenta = "#F5C2E7"
-# red = "#F28FAD"
-# white = "#ffffff"
-# yellow = "#FAE3B0"
-#
-# [colors.cursor]
-# cursor = "#ABE9B3"
-# text = "#D9E0EE"
-#
-# [colors.normal]
-# black = "#6E6C7E"
-# blue = "#96CDFB"
-# cyan = "#89DCEB"
-# green = "#ABE9B3"
-# magenta = "#F5C2E7"
-# red = "#F28FAD"
-# white = "#D9E0EE"
-# yellow = "#FAE3B0"
-#
-[colors.primary]
-background = "#1e1e2e"
-
-[cursor]
-blink_interval = 500
-blink_timeout = 5
-unfocused_hollow = false
-
-[cursor.style]
-blinking = "Off"
-shape = "Block"
-
 [font]
-normal.family = "JetBrainsMono Nerd Font"
-size = 15
+size = 14
 
 [font.bold]
 family = "JetBrainsMono Nerd Font"
@@ -63,31 +17,22 @@ style = "Bold"
 [font.italic]
 family = "JetBrainsMono Nerd Font"
 
-[font.glyph_offset]
-x = 0
-y = 0
+[font.normal]
+family = "JetBrainsMono Nerd Font"
+style = "Regular"
 
-[font.offset]
-x = 0
-y = 0
-
-[mouse]
-hide_when_typing = true
 
 [[mouse.bindings]]
 action = "PasteSelection"
 mouse = "Middle"
 
 [window]
-decorations = "full"
-dynamic_title = true
-startup_mode = "Maximized"
-padding.x = 5 
-padding.y = 5
-
-opacity = 0.8
+opacity = 1
 blur = true
-option_as_alt = "Both"
+
+[window.padding]
+x = 10
+y = 10
 
 [[keyboard.bindings]]
 key = "V"
@@ -103,7 +48,6 @@ action = "Copy"
 key = "K"
 mods = "Control"
 chars = "\u0003"
-
 
 # Dreams of Anatomy
 # live_config_reload = true
