@@ -8,7 +8,6 @@ return {
 	},
 	config = function()
 		local lualine = require("lualine")
-		-- local lazy_status = require("lazy.status") -- to configure lazy pending updates count
 
 		local colors = {
 			blue = "#89b4fa",
@@ -22,7 +21,7 @@ return {
 			seperator = "#45475a",
 		}
 
-		local my_lualine_theme = {
+		local lualine_theme = {
 			normal = {
 				a = { bg = colors.blue, fg = colors.bg, gui = "bold" },
 				b = { bg = colors.seperator, fg = colors.fg },
@@ -55,21 +54,17 @@ return {
 			},
 		}
 
-		-- configure lualine with modified theme
 		lualine.setup({
 			options = {
-				theme = my_lualine_theme,
+				theme = lualine_theme,
 				icons_enabled = true,
-				-- theme = "catppuccin",
 				component_separators = { left = "", right = "" },
 				section_separators = { left = "", right = "" },
-
-				globalstatus = true,
 			},
-
 			sections = {
 				lualine_x = { "filetype" },
-				lualine_b = { "branch" },
+				-- lualine_b = { "branch" },
+				lualine_b = { "branch", "diff", "diagnostics" },
 			},
 		})
 	end,

@@ -1,5 +1,5 @@
 configuration{
-modi: "drun,run,  Settings :~/.local/bin/rofi-control-center.py";
+modi: "drun,run";
     lines: 10;
     font: "JetBrainsMono Nerd Font 12";
     show-icons: true;

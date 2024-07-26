@@ -28,6 +28,9 @@ return {
 		end
 		telescope.setup({
 			defaults = {
+				file_ignore_patterns = {
+					"node_modules",
+				},
 				layout_strategy = "horizontal",
 				layout_config = {
 					preview_width = 0.65,
