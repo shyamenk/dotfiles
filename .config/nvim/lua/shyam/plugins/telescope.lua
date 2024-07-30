@@ -9,6 +9,7 @@ return {
 		"folke/todo-comments.nvim",
 		"folke/twilight.nvim",
 		"nvim-telescope/telescope-live-grep-args.nvim",
+		"nvim-telescope/telescope-media-files.nvim",
 		version = "^1.0.0",
 	},
 	config = function()
@@ -30,6 +31,10 @@ return {
 			defaults = {
 				file_ignore_patterns = {
 					"node_modules",
+					".git",
+					"yarn-lock",
+					".next",
+					".build",
 				},
 				layout_strategy = "horizontal",
 				layout_config = {
@@ -64,6 +69,8 @@ return {
 		telescope.load_extension("harpoon")
 		telescope.load_extension("advanced_git_search")
 		telescope.load_extension("live_grep_args")
+		telescope.load_extension("live_grep_args")
+
 		-- set keymaps
 		local builtin = require("telescope.builtin")
 		vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Find Files" })

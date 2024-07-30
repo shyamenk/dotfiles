@@ -5,8 +5,7 @@
 
 set $mod Mod4
 exec_always --no-startup-id picom -b --config ~/.config/picom/picom.conf
-
-exec_always --no-startup-id feh --bg-scale ~/Downloads/arch-blue.png
+# exec_always --no-startup-id feh --bg-scale ~/Pictures/2.png
 # kill any hanging polybar processes
 exec_always killall polybar
 exec_always --no-startup-id ~/.config/polybar/launch_polybar.sh
@@ -118,7 +117,7 @@ set $ws6 "6"
 set $ws7 "7"
 set $ws8 "8"
 set $ws9 "9"
-set $ws10 "10"
+set $ws10 "0"
 
 # define names for workspaces with some nice symbols
 
@@ -227,11 +226,12 @@ client.background        $base
 
 # Disable title bars for all windows
 for_window [class=".*"] border pixel 0
-gaps inner 15
+gaps inner 10
 
-
-
-# Configure an additional 5px of extra space to the screen edges,
-# for a total gap of 10px to the screen edges, and 5px between windows.
-
+for_window [class="firefox"] move to workspace $ws1
+for_window [class="beekeeper-studio"] move to workspace $ws3
+for_window [class="org.gnome.Nautilus"] move to workspace $ws4
+for_window [class="Spotify"] move to workspace $ws5
+for_window [class="org.remmina.Remmina"] move to workspace $ws6
+for_window [class="Slack"] move to workspace $ws7
 

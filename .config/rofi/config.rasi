@@ -10,6 +10,7 @@ modi: "drun,run";
     disable-history: false;
     hide-scrollbar: true;
     display-drun: "   Apps ";
+    display-Network: " 󰤨  Network";   
     display-run: "   Run ";
     display-Settinsgs: "   Settings ";
     sidebar-mode: true;}
