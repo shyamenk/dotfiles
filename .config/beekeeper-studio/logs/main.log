@@ -40,3 +40,19 @@
 [2024-07-24 19:39:09.718] [info]                      initializing background
 [2024-07-24 20:23:37.289] [info]                      initializing background
 [2024-07-25 10:55:46.140] [info]                      initializing background
+[2024-08-04 03:32:02.619] [debug] (db/util) building selectTop for table 0 10 [ { field: 'id', dir: 'asc' } ] [ '*' ]
+[2024-08-04 03:32:02.659] [debug] (db/util) building selectTop for users 10 100 null [ '*' ]
+[2024-08-04 03:32:02.661] [debug] (db/util) building selectTop for info 100 10 null [ '*' ]
+[2024-08-04 03:32:02.664] [debug] (db/util) building selectTop for info 100 10 null [ '*' ]
+[2024-08-04 03:32:02.666] [debug] (db/util) building selectTop for info 100 10 null [ '*' ]
+[2024-08-04 03:32:22.131] [debug] (export/export)     starting export
+[2024-08-04 03:32:22.134] [debug] (db/util)           building selectTop for toexport null null [] [ '*' ]
+[2024-08-04 03:32:22.136] [debug] (db/util)           building selectTop for toexport null null null [ '*' ]
+[2024-08-04 03:32:22.138] [debug] (export/export)     running export
+[2024-08-04 03:32:22.145] [debug] (export/export)     starting export
+[2024-08-04 03:32:22.149] [debug] (db/util)           building selectTop for toexport null null [] [ '*' ]
+[2024-08-04 03:32:22.151] [debug] (db/util)           building selectTop for toexport null null null [ '*' ]
+[2024-08-04 03:32:22.153] [debug] (export/export)     running export
+[2024-08-04 03:38:03.610] [info]                      initializing background
+[2024-08-04 17:49:56.470] [info]                      initializing background
+[2024-08-04 18:38:06.228] [info]                      initializing background

@@ -4,13 +4,11 @@
 
 
 set $mod Mod4
-exec_always --no-startup-id picom -b --config ~/.config/picom/picom.conf
-# exec_always --no-startup-id feh --bg-scale ~/Pictures/2.png
-# kill any hanging polybar processes
+exec_always --no-startup-id picom 
 exec_always killall polybar
 exec_always --no-startup-id ~/.config/polybar/launch_polybar.sh
-exec --no-startup-id dex --autostart --environment i3
-font pango:JetBrains Mono Nerd Font 26
+# exec --no-startup-id dex --autostart --environment i3
+font pango:JetBrains Mono Nerd Font 18
 
 # Start XDG autostart .desktop files using dex. See also
 # https://wiki.archlinux.org/index.php/XDG_Autostart
@@ -179,6 +177,7 @@ mode "resize" {
 }
 
 bindsym $mod+r mode "resize"
+bindsym $mod+shift+n exec thunar
 # Start i3bar to display a workspace bar (plus the system information i3status
 
 
@@ -235,3 +234,15 @@ for_window [class="Spotify"] move to workspace $ws5
 for_window [class="org.remmina.Remmina"] move to workspace $ws6
 for_window [class="Slack"] move to workspace $ws7
 
+exec feh --bg-fill --randomize ~/Pictures/wallpaper/* &
+##  Display Resolution 
+
+# exec_always xrandr --output eDP01 --mode 1920x1080
+
+# Assign Programs to workspace 
+
+for_window [class="firefox"] move to workspace $ws1
+for_window [class="spotify"] move to workspace $ws5
+for_window [class="Thunar"] move to workspace $ws4
+
+# exec_always xrandr --output eDP-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal

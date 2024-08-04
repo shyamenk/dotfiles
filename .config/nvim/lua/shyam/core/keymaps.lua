@@ -2,7 +2,7 @@ vim.g.mapleader = " "
 
 local keymap = vim.keymap
 -- General Keymaps
-
+keymap.set("n", "-", "<CMD>Oil --float<CR>", { desc = "Open parent directory" })
 keymap.set("n", "<leader><left>", ":vertical resize +20<CR>", { desc = "Increase Vertical Window Size" })
 keymap.set("n", "<leader><right>", ":vertical resize -20<CR>", { desc = "Decrease Vertical Window Size" })
 keymap.set("n", "<leader><up>", ":resize +10<CR>", { desc = "Increase Horizontal Window Size" })
@@ -85,11 +85,11 @@ keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Open Current Buffer
 -- Highlight on yank
 local highlight_group = vim.api.nvim_create_augroup("YankHighlight", { clear = true })
 vim.api.nvim_create_autocmd("TextYankPost", {
-	callback = function()
-		vim.highlight.on_yank()
-	end,
-	group = highlight_group,
-	pattern = "*",
+  callback = function()
+    vim.highlight.on_yank()
+  end,
+  group = highlight_group,
+  pattern = "*",
 })
 
 ---------------------------
@@ -100,10 +100,10 @@ keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go To Previous Diagnos
 keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go To Next Diagnostic" })
 keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open Diagnostics List" })
 keymap.set(
-	"n",
-	"<leader><leader>",
-	"<cmd>lua require('goto-preview').close_all_win()<CR>",
-	{ noremap = true, desc = "Close All Preview Windows" }
+  "n",
+  "<leader><leader>",
+  "<cmd>lua require('goto-preview').close_all_win()<CR>",
+  { noremap = true, desc = "Close All Preview Windows" }
 )
 
 -----------------------
