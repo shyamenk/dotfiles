@@ -14,10 +14,11 @@ exec --no-startup-id nm-applet
 # ===== Keybindings =====
 # Launch Programs
 bindsym $mod+Return exec alacritty # Start terminal
-bindsym $mod+p exec --no-startup-id firefox # Start Firefox
-bindsym $mod+shift+x exec --no-startup-id betterlockscreen -l dim # Lock screen
-bindsym $mod+space exec --no-startup-id "rofi -show" # Start Rofi
-bindsym $mod+shift+n exec thunar # Start Thunar file manager
+bindsym $mod+p exec --no-startup-id firefox
+bindsym $mod+shift+x exec --no-startup-id betterlockscreen -l dim 
+bindsym $mod+space exec --no-startup-id "rofi -show"
+bindsym $mod+shift+n exec thunar
+bindsym $mod+q kill
 
 # Volume Control
 set $refresh_i3status killall -SIGUSR1 i3status
@@ -119,8 +120,8 @@ bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
 # Miscellaneous
-bindsym $mod+Shift+c reload # Reload configuration
-bindsym $mod+Shift+r restart # Restart i3
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
 # Window Appearance
