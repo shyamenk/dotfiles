@@ -217,3 +217,10 @@ eval "$(zoxide init zsh)"
 
 
 export PATH=$PATH:/home/shyamenk/.spicetify
+
+# bun completions
+[ -s "/home/elliott/.bun/_bun" ] && source "/home/elliott/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
