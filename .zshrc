@@ -1,11 +1,9 @@
 
 export STARSHIP_CONFIG=~/.config/starship.toml
-# Remove older command from the history if a duplicate is to be added.
 setopt HIST_IGNORE_ALL_DUPS
-# Set editor default keymap to emacs (`-e`) or vi (`-v`)
 bindkey -e
 
-# Remove path separator from WORDCHARS.
+
 WORDCHARS=${WORDCHARS//[\/]}
 
 # -----------------
@@ -128,7 +126,7 @@ alias ls="eza --color=always --long --git --no-filesize --icons=always --no-time
 # alias bat="batcat"
 alias t="tmux -u"
 alias n="nvim"
-
+alias y="yazi"
 eval "$(fzf --zsh)"
 # FZF setup
 # source /usr/share/doc/fzf/examples/key-bindings.zsh
