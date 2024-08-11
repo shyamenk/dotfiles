@@ -3,7 +3,8 @@ return {
 	dependencies = {
 		"nvim-tree/nvim-web-devicons",
 		"folke/noice.nvim",
-		"MunifTanjim/nui.nvim",
+		"yavorski/lualine-macro-recording.nvim",
+		-- "MunifTanjim/nui.nvim",
 		"rcarriga/nvim-notify",
 	},
 	config = function()
@@ -62,9 +63,11 @@ return {
 				section_separators = { left = "", right = "" },
 			},
 			sections = {
-				lualine_x = { "filetype" },
-				-- lualine_b = { "branch" },
+				lualine_x = {
+					"filetype",
+				},
 				lualine_b = { "branch", "diff", "diagnostics" },
+				lualine_c = { "macro_recording", "%S" },
 			},
 		})
 	end,

@@ -92,6 +92,7 @@ source ${ZIM_HOME}/init.zsh
 #
 
 zmodload -F zsh/terminfo +p:terminfo
+export EDITOR=nvim
 
 # Bind ^[[A/^[[B manually so up/down works both before and after zle-line-init
 for key ('^[[A' '^P' ${terminfo[kcuu1]}) bindkey ${key} history-substring-search-up
@@ -108,7 +109,7 @@ alias gca="git commit -a -m"
 alias gp="git push origin HEAD"
 alias gpu="git pull origin"
 alias gst="git status"
-alias glog="git log --graph --topo-order --pretty='%w(100,0,6)%C(yellow)%h%C(bold)%C(black)%d %C(cyan)%ar %C(green)%an%n%C(bold)%C(white)%s %N' --abbrev-commit"
+alias go="git log --graph --topo-order --pretty='%w(100,0,6)%C(yellow)%h%C(bold)%C(black)%d %C(cyan)%ar %C(green)%an%n%C(bold)%C(white)%s %N' --abbrev-commit"
 alias gdiff="git diff"
 alias gco="git checkout"
 alias gb='git branch'
@@ -118,6 +119,7 @@ alias ga='git add -p'
 alias gcoall='git checkout -- .'
 alias gr='git remote'
 alias gre='git reset'
+alias glg='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset" --abbrev-commit --date=relative'
 
 # Eza
 alias l="eza -l --icons --git -a"

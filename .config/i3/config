@@ -10,6 +10,7 @@ exec_always killall polybar
 exec_always --no-startup-id ~/.config/polybar/launch_polybar.sh
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 exec --no-startup-id nm-applet
+exec_always feh --bg-fill ~/Pictures/wallpaper/alpine.png
 
 # ===== Keybindings =====
 # Launch Programs
