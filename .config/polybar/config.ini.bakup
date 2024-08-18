@@ -5,8 +5,6 @@
 ; ===============================
 ; Colors
 ; ===============================
-
-
 [colors]
 base = #1e1e2e
 mantle = #181825
@@ -38,7 +36,6 @@ transparent = #FF00000
 bright-blue = #32afff
 bright-red = #ef2929
 bright-pink = #8ae234
-grey = #6B7280
 
 
 ; ===============================
@@ -46,7 +43,7 @@ grey = #6B7280
 ; ===============================
 [bar/main]
 width = 100%
-height = 30
+height = 40
 background = ${colors.base}
 foreground = ${colors.text}
 top = true
@@ -72,7 +69,6 @@ interval = 2
 click-left = exec blueberry
 click-right = exec ~/.config/polybar/toggle.sh
 format-padding = 1
-content-padding = 4
 
 
 
@@ -82,7 +78,7 @@ content-padding = 4
 [module/launcher]
 type = custom/text
 format =  | LiNuX
-format-foreground = ${colors.bright-blue}
+format-foreground = ${colors.sapphire}
 content-padding = 2
 click-left = rofi -show drun -show-icons 
 
@@ -97,13 +93,13 @@ ws-icon-default = " "
 format = <label-state> <label-mode>
 label-mode = %mode%
 label-focused = %icon% %name%
-label-focused-foreground =  ${colors.lavendar}
+label-focused-foreground =  ${colors.sapphire}
 label-focused-background = ${colors.base}
 label-focused-padding = 1
 label-unfocused = %icon% %name%
 label-unfocused-padding = 1
 label-unfocused-background = ${colors.base}
-label-unfocused-foreground = ${colors.grey}
+label-unfocused-foreground = ${colors.overlay1}
 label-visible = %icon% %name%
 label-visible-background = ${colors.base}
 label-visible-padding = 1
@@ -111,7 +107,6 @@ label-urgent = %icon% %name%
 label-urgent-background = ${colors.base}
 label-urgent-foreground = ${colors.red}
 label-urgent-padding = 1
-override-redirect = true
 
 ; ===============================
 ; Backlight Module
@@ -224,7 +219,7 @@ animation-discharging-framerate = 500
 ; ===============================
 [module/wlan]
 type = internal/network
-interface = wlan0
+interface = wlp0s20f3
 format-prefix = "󰖩"
 label-connected = %{F#cdd6f4}%{A1:alacritty -e nmtui &:}󰖩 %essid%%{A}
 label-disconnected = %{F#cdd6f4}󰖩 %{F#cdd6f4}Disconnected
@@ -241,17 +236,12 @@ ramp-signal-foreground = #7e52c6
 ; ===============================
 ; Date Module
 ; ===============================
-
 [module/date]
 type = internal/date
 interval = 1
-label-foreground = ${colors.lavender}
 format-prefix = "  "
 time = "%a, %b %d %I:%M %p"
-format-prefix-foreground = ${colors.lavender}
-
-# Click action to display the calendar using Galendae with a specific configuration
-label = "%{A1:galendae -c blue.conf:}%{T1}%time%%{T-}%{A}"
+label = %{T1}%time%%{T-}
 
 ; ===============================
 ; Powermenu Module

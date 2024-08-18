@@ -1,6 +1,11 @@
 vim.g.mapleader = " "
 
 local keymap = vim.keymap
+
+vim.keymap.set("n", "<leader>log", function()
+	require("telescope.builtin").live_grep({ default_text = "console\\.log\\(", initial_mode = "normal" })
+end, { desc = "List console.logs" })
+
 -- General Keymaps
 keymap.set("n", "-", "<CMD>Oil --float<CR>", { desc = "Open parent directory" })
 keymap.set("n", "<leader><left>", ":vertical resize +20<CR>", { desc = "Increase Vertical Window Size" })
