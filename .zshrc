@@ -224,3 +224,4 @@ export PATH=$PATH:/home/shyamenk/.spicetify
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+export TESSDATA_PREFIX=/usr/share/

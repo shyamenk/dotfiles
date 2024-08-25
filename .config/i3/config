@@ -12,20 +12,29 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 exec --no-startup-id nm-applet
 exec_always feh --randomize --bg-fill  ~/Pictures/wallpaper/*
 exec --no-startup-id pkill dunst
+exec --no-startup-id ~/scripts/battery_alert.sh
+
+#TEXT EXTRACTOR
+
+bindsym $mod+shift+o exec --no-startup-id env TESSDATA_PREFIX=/usr/share/ ~/scripts/text_extractor.sh
 
 # ===== Keybindings =====
 # Launch Programs
 bindsym $mod+Return exec alacritty # Start terminal
 bindsym $mod+p exec --no-startup-id firefox
+# bindsym $mod+g exec --no-startup-id google-chrome
+bindsym $mod+g exec --no-startup-id /opt/google/chrome/google-chrome
 bindsym $mod+shift+x exec --no-startup-id betterlockscreen -l dim 
 bindsym $mod+space exec --no-startup-id "rofi -show"
 bindsym $mod+shift+n exec nautilus
 bindsym $mod+q kill
 
+
+
 #Video Recording
 
 # Start screen recording
-bindsym $mod+Shift+V exec --no-startup-id ~/screen-recording.sh
+bindsym $mod+Shift+V exec --no-startup-id ~/scripts/screen-recording.sh
 
 # Stop screen recording
 bindsym $mod+Shift+S exec --no-startup-id pkill -INT ffmpeg && dunstify -i camera-web -t 3000 "Screen Recording" "Recording stopped" && echo "$(date '+%Y-%m-%d %H:%M:%S') - Recording stopped" >> ~/screen_recording.log
@@ -175,9 +184,9 @@ for_window [class=".*"] border pixel 0
 gaps inner 10
 
 # Application-specific Window Rules
-for_window [class="firefox"] move to workspace $ws1
+for_window [class="Google-chrome"] move to workspace $ws1
 for_window [class="beekeeper-studio"] move to workspace $ws3
 for_window [class="org.gnome.Nautilus"] move to workspace $ws4
 for_window [class="Spotify"] move to workspace $ws5
 for_window [class="org.remmina.Remmina"] move to workspace $ws6
-for_window [class="Slack"] move to workspace $ws7
+for_window [class=-"Slack"] move to workspace $ws7
