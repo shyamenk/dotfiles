@@ -38,6 +38,8 @@ return {
 				"prettier",
 				"stylua",
 				"eslint_d",
+				"flake8", -- Added Python linter
+				"black", -- Added Python formatter
 			},
 		})
 	end,

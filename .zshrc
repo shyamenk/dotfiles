@@ -225,3 +225,7 @@ export PATH=$PATH:/home/shyamenk/.spicetify
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 export TESSDATA_PREFIX=/usr/share/
+
+export PATH=/usr/bin/aws_completer/:$PATH
+
+complete -C '/usr/bin/aws_completer' aws

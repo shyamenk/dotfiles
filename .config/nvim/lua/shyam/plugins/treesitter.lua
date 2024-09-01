@@ -19,6 +19,7 @@ return {
 				enable = true,
 			},
 			modules = {},
+			vim.treesitter.language.register("markdown", "mdx"),
 			ensure_installed = {
 				"json",
 				"javascript",

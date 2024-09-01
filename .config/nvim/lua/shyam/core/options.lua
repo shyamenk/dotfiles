@@ -1,6 +1,11 @@
 vim.cmd("let g:netrw_liststyle = 3")
 local opt = vim.opt
 
+vim.filetype.add({
+	extension = {
+		mdx = "mdx",
+	},
+})
 opt.conceallevel = 2
 opt.relativenumber = true
 opt.number = true
