@@ -1,73 +1,90 @@
 return {
 	"epwalsh/obsidian.nvim",
-	-- tag = "*",
-	requires = {
+	dependencies = {
 		"nvim-lua/plenary.nvim",
+		"hrsh7th/nvim-cmp",
+		"nvim-telescope/telescope.nvim",
+		"nvim-treesitter/nvim-treesitter",
 	},
 	config = function()
-		require("obsidian").setup({
+		local obsidian = require("obsidian")
+
+		obsidian.setup({
 			workspaces = {
 				{
-					name = "notes",
-					path = "~/Documents/Notes",
+					name = "vault2",
+					path = "~/Documents/Second Brain",
 				},
 			},
-
 			notes_subdir = "inbox",
 			new_notes_location = "notes_subdir",
-
 			note_id_func = function(title)
-				local suffix = ""
-				if title ~= nil then
-					suffix = title:gsub(" ", "-"):gsub("[^A-Za-z0-9-]", ""):lower()
-				else
-					for _ = 1, 4 do
-						suffix = suffix .. string.char(math.random(65, 90))
+				return title
+			end,
+			note_frontmatter_func = function(note)
+				local out = {
+					id = tostring(os.time()),
+					tags = note.tags or {},
+					["created at"] = os.date("%Y-%m-%d"),
+					title = note.title,
+				}
+				if note.metadata ~= nil and not vim.tbl_isempty(note.metadata) then
+					for k, v in pairs(note.metadata) do
+						out[k] = v
 					end
 				end
-				return suffix .. ".md"
+				return out
 			end,
-
-			-- note_frontmatter_func = function(note)
-			-- 	if note.title then
-			-- 		note:add_alias(note.title)
-			-- 	end
-			--
-			-- 	local out = {
-			-- 		id = note.id,
-			-- 		aliases = note.aliases,
-			-- 		tags = note.tags,
-			-- 	}
-			--
-			-- 	if note.metadata then
-			-- 		for k, v in pairs(note.metadata) do
-			-- 			out[k] = v
-			-- 		end
-			-- 	end
-			--
-			-- 	if not out.url then
-			-- 		out.author = "shyamenk@gmail.com"
-			-- 		out.reference = "https://example.com"
-			-- 	end
-			--
-			-- 	return out
-			-- end,
 			templates = {
-				subdir = "Templates",
-				date_format = "%Y-%m-%d",
-				time_format = "%H:%M:%S",
+				subdir = "templates",
+				date_format = "%d-%m-%Y",
+				time_format = "%H:%M",
+				substitutions = {},
 			},
-
 			daily_notes = {
-				folder = "Daily Notes",
+				folder = "daily",
+				date_format = "%d-%m-%Y",
+				alias_format = "%B %-d, %Y",
+				default_tags = { "daily-notes" },
+				template = "Daily Note.md",
 			},
 			completion = {
 				nvim_cmp = true,
 				min_chars = 2,
 			},
-			ui = {
-				enable = true,
+			wiki_link_func = function(opts)
+				if opts.id == nil then
+					return string.format("[[%s]]", opts.label)
+				elseif opts.label ~= opts.id then
+					return string.format("[[%s|%s]]", opts.id, opts.label)
+				else
+					return string.format("[[%s]]", opts.id)
+				end
+			end,
+			preferred_link_style = "wiki",
+			open_notes_in = "current",
+			mappings = {
+				["gf"] = {
+					action = function()
+						return obsidian.util.gf_passthrough()
+					end,
+					opts = { noremap = false, expr = true, buffer = true },
+				},
+				["<cr>"] = {
+					action = function()
+						return obsidian.util.smart_action()
+					end,
+					opts = { buffer = true, expr = true },
+				},
 			},
+			backlinks = {
+				height = 10,
+				wrap = true,
+			},
+			follow_url_func = function(url)
+				vim.fn.jobstart({ "xdg-open", url }) -- linux
+			end,
+			open_app_foreground = false,
 		})
 	end,
 }

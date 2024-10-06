@@ -189,4 +189,5 @@ for_window [class="beekeeper-studio"] move to workspace $ws3
 for_window [class="org.gnome.Nautilus"] move to workspace $ws4
 for_window [class="Spotify"] move to workspace $ws5
 for_window [class="org.remmina.Remmina"] move to workspace $ws6
-for_window [class=-"Slack"] move to workspace $ws7
+# for_window [class="slack"] move to workspace $ws7
+for_window [class="Slack"] move to workspace $ws7
