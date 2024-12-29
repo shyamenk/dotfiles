@@ -120,7 +120,11 @@ alias gcoall='git checkout -- .'
 alias gr='git remote'
 alias gre='git reset'
 alias glg='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset" --abbrev-commit --date=relative'
+alias fb='z ~/Desktop/future-builds/'
+alias rm='trash-put'
 
+alias dcp='docker-compose up'   # For docker-compose up (build and start in detached mode)
+alias dcd='docker-compose down'          # For docker-compose down
 # Eza
 alias l="eza -l --icons --git -a"
 alias lt="eza --tree --level=2 --long --icons --git"
@@ -229,3 +233,12 @@ export TESSDATA_PREFIX=/usr/share/
 export PATH=/usr/bin/aws_completer/:$PATH
 
 complete -C '/usr/bin/aws_completer' aws
+export PATH="$HOME/bin:$PATH"
+
+# Aliases for connecting to databases
+alias cpd="db_connect prod"
+alias cdd="db_connect dev"
+
+export PATH="$HOME/.pyenv/bin:$PATH"
+eval "$(pyenv init --path)"
+eval "$(pyenv init -)"

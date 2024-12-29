@@ -26,10 +26,9 @@ bindsym $mod+p exec --no-startup-id firefox
 bindsym $mod+g exec --no-startup-id /opt/google/chrome/google-chrome
 bindsym $mod+shift+x exec --no-startup-id betterlockscreen -l dim 
 bindsym $mod+space exec --no-startup-id "rofi -show"
-bindsym $mod+shift+n exec nautilus
+bindsym $mod+shift+n exec thunar
 bindsym $mod+q kill
-
-
+bindsym $mod+period exec rofimoji --action type
 
 #Video Recording
 
@@ -140,6 +139,7 @@ bindsym $mod+Shift+Right move right
 
 # Miscellaneous
 bindsym $mod+Shift+c reload
+bindsym $mod+Shift+g exec ~/scripts/color_picker.sh
 bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
@@ -186,7 +186,7 @@ gaps inner 10
 # Application-specific Window Rules
 for_window [class="Google-chrome"] move to workspace $ws1
 for_window [class="beekeeper-studio"] move to workspace $ws3
-for_window [class="org.gnome.Nautilus"] move to workspace $ws4
+for_window [class="Thunar"] move to workspace $ws4
 for_window [class="Spotify"] move to workspace $ws5
 for_window [class="org.remmina.Remmina"] move to workspace $ws6
 # for_window [class="slack"] move to workspace $ws7

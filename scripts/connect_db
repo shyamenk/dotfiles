@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Function to retrieve a specific credential from pass
+get_credential() {
+    local env=$1    # The environment (production or development)
+    local key=$2    # The key to retrieve (host, port, username, dbname, or password)
+    # Use pass to show the content, grep for the specific key, and cut to get only the value
+    pass show "db/$env" | grep "$key:" | cut -d' ' -f2-
+}
+
+# Function to connect to the database
+connect_to_db() {
+    local env=$1    # The environment to connect to
+
+    # Retrieve each credential using the get_credential function
+    local host=$(get_credential $env "host")
+    local port=$(get_credential $env "port")
+    local username=$(get_credential $env "username")
+    local dbname=$(get_credential $env "dbname")
+    local password=$(get_credential $env "password")
+
+    # Use psql to connect to the database
+    # PGPASSWORD sets the password for this command only
+    PGPASSWORD=$password psql -h $host -p $port -U $username -d $dbname
+}
+
+# Main script logic
+if [ "$1" = "prod" ] || [ "$1" = "production" ]; then
+    connect_to_db "production"
+elif [ "$1" = "dev" ] || [ "$1" = "development" ]; then
+    connect_to_db "development"
+else
+    echo "Usage: $0 [prod|dev]"
+    exit 1
+fi
