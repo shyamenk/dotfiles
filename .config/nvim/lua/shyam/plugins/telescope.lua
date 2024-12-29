@@ -35,6 +35,7 @@ return {
 					"yarn-lock",
 					".next",
 					".build",
+					"venv",
 				},
 				layout_strategy = "horizontal",
 				layout_config = {

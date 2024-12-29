@@ -77,10 +77,6 @@ return {
 					opts = { buffer = true, expr = true },
 				},
 			},
-			backlinks = {
-				height = 10,
-				wrap = true,
-			},
 			follow_url_func = function(url)
 				vim.fn.jobstart({ "xdg-open", url }) -- linux
 			end,

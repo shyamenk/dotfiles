@@ -1,4 +1,5 @@
 vim.cmd("let g:netrw_liststyle = 3")
+
 local opt = vim.opt
 
 vim.filetype.add({
@@ -6,38 +7,41 @@ vim.filetype.add({
 		mdx = "mdx",
 	},
 })
+-- General settings
 opt.conceallevel = 2
 opt.relativenumber = true
 opt.number = true
-
--- tabs & indentation
+-- Tabs & indentation
 opt.tabstop = 2
 opt.shiftwidth = 2
 opt.expandtab = true
 opt.autoindent = true
 
--- line wrapping
-opt.wrap = false
+-- Line wrapping
+opt.wrap = true
+opt.linebreak = true
+opt.formatoptions:append("t")
 
--- search settings
+opt.textwidth = 0
+-- Search settings
 opt.ignorecase = true
 opt.smartcase = true
 
--- cursor line
+-- Cursor line
 opt.cursorline = true
-
 opt.termguicolors = true
 opt.background = "dark"
 opt.signcolumn = "yes"
 
--- backspace
+-- Backspace
 opt.backspace = "indent,eol,start"
 
--- clipboard
+-- Clipboard
 opt.clipboard:append("unnamedplus")
 
--- split windows
+-- Split windows
 opt.splitright = true
 opt.splitbelow = true
--- turn off swapfile
+
+-- Turn off swapfile
 opt.swapfile = false

@@ -67,7 +67,19 @@ return {
 					"filetype",
 				},
 				lualine_b = { "branch", "diff", "diagnostics" },
-				lualine_c = { "macro_recording", "%S" },
+				lualine_c = {
+					"macro_recording",
+					"%S",
+					{
+						"filename",
+						path = 1,
+						symbols = {
+							modified = " ●",
+							readonly = " ",
+							unnamed = "[No Name]",
+						},
+					},
+				},
 			},
 		})
 	end,
