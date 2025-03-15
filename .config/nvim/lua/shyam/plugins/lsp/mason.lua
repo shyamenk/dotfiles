@@ -20,7 +20,21 @@ return {
 				},
 			},
 		})
+		null_ls.setup({
+			sources = {
+				-- Python formatters
+				null_ls.builtins.formatting.black,
+				-- null_ls.builtins.formatting.autopep8, -- Uncomment if you prefer autopep8
+				null_ls.builtins.formatting.isort, -- For sorting imports
 
+				-- Linters
+				null_ls.builtins.diagnostics.flake8,
+
+				-- Your existing formatters
+				null_ls.builtins.formatting.prettier,
+				null_ls.builtins.formatting.stylua,
+			},
+		})
 		mason_lspconfig.setup({
 			ensure_installed = {
 				"html",
@@ -39,7 +53,9 @@ return {
 				"stylua",
 				"eslint_d",
 				"eslint",
-				"flake8",
+				"black",
+				"autopep8",
+				"isort",
 			},
 		})
 	end,

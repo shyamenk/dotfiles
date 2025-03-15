@@ -28,8 +28,7 @@ bindsym $mod+shift+x exec --no-startup-id betterlockscreen -l dim
 bindsym $mod+space exec --no-startup-id "rofi -show"
 bindsym $mod+shift+n exec thunar
 bindsym $mod+q kill
-bindsym $mod+period exec rofimoji --action type
-
+bindsym $mod+period exec /bin/bash /home/$USER/emoji_picker.sh
 #Video Recording
 
 # Start screen recording
