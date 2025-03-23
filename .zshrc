@@ -91,6 +91,28 @@ source ${ZIM_HOME}/init.zsh
 # zsh-history-substring-search
 #
 
+
+# Auto-activate/deactivate virtual environments when changing directories
+function cd() {
+  builtin cd "$@"
+  
+  # Path to your cybersec directory (adjust if needed)
+  local cybersec_path="$HOME/cybersec"
+  local current_path="$PWD"
+  
+  # Check if we're in the cybersec directory or any subdirectory
+  if [[ "$current_path" == "$cybersec_path"* ]]; then
+    # Only activate if not already in a venv
+    if [[ -z "$VIRTUAL_ENV" ]]; then
+      echo "🔒 Activating cybersecurity environment..."
+      source "$HOME/cybersec/python-env/venv/bin/activate"
+    fi
+  # If we were in a venv and now we're leaving the cybersec directory
+  elif [[ -n "$VIRTUAL_ENV" && "$VIRTUAL_ENV" == *"cybersec/python-env/venv"* ]]; then
+    echo "🔓 Deactivating cybersecurity environment..."
+    deactivate
+  fi
+}
 zmodload -F zsh/terminfo +p:terminfo
 export EDITOR=nvim
 
@@ -122,6 +144,8 @@ alias gre='git reset'
 alias glg='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset" --abbrev-commit --date=relative'
 alias fb='z ~/Desktop/future-builds/'
 alias rm='trash-put'
+# Alias to quickly jump to the cybersec directory
+alias cybersec="cd ~/cybersec"
 
 alias dcp='docker-compose up'   # For docker-compose up (build and start in detached mode)
 alias dcd='docker-compose down'          # For docker-compose down
@@ -132,7 +156,6 @@ alias ls="eza --color=always --long --git --no-filesize --icons=always --no-time
 # alias bat="batcat"
 alias t="tmux -u"
 alias n="nvim"
-alias y="yazi"
 eval "$(fzf --zsh)"
 # FZF setup
 # source /usr/share/doc/fzf/examples/key-bindings.zsh
@@ -242,3 +265,13 @@ alias cdd="db_connect dev"
 export PATH="$HOME/.pyenv/bin:$PATH"
 eval "$(pyenv init --path)"
 eval "$(pyenv init -)"
+
+# Yazi Setup
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		builtin cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
+}
