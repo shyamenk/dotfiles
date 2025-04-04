@@ -253,18 +253,18 @@ export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 export TESSDATA_PREFIX=/usr/share/
 
-export PATH=/usr/bin/aws_completer/:$PATH
-
-complete -C '/usr/bin/aws_completer' aws
+# export PATH=/usr/bin/aws_completer/:$PATH
+#
+# complete -C '/usr/bin/aws_completer' aws
 export PATH="$HOME/bin:$PATH"
 
 # Aliases for connecting to databases
 alias cpd="db_connect prod"
 alias cdd="db_connect dev"
 
-export PATH="$HOME/.pyenv/bin:$PATH"
-eval "$(pyenv init --path)"
-eval "$(pyenv init -)"
+# export PATH="$HOME/.pyenv/bin:$PATH"
+# eval "$(pyenv init --path)"
+# eval "$(pyenv init -)"
 
 # Yazi Setup
 function y() {

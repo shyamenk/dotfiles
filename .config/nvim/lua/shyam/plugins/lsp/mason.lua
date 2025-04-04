@@ -3,14 +3,14 @@ return {
 	dependencies = {
 		"williamboman/mason-lspconfig.nvim",
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
-		"jose-elias-alvarez/null-ls.nvim", -- Add null-ls for formatting
 	},
 	config = function()
+		-- import mason
 		local mason = require("mason")
+		-- import mason-lspconfig
 		local mason_lspconfig = require("mason-lspconfig")
 		local mason_tool_installer = require("mason-tool-installer")
-		local null_ls = require("null-ls")
-
+		-- enable mason and configure icons
 		mason.setup({
 			ui = {
 				icons = {
@@ -20,26 +20,13 @@ return {
 				},
 			},
 		})
-		null_ls.setup({
-			sources = {
-				-- Python formatters
-				null_ls.builtins.formatting.black,
-				-- null_ls.builtins.formatting.autopep8, -- Uncomment if you prefer autopep8
-				null_ls.builtins.formatting.isort, -- For sorting imports
-
-				-- Linters
-				null_ls.builtins.diagnostics.flake8,
-
-				-- Your existing formatters
-				null_ls.builtins.formatting.prettier,
-				null_ls.builtins.formatting.stylua,
-			},
-		})
 		mason_lspconfig.setup({
+			-- list of servers for mason to install
 			ensure_installed = {
 				"html",
 				"cssls",
 				"tailwindcss",
+				"svelte",
 				"lua_ls",
 				"graphql",
 				"emmet_ls",
@@ -49,13 +36,12 @@ return {
 		})
 		mason_tool_installer.setup({
 			ensure_installed = {
-				"prettier",
-				"stylua",
+				"prettier", -- prettier formatter
+				"stylua", -- lua formatter
+				"isort", -- python formatter
+				"black", -- python formatter
+				"pylint",
 				"eslint_d",
-				"eslint",
-				"black",
-				"autopep8",
-				"isort",
 			},
 		})
 	end,
