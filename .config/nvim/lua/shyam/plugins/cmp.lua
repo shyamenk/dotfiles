@@ -2,13 +2,13 @@ return {
 	"hrsh7th/nvim-cmp",
 	event = "InsertEnter",
 	dependencies = {
-		"hrsh7th/cmp-buffer", -- source for text in buffer
-		"hrsh7th/cmp-path", -- source for file system paths
-		"hrsh7th/cmp-nvim-lsp", -- ADD THIS: for LSP source
+		"hrsh7th/cmp-buffer",
+		"hrsh7th/cmp-path",
+		"hrsh7th/cmp-cmdline",
+		"hrsh7th/cmp-nvim-lsp",
 		{
 			"L3MON4D3/LuaSnip",
-			-- follow latest release.
-			version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
+			version = "v2.*",
 			-- install jsregexp (optional!).
 			build = "make install_jsregexp",
 		},
@@ -49,6 +49,8 @@ return {
 			}),
 			-- configure lspkind for vs-code like pictograms in completion menu
 			formatting = {
+				fields = { "kind", "abbr", "menu" },
+				expandable_indicator = true,
 				format = lspkind.cmp_format({
 					maxwidth = 50,
 					ellipsis_char = "...",

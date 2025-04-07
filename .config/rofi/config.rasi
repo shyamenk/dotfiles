@@ -1,7 +1,7 @@
 configuration{
 modi: "drun,run";
     lines: 10;
-    font: "JetBrainsMono Nerd Font 12";
+    font: "JetBrainsMono Nerd Font 13";
     show-icons: true;
     icon-theme: "Oranchelo";
     terminal: "alacritty";
