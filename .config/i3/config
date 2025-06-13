@@ -6,6 +6,7 @@ font pango:JetBrains Mono Nerd Font 18
 
 # ===== Startup Applications =====
 exec_always --no-startup-id picom 
+# exec_always --no-startup-id picom --experimental-backends --config ~/.config/picom/picom.conf
 exec_always killall polybar
 exec_always --no-startup-id ~/.config/polybar/launch_polybar.sh
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
@@ -141,7 +142,8 @@ bindsym $mod+Shift+g exec ~/scripts/color_picker.sh
 bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
-# Window Appearance
+# ===== Window Appearance =====
+# Catppuccin Colors
 set $rosewater #f5e0dc
 set $flamingo  #f2cdcd
 set $pink      #f5c2e7
@@ -170,18 +172,20 @@ set $mantle    #181825
 set $crust     #11111b
 
 # Window Borders
-client.focused           $mantle   $mauve $mantle  $rosewater $surface3
-client.focused_inactive  $overlay0 $base  $text    $rosewater $overlay0
-client.unfocused         $overlay0 $base  $text    $rosewater $overlay0
-client.urgent            $peach    $base  $peach   $overlay0  $peach
-client.placeholder       $overlay0 $base  $text    $overlay0  $overlay0
-client.background        $base
-for_window [class=".*"] border pixel 0
+# Enable borders and set thickness
+for_window [class=".*"] border pixel 3
+
+# Window colorscheme (border, background, text, indicator, child_border)
+client.focused          $mauve     $base      $text     $lavender  $mauve
+client.focused_inactive $overlay0  $base      $text     $overlay0  $overlay0
+client.unfocused        $overlay0  $base      $text     $overlay0  $surface0
+client.urgent           $peach     $base      $peach    $peach     $peach
+client.placeholder      $overlay0  $base      $text     $overlay0  $overlay0
+client.background       $base
 
 # Gaps
 gaps inner 10
-
-# Application-specific Window Rules
+gaps outer 5
 for_window [class="Google-chrome"] move to workspace $ws1
 for_window [class="beekeeper-studio"] move to workspace $ws3
 for_window [class="Thunar"] move to workspace $ws4

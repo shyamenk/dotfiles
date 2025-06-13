@@ -131,7 +131,7 @@ alias gca="git commit -a -m"
 alias gp="git push origin HEAD"
 alias gpu="git pull origin"
 alias gst="git status"
-alias go="git log --graph --topo-order --pretty='%w(100,0,6)%C(yellow)%h%C(bold)%C(black)%d %C(cyan)%ar %C(green)%an%n%C(bold)%C(white)%s %N' --abbrev-commit"
+# alias go="git log --graph --topo-order --pretty='%w(100,0,6)%C(yellow)%h%C(bold)%C(black)%d %C(cyan)%ar %C(green)%an%n%C(bold)%C(white)%s %N' --abbrev-commit"
 alias gdiff="git diff"
 alias gco="git checkout"
 alias gb='git branch'
@@ -144,6 +144,7 @@ alias gre='git reset'
 alias glg='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset" --abbrev-commit --date=relative'
 alias fb='z ~/Desktop/future-builds/'
 alias rm='trash-put'
+alias logs='cat /var/log/system-monitor/system_stats.log'
 # Alias to quickly jump to the cybersec directory
 alias cybersec="cd ~/cybersec"
 
@@ -183,6 +184,9 @@ purple="#B388FF"
 blue="#06BCE4"
 cyan="#2CF9ED"
 
+export PATH="$HOME/.local/bin:$PATH"
+
+export MANPAGER='nvim +Man!'
 # History setup
 HISTFILE=$HOME/.zhistory
 SAVEHIST=1000
@@ -275,3 +279,16 @@ function y() {
 	fi
 	rm -f -- "$tmp"
 }
+
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+export GOROOT=/usr/lib/go
+export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+export GOPATH=$HOME/go
+
+[[ -s "/home/shyamenk/.gvm/scripts/gvm" ]] && source "/home/shyamenk/.gvm/scripts/gvm"
+
+# Bug Bounty aliases
+if [ -f ~/.bug_bounty_aliases ]; then
+  . ~/.bug_bounty_aliases
+fi

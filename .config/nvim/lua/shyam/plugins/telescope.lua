@@ -67,7 +67,7 @@ return {
 
 		telescope.load_extension("fzf")
 		telescope.load_extension("noice")
-		telescope.load_extension("harpoon")
+		-- telescope.load_extension("harpoon")
 		telescope.load_extension("advanced_git_search")
 		telescope.load_extension("live_grep_args")
 		telescope.load_extension("live_grep_args")
