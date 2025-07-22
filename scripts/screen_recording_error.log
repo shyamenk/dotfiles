@@ -854,3 +854,52 @@ frame= 1668 fps= 30 q=-1.0 Lsize=    2415KiB time=00:00:54.70 bitrate= 361.6kbit
 [libx264 @ 0x55d45aa90a40] ref B L1: 98.8%  1.2%
 [libx264 @ 0x55d45aa90a40] kb/s:248.28
 Exiting normally, received signal 2.
+ffmpeg version n7.1.1 Copyright (c) 2000-2025 the FFmpeg developers
+  built with gcc 15.1.1 (GCC) 20250425
+  configuration: --prefix=/usr --disable-debug --disable-static --disable-stripping --enable-amf --enable-avisynth --enable-cuda-llvm --enable-lto --enable-fontconfig --enable-frei0r --enable-gmp --enable-gnutls --enable-gpl --enable-ladspa --enable-libaom --enable-libass --enable-libbluray --enable-libbs2b --enable-libdav1d --enable-libdrm --enable-libdvdnav --enable-libdvdread --enable-libfreetype --enable-libfribidi --enable-libglslang --enable-libgsm --enable-libharfbuzz --enable-libiec61883 --enable-libjack --enable-libjxl --enable-libmodplug --enable-libmp3lame --enable-libopencore_amrnb --enable-libopencore_amrwb --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-libplacebo --enable-libpulse --enable-librav1e --enable-librsvg --enable-librubberband --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libtheora --enable-libv4l2 --enable-libvidstab --enable-libvmaf --enable-libvorbis --enable-libvpl --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxcb --enable-libxml2 --enable-libxvid --enable-libzimg --enable-libzmq --enable-nvdec --enable-nvenc --enable-opencl --enable-opengl --enable-shared --enable-vapoursynth --enable-version3 --enable-vulkan
+  libavutil      59. 39.100 / 59. 39.100
+  libavcodec     61. 19.101 / 61. 19.101
+  libavformat    61.  7.100 / 61.  7.100
+  libavdevice    61.  3.100 / 61.  3.100
+  libavfilter    10.  4.100 / 10.  4.100
+  libswscale      8.  3.100 /  8.  3.100
+  libswresample   5.  3.100 /  5.  3.100
+  libpostproc    58.  3.100 / 58.  3.100
+[x11grab @ 0x5622100a8d80] Stream #0: not enough frames to estimate rate; consider increasing probesize
+Input #0, x11grab, from ':0.0':
+  Duration: N/A, start: 1753161401.839443, bitrate: 1990656 kb/s
+  Stream #0:0: Video: rawvideo (BGR[0] / 0x524742), bgr0, 1920x1080, 1990656 kb/s, 30 fps, 1000k tbr, 1000k tbn
+Stream mapping:
+  Stream #0:0 -> #0:0 (rawvideo (native) -> h264 (libx264))
+Press [q] to stop, [?] for help
+[libx264 @ 0x5622100b0900] using cpu capabilities: MMX2 SSE2Fast SSSE3 SSE4.2 AVX FMA3 BMI2 AVX2
+[libx264 @ 0x5622100b0900] profile High 4:4:4 Predictive, level 4.0, 4:4:4, 8-bit
+[libx264 @ 0x5622100b0900] 264 - core 164 r3108 31e19f9 - H.264/MPEG-4 AVC codec - Copyleft 2003-2023 - http://www.videolan.org/x264.html - options: cabac=1 ref=3 deblock=1:0:0 analyse=0x3:0x113 me=hex subme=7 psy=1 psy_rd=1.00:0.00 mixed_ref=1 me_range=16 chroma_me=1 trellis=1 8x8dct=1 cqm=0 deadzone=21,11 fast_pskip=1 chroma_qp_offset=4 threads=12 lookahead_threads=2 sliced_threads=0 nr=0 decimate=1 interlaced=0 bluray_compat=0 constrained_intra=0 bframes=3 b_pyramid=2 b_adapt=1 b_bias=0 direct=1 weightb=1 open_gop=0 weightp=2 keyint=250 keyint_min=25 scenecut=40 intra_refresh=0 rc_lookahead=40 rc=crf mbtree=1 crf=23.0 qcomp=0.60 qpmin=0 qpmax=69 qpstep=4 ip_ratio=1.40 aq=1:1.00
+Output #0, matroska, to '/home/shyamenk/Videos/screen_record_2025-07-22_05-16-41.mkv':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: h264 (H264 / 0x34363248), yuv444p(tv, progressive), 1920x1080, q=2-31, 30 fps, 1k tbn
+      Metadata:
+        encoder         : Lavc61.19.101 libx264
+      Side data:
+        cpb: bitrate max/min/avg: 0/0/0 buffer size: 0 vbv_delay: N/A
+frame=    0 fps=0.0 q=0.0 size=       0KiB time=N/A bitrate=N/A speed=N/A    frame=    0 fps=0.0 q=0.0 size=       0KiB time=N/A bitrate=N/A speed=N/A    frame=    0 fps=0.0 q=0.0 size=       0KiB time=N/A bitrate=N/A speed=N/A    frame=    5 fps=2.5 q=29.0 size=       1KiB time=00:00:00.10 bitrate=  47.4kbits/s speed=0.05x    frame=   20 fps=8.0 q=29.0 size=       1KiB time=00:00:00.60 bitrate=   7.9kbits/s speed=0.24x    [out#0/matroska @ 0x5622100b2240] video:66KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 1.772467%
+frame=   91 fps= 28 q=-1.0 Lsize=      67KiB time=00:00:02.96 bitrate= 185.3kbits/s speed=0.911x    
+[libx264 @ 0x5622100b0900] frame I:1     Avg QP:19.15  size: 54399
+[libx264 @ 0x5622100b0900] frame P:24    Avg QP:14.62  size:   266
+[libx264 @ 0x5622100b0900] frame B:66    Avg QP:13.67  size:    92
+[libx264 @ 0x5622100b0900] consecutive B-frames:  3.3%  0.0%  0.0% 96.7%
+[libx264 @ 0x5622100b0900] mb I  I16..4: 26.1% 61.2% 12.6%
+[libx264 @ 0x5622100b0900] mb P  I16..4:  0.1%  0.1%  0.0%  P16..4:  0.1%  0.0%  0.0%  0.0%  0.0%    skip:99.6%
+[libx264 @ 0x5622100b0900] mb B  I16..4:  0.0%  0.0%  0.0%  B16..8:  0.3%  0.0%  0.0%  direct: 0.0%  skip:99.7%  L0:61.1% L1:38.9% BI: 0.0%
+[libx264 @ 0x5622100b0900] 8x8 transform intra:60.9% inter:15.1%
+[libx264 @ 0x5622100b0900] coded y,u,v intra: 7.8% 1.9% 1.4% inter: 0.0% 0.0% 0.0%
+[libx264 @ 0x5622100b0900] i16 v,h,dc,p: 44% 56%  0%  0%
+[libx264 @ 0x5622100b0900] i8 v,h,dc,ddl,ddr,vr,hd,vl,hu: 58%  7% 35%  0%  0%  0%  0%  0%  0%
+[libx264 @ 0x5622100b0900] i4 v,h,dc,ddl,ddr,vr,hd,vl,hu: 34% 32% 14%  2%  3%  3%  4%  3%  4%
+[libx264 @ 0x5622100b0900] Weighted P-Frames: Y:0.0% UV:0.0%
+[libx264 @ 0x5622100b0900] ref P L0: 59.4%  5.6% 13.6% 21.3%
+[libx264 @ 0x5622100b0900] ref B L0: 45.2% 52.2%  2.6%
+[libx264 @ 0x5622100b0900] ref B L1: 99.4%  0.6%
+[libx264 @ 0x5622100b0900] kb/s:176.29
+Exiting normally, received signal 2.
