@@ -993,121 +993,122 @@ main() {
     echo -e "${MAGENTA}Step 3: Adding necessary repositories...${NC}"
     add_repositories
     
-    # Step 4: Core development tools
-    echo -e "${MAGENTA}Step 4: Installing core development tools...${NC}"
+    # Step 4: Dotfiles management (moved to beginning)
+    echo -e "${MAGENTA}Step 4: Setting up dotfiles management and configurations...${NC}"
+    echo -e "${CYAN}This will clone and apply your dotfiles before installing applications${NC}"
+    read -p "Setup dotfiles management with GNU Stow? (y/N): " setup_dotfiles
+    if [[ "$setup_dotfiles" =~ ^[Yy]$ ]] || [ -z "$setup_dotfiles" ]; then
+        setup_dotfiles_management
+    fi
+    
+    # Step 5: Core development tools
+    echo -e "${MAGENTA}Step 5: Installing core development tools...${NC}"
     echo -e "${CYAN}Installing: Neovim, VS Code, Git, Tmux, and CLI utilities...${NC}"
     read -p "Continue with core development tools installation? (y/N): " install_core
     if [[ "$install_core" =~ ^[Yy]$ ]] || [ -z "$install_core" ]; then
         install_core_dev_tools
     fi
     
-    # Step 5: Terminal applications
-    echo -e "${MAGENTA}Step 5: Installing terminal applications...${NC}"
+    # Step 6: Terminal applications
+    echo -e "${MAGENTA}Step 6: Installing terminal applications...${NC}"
     echo -e "${CYAN}Installing: Alacritty, Kitty, Zsh, JetBrains Mono font...${NC}"
     read -p "Continue with terminal applications? (y/N): " install_terminal
     if [[ "$install_terminal" =~ ^[Yy]$ ]] || [ -z "$install_terminal" ]; then
         install_terminal_apps
     fi
     
-    # Step 6: Zsh environment setup
-    echo -e "${MAGENTA}Step 6: Setting up Zsh with Starship and Zimfw...${NC}"
+    # Step 7: Zsh environment setup
+    echo -e "${MAGENTA}Step 7: Setting up Zsh with Starship and Zimfw...${NC}"
     read -p "Setup Zsh environment with Starship prompt and Zimfw? (y/N): " setup_zsh
     if [[ "$setup_zsh" =~ ^[Yy]$ ]] || [ -z "$setup_zsh" ]; then
         setup_zsh_environment
     fi
     
-    # Step 7: Programming languages
-    echo -e "${MAGENTA}Step 7: Installing programming languages...${NC}"
+    # Step 8: Programming languages
+    echo -e "${MAGENTA}Step 8: Installing programming languages...${NC}"
     echo -e "${CYAN}Installing: Python + UV, Node.js + NVM, Go...${NC}"
     read -p "Continue with programming languages installation? (y/N): " install_langs
     if [[ "$install_langs" =~ ^[Yy]$ ]] || [ -z "$install_langs" ]; then
         install_programming_languages
     fi
     
-    # Step 8: Docker and containers
-    echo -e "${MAGENTA}Step 8: Installing Docker and container tools...${NC}"
+    # Step 9: Docker and containers
+    echo -e "${MAGENTA}Step 9: Installing Docker and container tools...${NC}"
     read -p "Install Docker and Docker Compose? (y/N): " install_docker
     if [[ "$install_docker" =~ ^[Yy]$ ]] || [ -z "$install_docker" ]; then
         install_docker_postgres
     fi
     
-    # Step 9: Text editors and IDEs
-    echo -e "${MAGENTA}Step 9: Installing text editors and IDEs...${NC}"
+    # Step 10: Text editors and IDEs
+    echo -e "${MAGENTA}Step 10: Installing text editors and IDEs...${NC}"
     echo -e "${CYAN}Installing: Cursor, Claude Code, Typora...${NC}"
     read -p "Continue with editors and IDEs? (y/N): " install_editors
     if [[ "$install_editors" =~ ^[Yy]$ ]] || [ -z "$install_editors" ]; then
         install_editors_ides
     fi
     
-    # Step 10: Web browsers
-    echo -e "${MAGENTA}Step 10: Installing web browsers...${NC}"
+    # Step 11: Web browsers
+    echo -e "${MAGENTA}Step 11: Installing web browsers...${NC}"
     echo -e "${CYAN}Installing: Firefox, Google Chrome...${NC}"
     read -p "Continue with web browsers? (y/N): " install_browsers
     if [[ "$install_browsers" =~ ^[Yy]$ ]] || [ -z "$install_browsers" ]; then
         install_web_browsers
     fi
     
-    # Step 11: Communication apps
-    echo -e "${MAGENTA}Step 11: Installing communication applications...${NC}"
+    # Step 12: Communication apps
+    echo -e "${MAGENTA}Step 12: Installing communication applications...${NC}"
     echo -e "${CYAN}Installing: Slack, Discord, WhatsApp...${NC}"
     read -p "Continue with communication apps? (y/N): " install_comm
     if [[ "$install_comm" =~ ^[Yy]$ ]] || [ -z "$install_comm" ]; then
         install_communication_apps
     fi
     
-    # Step 12: Productivity apps
-    echo -e "${MAGENTA}Step 12: Installing productivity applications...${NC}"
+    # Step 13: Productivity apps
+    echo -e "${MAGENTA}Step 13: Installing productivity applications...${NC}"
     echo -e "${CYAN}Installing: Obsidian, Beekeeper Studio...${NC}"
     read -p "Continue with productivity apps? (y/N): " install_prod
     if [[ "$install_prod" =~ ^[Yy]$ ]] || [ -z "$install_prod" ]; then
         install_productivity_apps
     fi
     
-    # Step 13: Media and graphics
-    echo -e "${MAGENTA}Step 13: Installing media and graphics applications...${NC}"
+    # Step 14: Media and graphics
+    echo -e "${MAGENTA}Step 14: Installing media and graphics applications...${NC}"
     echo -e "${CYAN}Installing: GIMP, VLC, FFmpeg...${NC}"
     read -p "Continue with media and graphics apps? (y/N): " install_media
     if [[ "$install_media" =~ ^[Yy]$ ]] || [ -z "$install_media" ]; then
         install_media_graphics
     fi
     
-    # Step 14: i3 window manager environment
-    echo -e "${MAGENTA}Step 14: Installing i3 window manager environment...${NC}"
+    # Step 15: i3 window manager environment
+    echo -e "${MAGENTA}Step 15: Installing i3 window manager environment...${NC}"
     echo -e "${CYAN}Installing: i3, polybar, rofi, picom, dunst, and related tools...${NC}"
     read -p "Install i3 window manager environment? (y/N): " install_i3
     if [[ "$install_i3" =~ ^[Yy]$ ]] || [ -z "$install_i3" ]; then
         install_i3_environment
     fi
     
-    # Step 15: System utilities
-    echo -e "${MAGENTA}Step 15: Installing system utilities...${NC}"
+    # Step 16: System utilities
+    echo -e "${MAGENTA}Step 16: Installing system utilities...${NC}"
     echo -e "${CYAN}Installing: Flatpak, system monitoring tools...${NC}"
     read -p "Continue with system utilities? (y/N): " install_utils
     if [[ "$install_utils" =~ ^[Yy]$ ]] || [ -z "$install_utils" ]; then
         install_system_utilities
     fi
     
-    # Step 16: Cloud and DevOps tools
-    echo -e "${MAGENTA}Step 16: Installing cloud and DevOps tools...${NC}"
+    # Step 17: Cloud and DevOps tools
+    echo -e "${MAGENTA}Step 17: Installing cloud and DevOps tools...${NC}"
     echo -e "${CYAN}Installing: AWS CLI, GitHub CLI...${NC}"
     read -p "Continue with cloud and DevOps tools? (y/N): " install_devops
     if [[ "$install_devops" =~ ^[Yy]$ ]] || [ -z "$install_devops" ]; then
         install_cloud_devops_tools
     fi
     
-    # Step 17: Fonts
-    echo -e "${MAGENTA}Step 17: Installing fonts...${NC}"
+    # Step 18: Fonts
+    echo -e "${MAGENTA}Step 18: Installing fonts...${NC}"
     echo -e "${CYAN}Installing: JetBrains Mono Nerd Font...${NC}"
     read -p "Continue with fonts installation? (y/N): " install_fonts_prompt
     if [[ "$install_fonts_prompt" =~ ^[Yy]$ ]] || [ -z "$install_fonts_prompt" ]; then
         install_fonts
-    fi
-    
-    # Step 18: Dotfiles management
-    echo -e "${MAGENTA}Step 18: Setting up dotfiles management...${NC}"
-    read -p "Setup dotfiles management with GNU Stow? (y/N): " setup_dotfiles
-    if [[ "$setup_dotfiles" =~ ^[Yy]$ ]] || [ -z "$setup_dotfiles" ]; then
-        setup_dotfiles_management
     fi
     
     # Step 19: Development environment configuration
