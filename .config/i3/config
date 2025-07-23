@@ -14,6 +14,7 @@ exec --no-startup-id nm-applet
 exec_always feh --randomize --bg-fill  ~/Pictures/wallpaper/*
 exec --no-startup-id pkill dunst
 exec --no-startup-id ~/scripts/battery_alert.sh
+exec --no-startup-id xrandr --output eDP1 --gamma 1.0:1.0:1.1
 
 #TEXT EXTRACTOR
 
@@ -173,7 +174,7 @@ set $crust     #11111b
 
 # Window Borders
 # Enable borders and set thickness
-for_window [class=".*"] border pixel 3
+for_window [class=".*"] border pixel 1
 
 # Window colorscheme (border, background, text, indicator, child_border)
 client.focused          $mauve     $base      $text     $lavender  $mauve
@@ -184,8 +185,8 @@ client.placeholder      $overlay0  $base      $text     $overlay0  $overlay0
 client.background       $base
 
 # Gaps
-gaps inner 10
-gaps outer 5
+gaps inner 1
+gaps outer 2
 for_window [class="Google-chrome"] move to workspace $ws1
 for_window [class="beekeeper-studio"] move to workspace $ws3
 for_window [class="Thunar"] move to workspace $ws4

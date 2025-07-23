@@ -298,3 +298,5 @@ alias aws-default='export AWS_PROFILE=default && echo "✅ Switched to DEFAULT p
 alias aws-dev='export AWS_PROFILE=developer && echo "✅ Switched to DEVELOPER profile" && aws sts get-caller-identity --query "Account" --output text'
 alias aws-root='export AWS_PROFILE=root && echo "✅ Switched to ROOT profile" && aws sts get-caller-identity --query "Account" --output text'
 alias aws-current='echo "Current profile: ${AWS_PROFILE:-default}" && aws sts get-caller-identity'
+
+alias claude="/home/shyamenk/.claude/local/claude"

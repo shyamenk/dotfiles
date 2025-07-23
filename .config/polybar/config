@@ -1,7 +1,7 @@
 [bar/main]
 width = 100%
-height = 45
-radius = 6
+height = 35
+radius = 0
 fixed-center = true
 background = ${colors.background}
 foreground = ${colors.foreground}
@@ -25,6 +25,7 @@ cursor-scroll = ns-resize
 enable-ipc = true
 tray-position = right
 tray-padding = 8
+
 
 [colors]
 background = #1e1e2e
