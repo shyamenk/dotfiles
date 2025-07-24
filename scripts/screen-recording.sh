@@ -1,27 +1,63 @@
 #!/bin/bash
-
 LOG_FILE="$HOME/screen_recording.log"
 ERROR_LOG="$HOME/screen_recording_error.log"
 VIDEO_SIZE=""
-RECORDING_FILE="$HOME/Videos/screen_record_$(date '+%Y-%m-%d_%H-%M-%S').mkv"
+RECORDING_FILE="$HOME/Videos/screen_record_$(date '+%Y-%m-%d_%H-%M-%S').mp4" # Changed to mp4
 
-# Retrieve video size for screen capture
-VIDEO_SIZE=$(xdpyinfo | grep dimensions | awk '{print $2}' | cut -d 'x' -f1,2)
+# Create Videos directory if it doesn't exist
+mkdir -p "$HOME/Videos"
 
-# Check if the video size is empty (failed to retrieve)
-if [ -z "$VIDEO_SIZE" ]; then
-  echo "$(date '+%Y-%m-%d %H:%M:%S') - Error: Unable to get video size." >> "$LOG_FILE"
-  dunstify -i camera-web -t 3000 "Screen Recording" "Error: Unable to get video size."
-  exit 1
+# Function to get video size
+get_video_size() {
+  if command -v xrandr >/dev/null 2>&1; then
+    VIDEO_SIZE=$(xrandr | grep '\*' | awk '{print $1}' | head -n1)
+    if [ -n "$VIDEO_SIZE" ]; then
+      echo "$VIDEO_SIZE"
+      return 0
+    fi
+  fi
+
+  if command -v xdpyinfo >/dev/null 2>&1; then
+    VIDEO_SIZE=$(xdpyinfo | grep dimensions | awk '{print $2}')
+    if [ -n "$VIDEO_SIZE" ]; then
+      echo "$VIDEO_SIZE"
+      return 0
+    fi
+  fi
+
+  echo "1920x1080"
+}
+
+VIDEO_SIZE=$(get_video_size)
+
+echo "$(date '+%Y-%m-%d %H:%M:%S') - Using video size: $VIDEO_SIZE" >>"$LOG_FILE"
+
+if command -v dunstify >/dev/null 2>&1; then
+  dunstify -i camera-web -t 3000 "Screen Recording" "Recording started... ($VIDEO_SIZE)"
 fi
 
-# Notify user that recording is starting
-dunstify -i camera-web -t 3000 "Screen Recording" "Recording started..."
-echo "$(date '+%Y-%m-%d %H:%M:%S') - Recording started" >> "$LOG_FILE"
+echo "$(date '+%Y-%m-%d %H:%M:%S') - Recording started" >>"$LOG_FILE"
 
-# Start the recording using FFmpeg (without audio capture)
-ffmpeg -video_size "$VIDEO_SIZE" -framerate 30 -f x11grab -i :0.0 "$RECORDING_FILE" 2>> "$ERROR_LOG"
+# Improved FFmpeg command with better compatibility
+ffmpeg -video_size "$VIDEO_SIZE" \
+  -framerate 30 \
+  -f x11grab \
+  -i :0.0 \
+  -c:v libx264 \
+  -preset medium \
+  -crf 23 \
+  -pix_fmt yuv420p \
+  -movflags +faststart \
+  "$RECORDING_FILE" 2>>"$ERROR_LOG"
 
-# Notify user that recording has stopped
-dunstify -i camera-web -t 3000 "Screen Recording" "Recording stopped."
-echo "$(date '+%Y-%m-%d %H:%M:%S') - Recording stopped" >> "$LOG_FILE"
+if [ $? -eq 0 ]; then
+  if command -v dunstify >/dev/null 2>&1; then
+    dunstify -i camera-web -t 3000 "Screen Recording" "Recording saved: $(basename "$RECORDING_FILE")"
+  fi
+  echo "$(date '+%Y-%m-%d %H:%M:%S') - Recording saved successfully" >>"$LOG_FILE"
+else
+  if command -v dunstify >/dev/null 2>&1; then
+    dunstify -i error -t 5000 "Screen Recording" "Recording failed!"
+  fi
+  echo "$(date '+%Y-%m-%d %H:%M:%S') - Recording failed" >>"$LOG_FILE"
+fi

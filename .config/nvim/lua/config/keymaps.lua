@@ -124,5 +124,42 @@ keymap.set("n", "<leader>os", "<cmd>ObsidianSearch<CR>", { desc = "Search Obsidi
 keymap.set("n", "<leader>oq", "<cmd>ObsidianQuickSwitch<CR>", { desc = "Quick Switch Obsidian Notes" })
 keymap.set("n", "<leader>ot", "<cmd>ObsidianTemplate<CR>", { desc = "Create New Note from Template" })
 
+-----------------------
+-- Markdown Keymaps --
+-----------------------
+
+-- Markdown preview
+keymap.set("n", "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", { desc = "Markdown Preview Toggle" })
+keymap.set("n", "<leader>mps", "<cmd>MarkdownPreviewStop<cr>", { desc = "Markdown Preview Stop" })
+keymap.set("n", "<leader>mpdf", "<cmd>MarkdownToPDF<cr>", { desc = "Export Markdown to PDF" })
+
+-- Table mode toggle
+keymap.set("n", "<leader>tm", "<cmd>TableModeToggle<cr>", { desc = "Toggle Table Mode" })
+
+-- Render markdown toggle (will be overridden by plugin config)
+
+-- Checkbox management
+keymap.set("n", "<leader>tc", function()
+  -- Try markdown-togglecheck first, fallback to markdown.nvim
+  local ok, togglecheck = pcall(require, "markdown-togglecheck")
+  if ok then
+    togglecheck.toggle()
+  else
+    -- Fallback to markdown.nvim toggle
+    local ok2, markdown = pcall(require, "markdown")
+    if ok2 then
+      return markdown.toggle_task_list_item()
+    end
+  end
+end, { desc = "Toggle checkbox state" })
+
+-- Bullets toggle
+keymap.set("n", "<leader>x", "<Plug>(bullets-toggle-checkbox)", { desc = "Toggle bullet checkbox" })
+
+-- Manual formatting
+keymap.set("n", "<leader>cf", function()
+  require("conform").format({ async = true, lsp_fallback = true })
+end, { desc = "Format current buffer" })
+
 -- Enable Twilight plugin
 keymap.set("n", "<leader>tw", ":Twilight<enter>", { desc = "Enable Twilight Mode" })

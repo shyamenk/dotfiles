@@ -15,6 +15,7 @@ exec_always feh --randomize --bg-fill  ~/Pictures/wallpaper/*
 exec --no-startup-id pkill dunst
 exec --no-startup-id ~/scripts/battery_alert.sh
 exec --no-startup-id xrandr --output eDP1 --gamma 1.0:1.0:1.1
+exec --no-startup-id imwheel
 
 #TEXT EXTRACTOR
 

@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Path to your Second Brain vault
 VAULT_PATH="$HOME/Documents/Second Brain"
 
@@ -37,9 +36,19 @@ fi
 # Add all changes
 git add .
 
-# Get a random commit message
+# Debug: Check array length
+echo "Array length: ${#COMMIT_MESSAGES[@]}"
+
+# Get a random commit message with safety check
+if [ ${#COMMIT_MESSAGES[@]} -eq 0 ]; then
+  echo "Error: No commit messages defined"
+  exit 1
+fi
+
 RANDOM_INDEX=$((RANDOM % ${#COMMIT_MESSAGES[@]}))
 COMMIT_MSG="${COMMIT_MESSAGES[$RANDOM_INDEX]}"
+
+echo "Selected message: $COMMIT_MSG"
 
 # Only commit if there are changes to commit
 if git diff --cached --quiet; then
@@ -48,8 +57,9 @@ else
   # Commit with the random message
   git commit -m "$COMMIT_MSG"
 
-  # Push to remote repository
-  git push origin main || git push origin master
+  # Get current branch name and push to it
+  CURRENT_BRANCH=$(git branch --show-current)
+  git push origin "$CURRENT_BRANCH"
 
-  echo "Changes committed and pushed with message: $COMMIT_MSG"
+  echo "Changes committed and pushed to $CURRENT_BRANCH with message: $COMMIT_MSG"
 fi
