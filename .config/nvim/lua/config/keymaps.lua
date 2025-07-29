@@ -3,8 +3,10 @@ vim.g.mapleader = " "
 local keymap = vim.keymap
 
 vim.keymap.set("n", "<leader>log", function()
-	require("telescope.builtin").live_grep({ default_text = "console\\.log\\(", initial_mode = "normal" })
+  require("telescope.builtin").live_grep({ default_text = "console\\.log\\(", initial_mode = "normal" })
 end, { desc = "List console.logs" })
+-- Claude Code
+keymap.set("n", "<leader>cc", "<cmd>ClaudeCode<CR>", { desc = "Toggle Claude Code" })
 
 -- General Keymaps
 keymap.set("n", "-", "<CMD>Oil --float<CR>", { desc = "Open parent directory" })
@@ -90,11 +92,11 @@ keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Open Current Buffer
 -- Highlight on yank
 local highlight_group = vim.api.nvim_create_augroup("YankHighlight", { clear = true })
 vim.api.nvim_create_autocmd("TextYankPost", {
-	callback = function()
-		vim.highlight.on_yank()
-	end,
-	group = highlight_group,
-	pattern = "*",
+  callback = function()
+    vim.highlight.on_yank()
+  end,
+  group = highlight_group,
+  pattern = "*",
 })
 
 ---------------------------
@@ -105,10 +107,10 @@ keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go To Previous Diagnos
 keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go To Next Diagnostic" })
 keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open Diagnostics List" })
 keymap.set(
-	"n",
-	"<leader><leader>",
-	"<cmd>lua require('goto-preview').close_all_win()<CR>",
-	{ noremap = true, desc = "Close All Preview Windows" }
+  "n",
+  "<leader><leader>",
+  "<cmd>lua require('goto-preview').close_all_win()<CR>",
+  { noremap = true, desc = "Close All Preview Windows" }
 )
 
 -----------------------

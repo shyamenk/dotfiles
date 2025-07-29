@@ -1,0 +1,13 @@
+#!/bin/bash
+
+dbus-monitor "interface='org.freedesktop.Notifications'" |
+  while read -r line; do
+    echo "$line" # debug
+    if echo "$line" | grep -q 'member=Notify'; then
+      if echo "$line" | grep -qi "dosage"; then
+        paplay /path/to/medical-reminder.wav
+      else
+        canberra-gtk-play --id="message-new-instant"
+      fi
+    fi
+  done
