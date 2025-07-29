@@ -37,8 +37,11 @@ bindsym $mod+period exec /bin/bash /home/$USER/emoji_picker.sh
 exec --no-startup-id dunst
 exec --no-startup-id ~/.local/bin/dunst-notify
 
-# exec --no-startup-id flatpak run io.github.dgsasha.Remembrance
-# exec --no-startup-id flatpak run com.discordapp.Discord
+# Autostart Remembrance (Reminders)
+exec --no-startup-id flatpak run io.github.dgsasha.Remembrance
+
+# Autostart Dosage (Medication reminders)
+exec --no-startup-id flatpak run io.github.diegopvlk.Dosage
 
 # Start screen recording
 bindsym $mod+Shift+V exec --no-startup-id ~/scripts/screen-recording.sh
@@ -201,3 +204,5 @@ for_window [class="Spotify"] move to workspace $ws5
 for_window [class="org.remmina.Remmina"] move to workspace $ws6
 # for_window [class="slack"] move to workspace $ws7
 for_window [class="Slack"] move to workspace $ws7
+# for_window [class="Remembrance"] move to workspace hidden
+# for_window [class="Dosage"] move to workspace hidden

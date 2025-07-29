@@ -302,7 +302,6 @@ alias aws-root='export AWS_PROFILE=root && echo "✅ Switched to ROOT profile" &
 alias aws-current='echo "Current profile: ${AWS_PROFILE:-default}" && aws sts get-caller-identity'
 
 
-alias claude="/home/shyamenk/.claude/local/claude"
 export PATH=~/.npm-global/bin:$PATH
 export PATH="$HOME/.nvm/versions/node/$(nvm version)/bin:$PATH"
 
