@@ -2,8 +2,7 @@
 
 # ===== General Settings =====
 set $mod Mod4
-font pango:JetBrainsMono NF 18
-
+font pango:JetBrainsMono Nerd Font 18
 # ===== Startup Applications =====
 exec_always --no-startup-id picom 
 # exec_always --no-startup-id picom --experimental-backends --config ~/.config/picom/picom.conf
@@ -14,7 +13,7 @@ exec --no-startup-id nm-applet
 exec_always feh --randomize --bg-fill  ~/Pictures/wallpaper/*
 exec --no-startup-id pkill dunst
 exec --no-startup-id ~/scripts/battery_alert.sh
-exec --no-startup-id xrandr --output eDP1 --gamma 1.0:1.0:1.1
+# exec --no-startup-id xrandr --output eDP1 --gamma 1.0:1.0:1.1
 exec --no-startup-id imwheel
 
 #TEXT EXTRACTOR
@@ -38,10 +37,10 @@ exec --no-startup-id dunst
 exec --no-startup-id ~/.local/bin/dunst-notify
 
 # Autostart Remembrance (Reminders)
-exec --no-startup-id flatpak run io.github.dgsasha.Remembrance
+# exec --no-startup-id flatpak run io.github.dgsasha.Remembrance
 
 # Autostart Dosage (Medication reminders)
-exec --no-startup-id flatpak run io.github.diegopvlk.Dosage
+# exec --no-startup-id flatpak run io.github.diegopvlk.Dosage
 
 # Start screen recording
 bindsym $mod+Shift+V exec --no-startup-id ~/scripts/screen-recording.sh

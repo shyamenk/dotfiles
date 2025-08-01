@@ -305,3 +305,35 @@ alias aws-current='echo "Current profile: ${AWS_PROFILE:-default}" && aws sts ge
 export PATH=~/.npm-global/bin:$PATH
 export PATH="$HOME/.nvm/versions/node/$(nvm version)/bin:$PATH"
 
+
+function killport() { sudo kill -9 $(sudo lsof -t -i:$1); }
+function killport() {
+  local pid
+  pid=$(sudo lsof -t -i:$1)
+  if [[ -z "$pid" ]]; then
+    echo "No process is using port $1"
+  else
+    echo "Killing process on port $1 (PID: $pid)"
+    sudo kill -9 $pid
+  fi
+}
+function killport() {
+  local pid
+  pid=$(lsof -t -i:$1)
+  if [[ -z "$pid" ]]; then
+    echo "No process is using port $1"
+  else
+    echo "Killing process on port $1 (PID: $pid)"
+    kill -9 $pid
+  fi
+}
+function killport() {
+  local pid
+  pid=$(ss -ltnp | grep ":$1 " | grep -oP 'pid=\K[0-9]+')
+  if [[ -z "$pid" ]]; then
+    echo "No process is using port $1"
+  else
+    echo "Killing process on port $1 (PID: $pid)"
+    kill -9 $pid
+  fi
+}
