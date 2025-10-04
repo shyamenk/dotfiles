@@ -114,7 +114,7 @@ label-muted-font = 2
 
 [module/backlight]
 type = internal/backlight
-card = intel_backlight
+card = nvidia_0
 use-actual-brightness = true
 enable-scroll = true
 format = <ramp> <label>
