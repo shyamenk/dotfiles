@@ -1,12 +1,12 @@
-# Work account
-Host github-work
+# Pro account
+Host github-pro
   HostName github.com
   User git
-  IdentityFile ~/.ssh/id_ed25519_work
+  IdentityFile ~/.ssh/id_ed25519_pro
 
 # Personal account
-Host github-personal
+Host github-me
   HostName github.com
   User git
-  IdentityFile ~/.ssh/id_ed25519_personal
+  IdentityFile ~/.ssh/id_ed25519_me
 
