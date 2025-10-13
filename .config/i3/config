@@ -5,6 +5,7 @@ set $mod Mod4
 font pango:JetBrainsMono Nerd Font 18
 # ===== Startup Applications =====
 exec_always --no-startup-id picom 
+exec --no-startup-id ~/.config/scripts/monitor-setup.sh
 # exec_always --no-startup-id picom --experimental-backends --config ~/.config/picom/picom.conf
 exec_always killall polybar
 exec_always --no-startup-id ~/.config/polybar/launch_polybar.sh
