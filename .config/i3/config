@@ -14,13 +14,15 @@ exec --no-startup-id nm-applet
 exec_always feh --randomize --bg-fill  ~/Pictures/wallpaper/*
 exec --no-startup-id pkill dunst
 exec --no-startup-id ~/scripts/battery_alert.sh
-# exec --no-startup-id xrandr --output eDP1 --gamma 1.0:1.0:1.1
+bindsym $mod+Shift+a exec ~/scripts/rofi-aur-launcher.sh
 exec --no-startup-id imwheel
 
 #TEXT EXTRACTOR
 
 bindsym $mod+shift+o exec --no-startup-id env TESSDATA_PREFIX=/usr/share/ ~/scripts/text_extractor.sh
 
+
+exec --no-startup-id xrandr --dpi 94
 # ===== Keybindings =====
 # Launch Programs
 bindsym $mod+Return exec alacritty # Start terminal
