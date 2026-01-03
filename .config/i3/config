@@ -51,6 +51,7 @@ bindsym $mod+Shift+V exec --no-startup-id ~/scripts/screen-recording.sh
 # Stop screen recording
 bindsym $mod+Shift+S exec --no-startup-id pkill -INT ffmpeg && dunstify -i camera-web -t 3000 "Screen Recording" "Recording stopped" && echo "$(date '+%Y-%m-%d %H:%M:%S') - Recording stopped" >> ~/screen_recording.log
 
+exec --no-startup-id nm-applet
 # Volume Control
 set $refresh_i3status killall -SIGUSR1 i3status
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status

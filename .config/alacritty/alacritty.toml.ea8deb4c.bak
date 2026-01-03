@@ -159,8 +159,3 @@ chars = "\u0003"
 # y = 4
 
 
-
-[[keyboard.bindings]]
-key = "Return"
-mods = "Shift"
-chars = "\u001b\r"
