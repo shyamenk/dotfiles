@@ -39,14 +39,26 @@ fi
 echo "$(date '+%Y-%m-%d %H:%M:%S') - Recording started" >>"$LOG_FILE"
 
 # Improved FFmpeg command with better compatibility
+
+
+  # Get the monitor source for system audio (desktop sounds)
+MONITOR_SOURCE=$(pactl get-default-sink).monitor
+
 ffmpeg -video_size "$VIDEO_SIZE" \
   -framerate 30 \
   -f x11grab \
   -i :0.0 \
+  -f pulse \
+  -i default \
+  -f pulse \
+  -i "$MONITOR_SOURCE" \
+  -filter_complex "amix=inputs=2:duration=longest" \
   -c:v libx264 \
   -preset medium \
   -crf 23 \
   -pix_fmt yuv420p \
+  -c:a aac \
+  -b:a 192k \
   -movflags +faststart \
   "$RECORDING_FILE" 2>>"$ERROR_LOG"
 
