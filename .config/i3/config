@@ -15,20 +15,22 @@ exec_always feh --randomize --bg-fill  ~/Pictures/wallpaper/*
 exec --no-startup-id pkill dunst
 exec --no-startup-id ~/scripts/battery_alert.sh
 bindsym $mod+Shift+p exec --no-startup-id ~/.config/scripts/power-menu.sh
+bindsym $mod+p exec ~/.config/rofi/scripts/project-launcher.sh
 
-bindsym $mod+Shift+a exec ~/scripts/rofi-aur-launcher.sh
+
+# bindsym $mod+Shift+a exec ~/scripts/rofi-aur-launcher.sh
 exec --no-startup-id imwheel
 
 #TEXT EXTRACTOR
 
 bindsym $mod+shift+o exec --no-startup-id env TESSDATA_PREFIX=/usr/share/ ~/scripts/text_extractor.sh
+bindsym $mod+Shift+i exec xset dpms force off
 
 
 exec --no-startup-id xrandr --dpi 94
 # ===== Keybindings =====
 # Launch Programs
 bindsym $mod+Return exec alacritty # Start terminal
-bindsym $mod+p exec --no-startup-id firefox
 # bindsym $mod+g exec --no-startup-id google-chrome
 bindsym $mod+g exec --no-startup-id /opt/google/chrome/google-chrome
 bindsym $mod+shift+x exec --no-startup-id betterlockscreen -l dim 

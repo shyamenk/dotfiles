@@ -346,11 +346,14 @@ export PATH=$JAVA_HOME/bin:$PATH
 export PATH="/home/shyamenk/.amp/bin:$PATH"
 export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
 export PATH=~/sf/bin:$PATH
-?? () {
+
+fabric_wrapper() {
   if [[ -t 0 ]]; then
     fabric "$@"
   else
     cat - | fabric "$@"
   fi
 }
+
+alias '??'=fabric_wrapper
 
