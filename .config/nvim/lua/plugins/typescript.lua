@@ -1,7 +1,7 @@
 return {
   -- Configure Mason to install TypeScript tools
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     opts = {
       ensure_installed = {
         -- TypeScript Language Server

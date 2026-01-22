@@ -1,12 +1,13 @@
-
+/* Catppuccin Mocha */
 * {
-    bg-col:  #1E1D2F;
-    bg-col-light: #1E1D2F;
-    border-col: #1E1D2F;
-    selected-col: #1E1D2F;
-    blue: #7aa2f7;
-    fg-col: #D9E0EE;
-    fg-col2: #F28FAD;
-    grey: #D9E0EE;
-    width: 600;
+    bg-col:  #1e1e2e;
+    bg-col-light: #313244;
+    border-col: #cba6f7;
+    selected-col: #45475a;
+    blue: #89b4fa;
+    fg-col: #cdd6f4;
+    fg-col2: #f5c2e7;
+    grey: #6c7086;
+    mauve: #cba6f7;
+    lavender: #b4befe;
 }

@@ -357,3 +357,6 @@ fabric_wrapper() {
 
 alias '??'=fabric_wrapper
 
+
+# YT-Insights alias
+alias yt="yt-insights"
