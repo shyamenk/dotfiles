@@ -34,56 +34,58 @@ sudo pacman -S cliphist
 
 ## Keybinding Mapping (i3 → Hyprland)
 
-| Action | i3 | Hyprland | Status |
-|--------|-----|----------|--------|
-| Terminal | `$mod+Return` | `$mod+Return` | ✅ Same |
-| Kill window | `$mod+q` | `$mod+Q` | ✅ Same |
-| Launcher | `$mod+space` | `$mod+Space` | ✅ Same (wofi) |
-| Chrome | `$mod+g` | `$mod+G` | ✅ Same |
-| Thunar | `$mod+Shift+n` | `$mod+Shift+N` | ✅ Same |
-| Power menu | `$mod+Shift+p` | `$mod+Shift+P` | ✅ Same |
-| Lock | `$mod+Shift+x` | `$mod+Shift+X` | ✅ Same (hyprlock) |
-| Fullscreen | `$mod+f` | `$mod+F` | ✅ Same |
-| Float toggle | `$mod+Shift+space` | `$mod+Shift+Space` | ✅ Same |
-| Workspaces | `$mod+1-0` | `$mod+1-0` | ✅ Same |
-| Move to WS | `$mod+Shift+1-0` | `$mod+Shift+1-0` | ✅ Same |
-| Focus hjkl | `$mod+j/k/l/;` | `$mod+J/K/L/;` | ✅ Same |
-| Move hjkl | `$mod+Shift+hjkl` | `$mod+Shift+HJKL` | ✅ Same |
-| Resize mode | `$mod+r` | `$mod+R` | ✅ Same (submap) |
-| Screenshot | `Print` variants | `Print` variants | ✅ Same (grim) |
-| Volume | `XF86Audio*` | `XF86Audio*` | ✅ Same |
-| Brightness | `XF86MonBrightness*` | `XF86MonBrightness*` | ✅ Same |
-| Recording | `$mod+Shift+v/s` | `$mod+Shift+V/S` | ✅ Same (wf-recorder) |
-| Color picker | `$mod+Shift+g` | `$mod+Shift+G` | ✅ Same (hyprpicker) |
-| OCR | `$mod+Shift+o` | `$mod+Shift+O` | ✅ Same |
+| Action       | i3                   | Hyprland             | Status                |
+| ------------ | -------------------- | -------------------- | --------------------- |
+| Terminal     | `$mod+Return`        | `$mod+Return`        | ✅ Same               |
+| Kill window  | `$mod+q`             | `$mod+Q`             | ✅ Same               |
+| Launcher     | `$mod+space`         | `$mod+Space`         | ✅ Same (wofi)        |
+| Chrome       | `$mod+g`             | `$mod+G`             | ✅ Same               |
+| Thunar       | `$mod+Shift+n`       | `$mod+Shift+N`       | ✅ Same               |
+| Power menu   | `$mod+Shift+p`       | `$mod+Shift+P`       | ✅ Same               |
+| Lock         | `$mod+Shift+x`       | `$mod+Shift+X`       | ✅ Same (hyprlock)    |
+| Fullscreen   | `$mod+f`             | `$mod+F`             | ✅ Same               |
+| Float toggle | `$mod+Shift+space`   | `$mod+Shift+Space`   | ✅ Same               |
+| Workspaces   | `$mod+1-0`           | `$mod+1-0`           | ✅ Same               |
+| Move to WS   | `$mod+Shift+1-0`     | `$mod+Shift+1-0`     | ✅ Same               |
+| Focus hjkl   | `$mod+j/k/l/;`       | `$mod+J/K/L/;`       | ✅ Same               |
+| Move hjkl    | `$mod+Shift+hjkl`    | `$mod+Shift+HJKL`    | ✅ Same               |
+| Resize mode  | `$mod+r`             | `$mod+R`             | ✅ Same (submap)      |
+| Screenshot   | `Print` variants     | `Print` variants     | ✅ Same (grim)        |
+| Volume       | `XF86Audio*`         | `XF86Audio*`         | ✅ Same               |
+| Brightness   | `XF86MonBrightness*` | `XF86MonBrightness*` | ✅ Same               |
+| Recording    | `$mod+Shift+v/s`     | `$mod+Shift+V/S`     | ✅ Same (wf-recorder) |
+| Color picker | `$mod+Shift+g`       | `$mod+Shift+G`       | ✅ Same (hyprpicker)  |
+| OCR          | `$mod+Shift+o`       | `$mod+Shift+O`       | ✅ Same               |
 
 ## Tool Replacements
 
-| X11 Tool | Wayland Tool | Notes |
-|----------|--------------|-------|
-| picom | Hyprland built-in | Blur, shadows, animations native |
-| polybar | Waybar | Config migrated |
-| rofi | wofi | Theme migrated |
-| maim | grim + slurp | Screenshots |
-| xclip | wl-clipboard | wl-copy, wl-paste |
-| xcolor | hyprpicker | Color picker |
-| xdotool | hyprctl | Window manipulation |
-| xrandr | wlr-randr | Monitor config |
-| xset | hyprctl dpms | Screen power |
-| betterlockscreen | hyprlock | Lock screen |
-| feh | hyprpaper | Wallpaper |
-| ffmpeg x11grab | wf-recorder | Screen recording |
-| i3lock | hyprlock | Lock screen |
+| X11 Tool         | Wayland Tool      | Notes                            |
+| ---------------- | ----------------- | -------------------------------- |
+| picom            | Hyprland built-in | Blur, shadows, animations native |
+| polybar          | Waybar            | Config migrated                  |
+| rofi             | wofi              | Theme migrated                   |
+| maim             | grim + slurp      | Screenshots                      |
+| xclip            | wl-clipboard      | wl-copy, wl-paste                |
+| xcolor           | hyprpicker        | Color picker                     |
+| xdotool          | hyprctl           | Window manipulation              |
+| xrandr           | wlr-randr         | Monitor config                   |
+| xset             | hyprctl dpms      | Screen power                     |
+| betterlockscreen | hyprlock          | Lock screen                      |
+| feh              | hyprpaper         | Wallpaper                        |
+| ffmpeg x11grab   | wf-recorder       | Screen recording                 |
+| i3lock           | hyprlock          | Lock screen                      |
 
 ## Testing Checklist
 
 ### Phase 1: Basic Functionality
+
 - [ ] Hyprland starts without errors
 - [ ] Waybar displays correctly
 - [ ] Workspaces switch properly
 - [ ] Windows open and close
 
 ### Phase 2: Keybindings
+
 - [ ] `$mod+Return` opens Alacritty
 - [ ] `$mod+Space` opens wofi
 - [ ] `$mod+q` closes windows
@@ -93,12 +95,14 @@ sudo pacman -S cliphist
 - [ ] Workspace switching works
 
 ### Phase 3: Applications
+
 - [ ] Chrome opens on workspace 1
 - [ ] Thunar opens on workspace 4
 - [ ] Project launcher works
 - [ ] Power menu works
 
 ### Phase 4: Media & Utilities
+
 - [ ] Volume keys work
 - [ ] Brightness keys work
 - [ ] Screenshots work (all variants)
@@ -107,6 +111,7 @@ sudo pacman -S cliphist
 - [ ] OCR text extractor works
 
 ### Phase 5: System Integration
+
 - [ ] Lock screen works
 - [ ] Suspend/resume works
 - [ ] Notifications appear
@@ -142,6 +147,7 @@ To set a random wallpaper like feh did:
 ```
 
 Or add to startup:
+
 ```
 exec-once = ~/.config/hypr/scripts/wallpaper-random.sh
 ```
@@ -149,12 +155,14 @@ exec-once = ~/.config/hypr/scripts/wallpaper-random.sh
 ## Troubleshooting
 
 ### Waybar not showing
+
 ```bash
 killall waybar
 waybar &
 ```
 
 ### Screen recording not working
+
 ```bash
 # Check wf-recorder is installed
 pacman -Qs wf-recorder
@@ -164,6 +172,7 @@ wf-recorder -f test.mp4
 ```
 
 ### Clipboard not working
+
 ```bash
 # Ensure wl-clipboard is installed
 pacman -Qs wl-clipboard

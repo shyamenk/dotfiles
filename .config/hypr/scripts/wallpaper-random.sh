@@ -9,17 +9,17 @@ WALLPAPER_DIR="$HOME/Pictures/wallpaper"
 WALLPAPER=$(find "$WALLPAPER_DIR" -type f \( -name "*.jpg" -o -name "*.png" -o -name "*.jpeg" \) | shuf -n 1)
 
 if [ -n "$WALLPAPER" ]; then
-    # Update hyprpaper config
-    cat > "$HOME/.config/hypr/hyprpaper.conf" << EOF
+  # Update hyprpaper config
+  cat >"$HOME/.config/hypr/hyprpaper.conf" <<EOF
 preload = $WALLPAPER
 wallpaper = ,$WALLPAPER
 splash = false
 ipc = on
 EOF
 
-    # Reload hyprpaper if running
-    if pgrep -x hyprpaper > /dev/null; then
-        killall hyprpaper
-        hyprpaper &
-    fi
+  # Reload hyprpaper if running
+  if pgrep -x hyprpaper >/dev/null; then
+    killall hyprpaper
+    hyprpaper &
+  fi
 fi

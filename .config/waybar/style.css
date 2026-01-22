@@ -21,88 +21,88 @@
 @define-color flamingo #f2cdcd;
 
 * {
-    font-family: "JetBrainsMono Nerd Font";
-    font-size: 16px;
-    font-weight: 600;
-    border: none;
-    border-radius: 0;
-    min-height: 0;
+  font-family: "JetBrainsMono Nerd Font";
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 0;
+  min-height: 0;
 }
 
 window#waybar {
-    background: transparent;
-    color: @text;
+  background: transparent;
+  color: @text;
 }
 
 window#waybar > box {
-    background-color: @base;
-    border-radius: 12px;
-    border: 2px solid @surface0;
+  background-color: @base;
+  border-radius: 12px;
+  border: 2px solid @surface0;
 }
 
 tooltip {
-    background-color: @base;
-    border: 2px solid @mauve;
-    border-radius: 12px;
-    padding: 15px;
+  background-color: @base;
+  border: 2px solid @lavender;
+  border-radius: 12px;
+  padding: 15px;
 }
 
 tooltip label {
-    color: @text;
-    font-size: 14px;
-    padding: 8px;
+  color: @text;
+  font-size: 14px;
+  padding: 8px;
 }
 
 /* Left modules */
 #custom-launcher {
-    font-size: 18px;
-    color: @mauve;
-    padding: 0 15px 0 12px;
-    margin-left: 5px;
+  font-size: 18px;
+  color: @blue;
+  padding: 0 15px 0 12px;
+  margin-left: 5px;
 }
 
 #custom-launcher:hover {
-    color: @lavender;
+  color: @lavender;
 }
 
 #workspaces {
-    background-color: @surface0;
-    border-radius: 10px;
-    padding: 2px 6px;
-    margin: 4px 0;
+  background-color: @surface0;
+  border-radius: 10px;
+  padding: 2px 6px;
+  margin: 4px 0;
 }
 
 #workspaces button {
-    padding: 0 8px;
-    margin: 2px;
-    color: @overlay0;
-    background: transparent;
-    border-radius: 8px;
-    transition: all 0.2s ease;
+  padding: 0 8px;
+  margin: 2px;
+  color: @overlay0;
+  background: transparent;
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
 
 #workspaces button.active {
-    color: @base;
-    background: @mauve;
+  color: @base;
+  background: @blue;
 }
 
 #workspaces button:hover {
-    color: @text;
-    background: @surface1;
+  color: @text;
+  background: @surface1;
 }
 
 #workspaces button.urgent {
-    color: @base;
-    background: @red;
+  color: @base;
+  background: @red;
 }
 
 /* Center */
 #clock {
-    color: @text;
-    background-color: @surface0;
-    border-radius: 10px;
-    padding: 4px 15px;
-    margin: 4px 0;
+  color: @text;
+  background-color: @surface0;
+  border-radius: 10px;
+  padding: 4px 15px;
+  margin: 4px 0;
 }
 
 /* Right modules - uniform container style */
@@ -112,12 +112,13 @@ tooltip label {
 #battery,
 #memory,
 #cpu {
-    color: @text;
-    padding: 4px 12px;
-    margin: 4px 3px;
-    background-color: @surface0;
-    border-radius: 10px;
-    min-width: 50px;
+  color: @green;
+  padding: 4px 12px;
+  font-weight: bold;
+  margin: 4px 3px;
+  background-color: @surface0;
+  border-radius: 10px;
+  min-width: 50px;
 }
 
 #pulseaudio:hover,
@@ -126,59 +127,61 @@ tooltip label {
 #battery:hover,
 #memory:hover,
 #cpu:hover {
-    background-color: @surface1;
+  background-color: @surface1;
 }
 
 #pulseaudio.muted {
-    color: @overlay0;
+  color: @overlay0;
 }
 
 #network.disconnected {
-    color: @overlay0;
+  color: @overlay0;
 }
 
 #battery.charging {
-    color: @green;
+  color: @green;
 }
 
 #battery.warning:not(.charging) {
-    color: @yellow;
+  color: @yellow;
 }
 
 #battery.critical:not(.charging) {
-    color: @red;
-    animation: blink 1s ease infinite;
+  color: @red;
+  animation: blink 1s ease infinite;
 }
 
 @keyframes blink {
-    50% { opacity: 0.5; }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 #tray {
-    background-color: @surface0;
-    border-radius: 10px;
-    padding: 4px 10px;
-    margin: 4px 2px;
+  background-color: @surface0;
+  border-radius: 10px;
+  padding: 4px 10px;
+  margin: 4px 2px;
 }
 
 #tray > .passive {
-    -gtk-icon-effect: dim;
+  -gtk-icon-effect: dim;
 }
 
 #tray > .needs-attention {
-    -gtk-icon-effect: highlight;
+  -gtk-icon-effect: highlight;
 }
 
 #custom-power {
-    font-size: 14px;
-    color: @red;
-    background-color: @surface0;
-    border-radius: 10px;
-    padding: 4px 12px;
-    margin: 4px 5px 4px 2px;
+  font-size: 16px;
+  color: @red;
+  background-color: @surface0;
+  border-radius: 10px;
+  padding: 4px 12px;
+  margin: 4px 5px 4px 2px;
 }
 
 #custom-power:hover {
-    color: @base;
-    background-color: @red;
+  color: @base;
+  background-color: @red;
 }
