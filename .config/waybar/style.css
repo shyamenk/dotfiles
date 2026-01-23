@@ -112,7 +112,7 @@ tooltip label {
 #battery,
 #memory,
 #cpu {
-  color: @green;
+  color: @lavender;
   padding: 4px 12px;
   font-weight: bold;
   margin: 4px 3px;
@@ -185,3 +185,5 @@ tooltip label {
   color: @base;
   background-color: @red;
 }
+
+
