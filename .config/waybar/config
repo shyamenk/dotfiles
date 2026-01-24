@@ -9,7 +9,7 @@
     
     "modules-left": ["custom/launcher", "hyprland/workspaces"],
     "modules-center": ["clock"],
-    "modules-right": ["tray", "memory", "cpu", "pulseaudio", "backlight", "network", "battery", "custom/power"],
+    "modules-right": ["", "memory", "cpu", "pulseaudio", "backlight", "network", "battery", "custom/power"],
     
     "custom/launcher": {
         "format": "󰣇 LinuX",
@@ -30,7 +30,6 @@
         "tooltip-format": "<span size='x-large' weight='bold'>{:%B %Y}</span>\n\n<span font='JetBrainsMono Nerd Font 14'>{calendar}</span>",
         "calendar": {
             "mode": "month",
-            "weeks-pos": "left",
             "format": {
                 "months": "<span color='#cba6f7'><b>{}</b></span>",
                 "weeks": "<span color='#89b4fa'><b>W{}</b></span>",
@@ -38,7 +37,6 @@
                 "today": "<span color='#a6e3a1'><b><u>{}</u></b></span>"
             }
         },
-        "on-click": "galendae -c blue.conf"
     },
     
     "memory": {
@@ -57,7 +55,7 @@
     "pulseaudio": {
         "format": "󰕾 {volume}%",
         "format-muted": "󰝟 MUTE",
-        "on-click": "pavucontrol",
+        "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
         "on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ +5%",
         "on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ -5%"
     },
@@ -66,15 +64,16 @@
         "device": "amdgpu_bl2",
         "format": "󰃟 {percent}%"
     },
-    
+
     "network": {
-        "interface": "wlan0",
-        "format-wifi": "󰖩 {essid}",
-        "format-disconnected": "󰖪 Disconnected",
-        "format-ethernet": "󰈀 {ipaddr}",
-        "tooltip-format": "{ifname}: {ipaddr}/{cidr}",
-        "on-click": "alacritty -e nmtui"
-    },
+    "format-wifi": "󰖩 {essid}",
+    "format-ethernet": "󰈀 {ipaddr}",
+    "format-wifi": "󰖩 {essid} ({signalStrength}%)",
+    "format-disconnected": "󰖪 Disconnected",
+    "tooltip-format": "{ifname}: {ipaddr}/{cidr}",
+    "on-click": "alacritty -e impala",
+    "on-click-right": "nm-applet"
+   },
     
     "battery": {
         "bat": "BAT1",
