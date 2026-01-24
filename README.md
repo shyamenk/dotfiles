@@ -1,54 +1,114 @@
-# 🛠️ My Dotfiles 🖥️
+# Dotfiles
 
-This repository contains my personal dotfiles setup.## Requirements
+Personal dotfiles for Arch Linux with Hyprland.
 
-ensure you have the following installed:
-
-## 📋 Requirements
-
-Make sure you have the following installed:
-
-### Git
+## Quick Install
 
 ```bash
-sudo apt install git
+git clone https://github.com/shyamenk/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+sudo ./setup.sh
 ```
 
-### GNU Stow
+## Manual Install
+
+### Requirements
 
 ```bash
-sudo apt install stow
+sudo pacman -S git stow
 ```
 
-### 🚀Installation
-
-1. Clone the dotfiles repository into your home directory:
+### Stow Individual Packages
 
 ```bash
-git clone git@github.com/shyamenk/dotfiles.git
-cd dotfiles
+cd ~/dotfiles
+
+stow hyprland    # Hyprland, hypridle, hyprlock, hyprpaper
+stow waybar      # Status bar
+stow wofi        # Application launcher
+stow dunst       # Notifications
+stow alacritty   # Terminal
+stow wezterm     # Terminal (alt)
+stow nvim        # Neovim (LazyVim)
+stow zsh         # Zsh + Zim
+stow tmux        # Tmux
+stow yazi        # File manager
+stow bat         # Better cat
+stow scripts     # Custom scripts (~/.local/bin)
 ```
 
-2. Use GNU Stow to symlink the dotfiles you want to use:
+### Stow All
 
 ```bash
-stow .
-
-or
-
-stow --adopt .
+stow */
 ```
 
-### 📁 Included Configurations
+## Structure
 
-This repository currently includes configurations for:
+```
+dotfiles/
+├── hyprland/     # Hyprland + hypr* configs + scripts
+├── waybar/       # Waybar config + styles
+├── wofi/         # Wofi launcher
+├── dunst/        # Notifications
+├── alacritty/    # Alacritty terminal
+├── wezterm/      # WezTerm terminal
+├── nvim/         # Neovim (LazyVim)
+├── zsh/          # .zshrc + .zimrc
+├── tmux/         # .tmux.conf
+├── yazi/         # File manager
+├── bat/          # Syntax highlighting
+├── scripts/      # ~/.local/bin scripts
+└── .archive/     # Legacy (i3, polybar, rofi, picom) - hidden, not stowed
+```
 
-- `.zshrc`: Zsh configuration
-- `zimrc`: Zim (Zsh configuration framework) configuration
-- `alacritty`: Alacritty terminal emulator configuration
-- `nvim`: Neovim configuration
-- `tmux`: Tmux configuration
+## Wayland Stack
 
-More configurations may be added in the future.
+| Component     | Package    |
+|---------------|------------|
+| Compositor    | Hyprland   |
+| Bar           | Waybar     |
+| Launcher      | Wofi       |
+| Notifications | Dunst      |
+| Lock          | Hyprlock   |
+| Idle          | Hypridle   |
+| Wallpaper     | Hyprpaper/swww |
 
-Feel free to customize and adapt these dotfiles to suit your needs!
+## Keybindings (Hyprland)
+
+| Key | Action |
+|-----|--------|
+| `Super+Return` | Alacritty |
+| `Super+Space` | Wofi |
+| `Super+Q` | Kill window |
+| `Super+G` | Chrome |
+| `Super+Shift+N` | Thunar |
+| `Super+Shift+V` | Screen record |
+| `Super+Shift+O` | OCR text extract |
+| `Super+Shift+G` | Color picker |
+| `Super+.` | Emoji picker |
+| `Print` | Screenshot |
+| `Shift+Print` | Area screenshot |
+
+## Scripts
+
+| Script | Description |
+|--------|-------------|
+| `tmux-dev` | Dev session (3 windows: code, server, shell) |
+| `power-menu.sh` | Shutdown/reboot/lock menu |
+| `screen-recording.sh` | wf-recorder toggle |
+| `text-extractor.sh` | OCR with tesseract |
+| `color-picker.sh` | hyprpicker color picker |
+
+## Apps Installed
+
+- **Dev**: Neovim, tmux, lazygit, bruno (API)
+- **Browsers**: Google Chrome
+- **Apps**: Obsidian, Spotify (with adblock), Thunar
+- **Tools**: ripgrep, fzf, bat, eza, yazi, zoxide
+
+## Unstow
+
+```bash
+stow -D hyprland   # Remove symlinks
+```

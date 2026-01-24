@@ -1,0 +1,22 @@
+#!/bin/bash
+
+SESSION="dev"
+
+if tmux has-session -t $SESSION 2>/dev/null; then
+    echo "Session '$SESSION' already exists. Attaching..."
+    tmux attach -t $SESSION
+    exit 0
+fi
+
+tmux new-session -d -s $SESSION -n code
+tmux split-window -h -t $SESSION:1
+tmux select-pane -t $SESSION:1.0
+tmux send-keys -t $SESSION:1.0 "nvim" C-m
+
+tmux new-window -t $SESSION:2 -n server
+tmux split-window -v -t $SESSION:2
+
+tmux new-window -t $SESSION:3 -n shell
+
+tmux select-window -t $SESSION:1
+tmux attach -t $SESSION
