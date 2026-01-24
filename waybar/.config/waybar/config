@@ -71,8 +71,7 @@
     "format-wifi": "󰖩 {essid} ({signalStrength}%)",
     "format-disconnected": "󰖪 Disconnected",
     "tooltip-format": "{ifname}: {ipaddr}/{cidr}",
-    "on-click": "alacritty -e impala",
-    "on-click-right": "nm-applet"
+    "on-click": "alacritty -e impala"
    },
     
     "battery": {
