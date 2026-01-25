@@ -81,10 +81,16 @@ tooltip label {
   transition: all 0.2s ease;
 }
 
-#workspaces button.active {
-  color: @base;
-  background: @blue;
-}
+#workspaces button:nth-child(1).active { background: @blue; color: @base; }
+#workspaces button:nth-child(2).active { background: @mauve; color: @base; }
+#workspaces button:nth-child(3).active { background: @green; color: @base; }
+#workspaces button:nth-child(4).active { background: @peach; color: @base; }
+#workspaces button:nth-child(5).active { background: @pink; color: @base; }
+#workspaces button:nth-child(6).active { background: @teal; color: @base; }
+#workspaces button:nth-child(7).active { background: @yellow; color: @base; }
+#workspaces button:nth-child(8).active { background: @sapphire; color: @base; }
+#workspaces button:nth-child(9).active { background: @flamingo; color: @base; }
+#workspaces button:nth-child(10).active { background: @lavender; color: @base; }
 
 #workspaces button:hover {
   color: @text;
@@ -105,20 +111,43 @@ tooltip label {
   margin: 4px 0;
 }
 
-/* Right modules - uniform container style */
+/* Right modules - each with distinct accent color */
 #pulseaudio,
 #backlight,
 #network,
 #battery,
 #memory,
 #cpu {
-  color: @lavender;
   padding: 4px 12px;
   font-weight: bold;
   margin: 4px 3px;
   background-color: @surface0;
   border-radius: 10px;
   min-width: 50px;
+}
+
+#memory {
+  color: @mauve;
+}
+
+#cpu {
+  color: @peach;
+}
+
+#pulseaudio {
+  color: @pink;
+}
+
+#backlight {
+  color: @yellow;
+}
+
+#network {
+  color: @teal;
+}
+
+#battery {
+  color: @green;
 }
 
 #pulseaudio:hover,

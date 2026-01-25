@@ -1,0 +1,76 @@
+/* Keybindings Help Menu - Catppuccin Mocha */
+
+* {
+    font-family: "JetBrainsMono Nerd Font";
+    font-size: 14px;
+}
+
+window {
+    background-color: #1e1e2e;
+    border: 2px solid #cba6f7;
+    border-radius: 12px;
+}
+
+#input {
+    margin: 12px 15px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: #313244;
+    color: #cdd6f4;
+    font-size: 14px;
+}
+
+#input:focus {
+    outline: none;
+    border: 2px solid #cba6f7;
+}
+
+#inner-box {
+    margin: 0 8px 8px 8px;
+    background-color: transparent;
+}
+
+#outer-box {
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+}
+
+#scroll {
+    margin: 0;
+    padding: 0;
+}
+
+#text {
+    margin: 0;
+    color: #cdd6f4;
+    font-size: 14px;
+}
+
+#entry {
+    padding: 8px 12px;
+    margin: 2px 4px;
+    border-radius: 6px;
+    background-color: transparent;
+}
+
+/* Section headers with icons */
+#entry #text:first-child {
+    color: #cba6f7;
+}
+
+#entry:selected {
+    background-color: #313244;
+    border: 1px solid #89b4fa;
+}
+
+#entry:selected #text {
+    color: #89b4fa;
+}
+
+/* Make headers stand out */
+#text:contains("") {
+    color: #f38ba8;
+    font-weight: bold;
+}

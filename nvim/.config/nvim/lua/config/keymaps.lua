@@ -131,9 +131,9 @@ keymap.set("n", "<leader>ot", "<cmd>ObsidianTemplate<CR>", { desc = "Create New 
 -----------------------
 
 -- Markdown preview
-keymap.set("n", "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", { desc = "Markdown Preview Toggle" })
+keymap.set("n", "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", { desc = "Markdown Preview (Browser)" })
+keymap.set("n", "<leader>mg", "<cmd>Glow<cr>", { desc = "Markdown Preview (Terminal)" })
 keymap.set("n", "<leader>mps", "<cmd>MarkdownPreviewStop<cr>", { desc = "Markdown Preview Stop" })
-keymap.set("n", "<leader>mpdf", "<cmd>MarkdownToPDF<cr>", { desc = "Export Markdown to PDF" })
 
 -- Table mode toggle
 keymap.set("n", "<leader>tm", "<cmd>TableModeToggle<cr>", { desc = "Toggle Table Mode" })

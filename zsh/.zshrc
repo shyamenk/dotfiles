@@ -360,3 +360,20 @@ alias '??'=fabric_wrapper
 
 # YT-Insights alias
 alias yt="yt-insights"
+
+# Pass fuzzy finder - copy to clipboard
+pf() {
+  local entry=$(find ~/.password-store -name '*.gpg' 2>/dev/null | \
+    sed 's|.*/\.password-store/||;s|\.gpg$||' | \
+    sort | \
+    fzf --height 40% --reverse --prompt="pass> ")
+  [[ -n "$entry" ]] && pass -c "$entry"
+}
+# Pass fuzzy finder - copy to clipboard
+pf() {
+  local entry=$(find ~/.password-store -name '*.gpg' 2>/dev/null | \
+    sed 's|.*/\.password-store/||;s|\.gpg$||' | \
+    sort | \
+    fzf --height 40% --reverse --prompt="pass> ")
+  [[ -n "$entry" ]] && pass -c "$entry"
+}
