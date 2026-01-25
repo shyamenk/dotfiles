@@ -1,0 +1,12 @@
+# Lock files
+nvim/.config/nvim/lazy-lock.json
+
+# Local state/share directories
+scripts/.local/share/
+scripts/.local/state/
+
+# Backup files
+*.backup
+
+# Environment files with secrets
+scripts/.local/bin/env
