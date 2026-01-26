@@ -66,25 +66,6 @@ keymap.set("n", "<leader>se", "<C-w>=", { desc = "Make Split Windows Equal Size"
 -- Close current split window
 keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close Split Window" })
 
----------------------
--- Tab Management --
----------------------
-
--- Open new tab
-keymap.set("n", "<leader>to", "<cmd>tabnew<CR>", { desc = "Open New Tab" })
-
--- Close current tab
-keymap.set("n", "<leader>tx", "<cmd>tabclose<CR>", { desc = "Close Current Tab" })
-
--- Go to next tab
-keymap.set("n", "<leader>tn", "<cmd>tabn<CR>", { desc = "Go To Next Tab" })
-
--- Go to previous tab
-keymap.set("n", "<leader>tp", "<cmd>tabp<CR>", { desc = "Go To Previous Tab" })
-
--- Open current buffer in new tab
-keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Open Current Buffer in New Tab" })
-
 -------------------------
 -- Highlight on Yank --
 -------------------------
