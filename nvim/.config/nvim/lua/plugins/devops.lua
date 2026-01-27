@@ -1,13 +1,19 @@
+-- DevOps tools LSP configuration (YAML, Docker)
+-- Mason tools are in mason-tools.lua
 return {
   {
-    "williamboman/mason.nvim",
+    "neovim/nvim-lspconfig",
     opts = {
-      ensure_installed = {
-        "yaml-language-server",
-        "yamllint",
-        "dockerfile-language-server",
-        "docker-compose-language-service",
-        "hadolint",
+      servers = {
+        yamlls = {
+          settings = {
+            yaml = {
+              keyOrdering = false,
+            },
+          },
+        },
+        dockerls = {},
+        docker_compose_language_service = {},
       },
     },
   },

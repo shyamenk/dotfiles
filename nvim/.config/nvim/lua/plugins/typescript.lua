@@ -1,25 +1,5 @@
 return {
-  -- Configure Mason to install TypeScript tools
-  {
-    "mason-org/mason.nvim",
-    opts = {
-      ensure_installed = {
-        -- TypeScript Language Server
-        "typescript-language-server",
-        -- Linters
-        "eslint-lsp",
-        -- Formatters
-        "prettier",
-        "prettierd", -- Faster prettier daemon
-        -- Markdown tools
-        "markdownlint",
-        "markdown-toc",
-        -- Additional tools
-        "js-debug-adapter", -- For debugging
-      },
-    },
-  },
-
+  -- TypeScript LSP configuration
   {
     "neovim/nvim-lspconfig",
     opts = {
@@ -55,21 +35,6 @@ return {
             workingDirectories = { mode = "auto" },
           },
         },
-      },
-    },
-  },
-
-  -- Add more treesitter parsers for TypeScript development
-  {
-    "nvim-treesitter/nvim-treesitter",
-    opts = {
-      ensure_installed = {
-        "typescript",
-        "tsx",
-        "javascript",
-        "jsdoc",
-        "json",
-        "jsonc",
       },
     },
   },

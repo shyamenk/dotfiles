@@ -48,7 +48,7 @@ keymap.set("n", "<leader>qq", ":q<CR>", { desc = "Quick Close" })
 keymap.set("n", "x", '"_x', { desc = "Delete Single Character Without Copying Into Register" })
 
 -- Dismiss Noice notifications
-keymap.set("n", "<leader>nn", ":Noice dismiss<CR>", { noremap = true, desc = "Dismis Noice Notifications" })
+keymap.set("n", "<leader>nn", ":Noice dismiss<CR>", { noremap = true, desc = "Dismiss Noice Notifications" })
 
 -------------------------
 -- Window Management --
@@ -65,20 +65,6 @@ keymap.set("n", "<leader>se", "<C-w>=", { desc = "Make Split Windows Equal Size"
 
 -- Close current split window
 keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close Split Window" })
-
--------------------------
--- Highlight on Yank --
--------------------------
-
--- Highlight on yank
-local highlight_group = vim.api.nvim_create_augroup("YankHighlight", { clear = true })
-vim.api.nvim_create_autocmd("TextYankPost", {
-  callback = function()
-    vim.highlight.on_yank()
-  end,
-  group = highlight_group,
-  pattern = "*",
-})
 
 ---------------------------
 -- Diagnostic Keymaps --

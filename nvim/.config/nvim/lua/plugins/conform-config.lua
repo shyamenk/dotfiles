@@ -9,10 +9,14 @@ return {
         lua = { "stylua" },
         typescript = { "prettier" },
         javascript = { "prettier" },
+        typescriptreact = { "prettier" },
+        javascriptreact = { "prettier" },
         json = { "prettier" },
         yaml = { "prettier" },
         html = { "prettier" },
         css = { "prettier" },
+        -- Python formatting
+        python = { "ruff_format" },
       },
       formatters = {
         -- Custom markdown formatter settings

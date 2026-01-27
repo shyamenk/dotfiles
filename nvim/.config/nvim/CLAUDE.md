@@ -75,99 +75,117 @@ This is a **LazyVim-based Neovim configuration** that follows a modular plugin a
 ## Complete Keymap Reference
 
 ### Core Navigation & Editing
-| Key | Command | Description |
-|-----|---------|-------------|
-| `jj` | `<ESC>` | Exit insert mode |
-| `-` | `:Oil --float<CR>` | Open parent directory |
-| `==` | `gg<S-v>G` | Select all text |
-| `<C-u>` | `<C-u>zz` | Scroll up and center |
-| `<C-d>` | `<C-d>zz` | Scroll down and center |
-| `n` | `nzzzv` | Next search result (centered) |
-| `N` | `Nzzzv` | Previous search result (centered) |
-| `x` | `"_x` | Delete character without copying |
-| `<C-s>` | `:w<CR>` | Save file |
-| `QQ` | `:q!<enter>` | Force quit without saving |
+| Key | Mode | Description |
+|-----|------|-------------|
+| `jj` | Insert | Exit insert mode |
+| `-` | Normal | Open Oil file manager (floating) |
+| `==` | Normal | Select all text |
+| `<C-u>` | Normal | Scroll up and center |
+| `<C-d>` | Normal | Scroll down and center |
+| `n` | Normal | Next search result (centered) |
+| `N` | Normal | Previous search result (centered) |
+| `x` | Normal | Delete character without copying |
+| `<C-s>` | Normal | Save file |
+| `QQ` | Normal | Force quit without saving |
+| `gp` | Normal | Go to preview definition |
 
 ### Window Management
-| Key | Command | Description |
-|-----|---------|-------------|
-| `<leader>sv` | `<C-w>v` | Split window vertically |
-| `<leader>sh` | `<C-w>s` | Split window horizontally |
-| `<leader>se` | `<C-w>=` | Make split windows equal size |
-| `<leader>sx` | `:close<CR>` | Close current split window |
-| `<leader><left>` | `:vertical resize +20<CR>` | Increase vertical window size |
-| `<leader><right>` | `:vertical resize -20<CR>` | Decrease vertical window size |
-| `<leader><up>` | `:resize +10<CR>` | Increase horizontal window size |
-| `<leader><down>` | `:resize -10<CR>` | Decrease horizontal window size |
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<leader>sv` | Normal | Split window vertically |
+| `<leader>sh` | Normal | Split window horizontally |
+| `<leader>se` | Normal | Make split windows equal size |
+| `<leader>sx` | Normal | Close current split window |
+| `<leader><left>` | Normal | Increase vertical window size |
+| `<leader><right>` | Normal | Decrease vertical window size |
+| `<leader><up>` | Normal | Increase horizontal window size |
+| `<leader><down>` | Normal | Decrease horizontal window size |
+| `<leader><leader>` | Normal | Close all preview windows |
 
-### Tab Management
-| Key | Command | Description |
-|-----|---------|-------------|
-| `<leader>to` | `:tabnew<CR>` | Open new tab |
-| `<leader>tx` | `:tabclose<CR>` | Close current tab |
-| `<leader>tn` | `:tabn<CR>` | Go to next tab |
-| `<leader>tp` | `:tabp<CR>` | Go to previous tab |
-| `<leader>tf` | `:tabnew %<CR>` | Open current buffer in new tab |
+### Terminal (ToggleTerm)
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<C-\>` | Normal/Terminal | Toggle terminal (floating) |
+| `<leader>th` | Normal | Terminal horizontal split |
+| `<leader>tv` | Normal | Terminal vertical split (80 width) |
+| `<leader>tf` | Normal | Terminal floating window |
 
 ### Obsidian Integration
-| Key | Command | Description |
-|-----|---------|-------------|
-| `<leader>oo` | `:ObsidianOpen<CR>` | Open Obsidian app |
-| `<leader>od` | `:ObsidianDailies<CR>` | Show daily notes |
-| `<leader>ob` | `:ObsidianBacklinks<CR>` | Show backlinks |
-| `<leader>ol` | `:ObsidianLinks<CR>` | Show all links |
-| `<leader>on` | `:ObsidianNew<CR>` | Create new note |
-| `<leader>os` | `:ObsidianSearch<CR>` | Search notes |
-| `<leader>oq` | `:ObsidianQuickSwitch<CR>` | Quick switch notes |
-| `<leader>ot` | `:ObsidianTemplate<CR>` | Create note from template |
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<leader>oo` | Normal | Open Obsidian app |
+| `<leader>od` | Normal | Show daily notes |
+| `<leader>ob` | Normal | Show backlinks |
+| `<leader>ol` | Normal | Show all links |
+| `<leader>on` | Normal | Create new note |
+| `<leader>os` | Normal | Search notes |
+| `<leader>oq` | Normal | Quick switch notes |
+| `<leader>ot` | Normal | Create note from template |
+| `gf` | Normal | Follow link (passthrough) |
+| `<CR>` | Normal | Smart action (in markdown) |
 
 ### Markdown Editing
-| Key | Command | Description |
-|-----|---------|-------------|
-| `<leader>mp` | `:MarkdownPreviewToggle<cr>` | Toggle markdown preview |
-| `<leader>tm` | `:TableModeToggle<cr>` | Toggle table mode |
-| `<leader>um` | `:RenderMarkdown toggle<cr>` | Toggle markdown rendering |
-| `<leader>tc` | `markdown-togglecheck.toggle()` | Toggle checkbox state |
-| `<leader>x` | `<Plug>(bullets-toggle-checkbox)` | Toggle bullet checkbox |
-| `<C-x>` | `markdown.toggle_task_list_item()` | Toggle task list item |
-| `]]` | Go to next heading | Navigate to next heading |
-| `[[` | Go to previous heading | Navigate to previous heading |
-| `gx` | Follow link | Follow markdown link |
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<leader>mp` | Normal | Toggle markdown preview (browser) |
+| `<leader>mg` | Normal | Markdown preview (Glow terminal) |
+| `<leader>mps` | Normal | Stop markdown preview |
+| `<leader>tm` | Normal | Toggle table mode |
+| `<leader>um` | Normal | Toggle render markdown |
+| `<leader>tc` | Normal | Toggle checkbox state |
+| `<leader>x` | Normal | Toggle bullet checkbox |
+| `<C-x>` | Normal/Visual | Toggle task list item |
+| `]]` | Normal | Go to next heading |
+| `[[` | Normal | Go to previous heading |
+| `]c` | Normal | Go to current heading |
+| `]p` | Normal | Go to parent heading |
+| `gx` | Normal | Follow link |
+| `gs` | Normal | Inline surround toggle |
+| `gss` | Normal | Inline surround toggle line |
+| `ds` | Normal | Inline surround delete |
+| `cs` | Normal | Inline surround change |
+| `gl` | Normal | Add link |
 
-### Completion Shortcuts (Insert Mode)
-| Key | Command | Description |
-|-----|---------|-------------|
-| `<C-space>` | Trigger completion | Show/trigger completion menu |
-| `<CR>` | Accept completion | Accept selected completion |
-| `<Tab>` | Next completion/snippet | Navigate completion or snippet |
-| `<S-Tab>` | Previous completion/snippet | Navigate back in completion |
-| `<C-n>` | Next item | Select next completion item |
-| `<C-p>` | Previous item | Select previous completion item |
-| `<C-e>` | Hide completion | Hide completion menu |
-| `<C-u>` | Scroll docs up | Scroll documentation up |
-| `<C-d>` | Scroll docs down | Scroll documentation down |
+### Completion (Blink.cmp - Insert Mode)
+| Key | Description |
+|-----|-------------|
+| `<C-space>` | Show/toggle completion & documentation |
+| `<CR>` | Accept completion |
+| `<Tab>` | Snippet forward / fallback |
+| `<S-Tab>` | Snippet backward / fallback |
+| `<Up>` / `<C-p>` | Select previous item |
+| `<Down>` / `<C-n>` | Select next item |
+| `<C-e>` | Hide completion menu |
+| `<C-u>` | Scroll documentation up |
+| `<C-d>` | Scroll documentation down |
 
 ### Diagnostic Navigation
-| Key | Command | Description |
-|-----|---------|-------------|
-| `[d` | `vim.diagnostic.goto_prev` | Go to previous diagnostic |
-| `]d` | `vim.diagnostic.goto_next` | Go to next diagnostic |
-| `<leader>q` | `vim.diagnostic.setloclist` | Open diagnostics list |
+| Key | Mode | Description |
+|-----|------|-------------|
+| `[d` | Normal | Go to previous diagnostic |
+| `]d` | Normal | Go to next diagnostic |
+| `<leader>q` | Normal | Open diagnostics list |
 
 ### Visual Mode Enhancements
-| Key | Command | Description |
-|-----|---------|-------------|
-| `K` | `:m '<-2<CR>gv=gv` | Move block up |
-| `J` | `:m '>+1<CR>gv=gv` | Move block down |
+| Key | Mode | Description |
+|-----|------|-------------|
+| `K` | Visual | Move block up |
+| `J` | Visual | Move block down |
 
 ### Search & Utility
-| Key | Command | Description |
-|-----|---------|-------------|
-| `<leader>log` | `Telescope live_grep console\\.log` | Search for console.log statements |
-| `<leader>nh` | `:nohl<CR>` | Clear search highlights |
-| `<leader>nn` | `:Noice dismiss<CR>` | Dismiss Noice notifications |
-| `<leader>qq` | `:q<CR>` | Quick close |
-| `<leader>tw` | `:Twilight<enter>` | Enable Twilight mode |
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<leader>log` | Normal | Search for console.log statements |
+| `<leader>nh` | Normal | Clear search highlights |
+| `<leader>nn` | Normal | Dismiss Noice notifications |
+| `<leader>qq` | Normal | Quick close |
+| `<leader>tw` | Normal | Enable Twilight mode |
+| `<leader>cf` | Normal | Format current buffer (Conform) |
+
+### Claude Code Integration
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<leader>cc` | Normal | Toggle Claude Code |
 
 ## Adding New Functionality
 

@@ -1,13 +1,25 @@
 return {
   {
     "saghen/blink.cmp",
-    opts = {
-      sources = {
-        default = { "lsp", "path", "snippets", "buffer" },
-      },
-      completion = {
+    opts = function(_, opts)
+      -- Base sources
+      opts.sources = opts.sources or {}
+      opts.sources.default = { "lsp", "path", "snippets", "buffer" }
+
+      -- Filetype-specific sources
+      opts.sources.per_filetype = {
+        markdown = { "lsp", "path", "snippets", "buffer" },
+        typescript = { "lsp", "path", "snippets", "buffer" },
+        javascript = { "lsp", "path", "snippets", "buffer" },
+        lua = { "lsp", "path", "snippets", "buffer", "lazydev" },
+        json = { "lsp", "path", "snippets", "buffer" },
+        yaml = { "lsp", "path", "snippets", "buffer" },
+        dockerfile = { "lsp", "path", "snippets", "buffer" },
+      }
+
+      -- Completion settings
+      opts.completion = {
         accept = {
-          -- Auto-insert on selection
           auto_brackets = {
             enabled = true,
           },
@@ -26,8 +38,10 @@ return {
           auto_show = true,
           auto_show_delay_ms = 200,
         },
-      },
-      keymap = {
+      }
+
+      -- Keymaps
+      opts.keymap = {
         preset = "default",
         ["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
         ["<C-e>"] = { "hide" },
@@ -40,28 +54,12 @@ return {
         ["<C-n>"] = { "select_next", "fallback" },
         ["<C-u>"] = { "scroll_documentation_up", "fallback" },
         ["<C-d>"] = { "scroll_documentation_down", "fallback" },
-      },
-    },
-  },
-  
-  -- Enhanced completion for different file types
-  {
-    "saghen/blink.cmp",
-    opts = function(_, opts)
-      -- Add filetype-specific sources
-      opts.sources.per_filetype = {
-        markdown = { "lsp", "path", "snippets", "buffer" },
-        typescript = { "lsp", "path", "snippets", "buffer" },
-        javascript = { "lsp", "path", "snippets", "buffer" },
-        lua = { "lsp", "path", "snippets", "buffer", "lazydev" },
-        json = { "lsp", "path", "snippets", "buffer" },
-        yaml = { "lsp", "path", "snippets", "buffer" },
-        dockerfile = { "lsp", "path", "snippets", "buffer" },
       }
+
       return opts
     end,
   },
-  
+
   -- Telescope integration improvements
   {
     "nvim-telescope/telescope.nvim",

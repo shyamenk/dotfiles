@@ -204,18 +204,4 @@ return {
     },
   },
 
-  -- Enhanced treesitter for markdown
-  {
-    "nvim-treesitter/nvim-treesitter",
-    opts = {
-      ensure_installed = {
-        "markdown",
-        "markdown_inline",
-      },
-      highlight = {
-        enable = true,
-        additional_vim_regex_highlighting = { "markdown" },
-      },
-    },
-  },
 }

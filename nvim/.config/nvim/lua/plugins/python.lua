@@ -1,16 +1,5 @@
 -- Python development enhancements (extends LazyVim's Python extra)
 return {
-  -- Additional Mason tools
-  {
-    "mason-org/mason.nvim",
-    opts = {
-      ensure_installed = {
-        "mypy", -- Static type checker
-        "debugpy", -- Python debugger
-      },
-    },
-  },
-
   -- Virtual environment selector
   {
     "linux-cultist/venv-selector.nvim",
