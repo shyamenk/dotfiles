@@ -56,6 +56,7 @@ path=(
   $HOME/sf/bin
   $HOME/.console-ninja/.bin
   $HOME/.npm-global/bin
+  $HOME/.nvm/versions/node/v24.13.0/bin  # nvm default node for Mason/LSP tools
   $HOME/.spicetify
   $HOME/.bun/bin
   $HOME/go/bin

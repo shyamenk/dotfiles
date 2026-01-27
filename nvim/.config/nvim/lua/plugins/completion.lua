@@ -55,6 +55,8 @@ return {
         javascript = { "lsp", "path", "snippets", "buffer" },
         lua = { "lsp", "path", "snippets", "buffer", "lazydev" },
         json = { "lsp", "path", "snippets", "buffer" },
+        yaml = { "lsp", "path", "snippets", "buffer" },
+        dockerfile = { "lsp", "path", "snippets", "buffer" },
       }
       return opts
     end,

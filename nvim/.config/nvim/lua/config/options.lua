@@ -45,3 +45,6 @@ opt.splitbelow = true
 
 -- Turn off swapfile
 opt.swapfile = false
+
+-- Disable tabline for single-buffer workflow
+opt.showtabline = 0
