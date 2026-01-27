@@ -1,0 +1,6 @@
+# Ignore application data directories
+\.local/share
+\.local/state
+
+# Ignore absolute symlinks that stow can't handle
+claude

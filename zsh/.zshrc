@@ -340,8 +340,6 @@ function killport() {
 export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
 export PATH=$JAVA_HOME/bin:$PATH
 
-. "$HOME/.local/bin/env"
-
 # Amp CLI
 export PATH="/home/shyamenk/.amp/bin:$PATH"
 export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
@@ -377,3 +375,4 @@ pf() {
     fzf --height 40% --reverse --prompt="pass> ")
   [[ -n "$entry" ]] && pass -c "$entry"
 }
+eval "$(uv generate-shell-completion zsh)"
