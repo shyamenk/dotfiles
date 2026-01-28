@@ -33,6 +33,8 @@ fi
 if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
   source ${ZIM_HOME}/zimfw.zsh init -q
 fi
+# Custom completions (must be before Zim init)
+fpath=(~/.local/share/zsh/site-functions $fpath)
 source ${ZIM_HOME}/init.zsh
 
 # -----------------
