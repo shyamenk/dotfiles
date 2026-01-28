@@ -1,0 +1,2 @@
+npx gitignore node
+It will create .gitignore file for nodejs
