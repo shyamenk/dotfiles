@@ -77,7 +77,7 @@ cd "$DOTFILES_DIR"
 STOW_PACKAGES=(
     zsh tmux nvim alacritty wezterm
     hyprland waybar wofi dunst
-    yazi bat scripts
+    yazi bat scripts cmdx
 )
 
 for pkg in "${STOW_PACKAGES[@]}"; do

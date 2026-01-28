@@ -264,3 +264,6 @@ if (( ${+commands[uv]} )); then
   }
   compdef _uv uv
 fi
+# AWS CLI auto-completion
+autoload bashcompinit && bashcompinit
+complete -C '/usr/local/bin/aws_completer' aws

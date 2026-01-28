@@ -1,0 +1,2 @@
+docker system prune -af --volumes
+Remove all unused containers, images, and volumes

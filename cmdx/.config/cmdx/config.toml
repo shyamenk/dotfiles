@@ -1,0 +1,11 @@
+[core]
+store_path = "~/.config/cmdx/store"
+default_action = "copy"
+shell = "bash"
+
+[display]
+color = true
+tree_style = "unicode"
+
+[clipboard]
+tool = "auto"

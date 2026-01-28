@@ -1,0 +1,2 @@
+kubectl get pods -A
+List all pods across namespaces

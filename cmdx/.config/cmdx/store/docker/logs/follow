@@ -1,0 +1,2 @@
+docker logs -f container_name
+Follow container logs
