@@ -1,0 +1,2 @@
+cargo clippy -- -W clippy::all
+Lint with all warnings

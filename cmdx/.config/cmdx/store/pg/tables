@@ -1,0 +1,2 @@
+psql -c "SELECT tablename FROM pg_tables WHERE schemaname='public';"
+List all tables

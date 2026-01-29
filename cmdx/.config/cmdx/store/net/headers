@@ -1,0 +1,2 @@
+curl -I <url>
+Show HTTP headers

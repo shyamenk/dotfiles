@@ -1,2 +1,0 @@
-cp /home/shyamenk/Desktop/development/Projects-Lab/cmdx/target/release/cmdx /home/shyamenk/dotfiles/cmdx/.local/bin/cmd
-It copies binary from cargo build to dotfiles

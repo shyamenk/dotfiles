@@ -1,0 +1,2 @@
+docker compose up -d
+Start compose in background

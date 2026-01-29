@@ -1,0 +1,2 @@
+git stash && git pull && git stash pop
+Pull with local changes

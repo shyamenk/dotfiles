@@ -1,2 +1,2 @@
- cargo build --release 2>&1
-It's production build command
+cargo build --release
+Build optimized binary

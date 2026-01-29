@@ -1,0 +1,2 @@
+git branch -d $(git branch --merged | grep -v main)
+Delete merged branches

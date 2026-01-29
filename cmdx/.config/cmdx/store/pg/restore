@@ -1,0 +1,2 @@
+psql -h localhost -U postgres -d dbname < backup.sql
+Restore from backup

@@ -1,0 +1,2 @@
+du -sh * | sort -hr | head -20
+Show largest dirs

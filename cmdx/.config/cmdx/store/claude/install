@@ -1,2 +1,0 @@
-curl -fsSL https://claude.ai/install.sh | bash
-To install Claude Code CLI

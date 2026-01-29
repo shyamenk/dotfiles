@@ -1,0 +1,2 @@
+tar -czvf archive.tar.gz folder/
+Create tar.gz archive

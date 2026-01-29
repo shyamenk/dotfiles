@@ -1,2 +1,0 @@
-psql -h localhost -p 5432 -U postgres -d postgres
-Command to connect to postgres DB using CLI

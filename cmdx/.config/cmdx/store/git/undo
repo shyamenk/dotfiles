@@ -1,0 +1,2 @@
+git reset --soft HEAD~1
+Undo last commit, keep changes

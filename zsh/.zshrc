@@ -270,5 +270,5 @@ fi
 autoload bashcompinit && bashcompinit
 complete -C '/usr/local/bin/aws_completer' aws
 alias c='cmdx'
-alias cf='cmdx pick'
+alias cx='cmdx pick'
 export PATH="$HOME/.local/bin:$PATH"

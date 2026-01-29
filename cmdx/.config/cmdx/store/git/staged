@@ -1,0 +1,2 @@
+git diff --cached
+Show staged changes

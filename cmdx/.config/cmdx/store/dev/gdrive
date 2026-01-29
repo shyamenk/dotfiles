@@ -1,0 +1,2 @@
+rclone mount gdrive: ~/gdrive --vfs-cache-mode writes --daemon
+Mount Google Drive

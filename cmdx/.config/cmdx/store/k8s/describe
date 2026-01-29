@@ -1,0 +1,2 @@
+kubectl describe pod <pod>
+Show pod details
