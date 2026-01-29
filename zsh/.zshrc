@@ -269,3 +269,6 @@ fi
 # AWS CLI auto-completion
 autoload bashcompinit && bashcompinit
 complete -C '/usr/local/bin/aws_completer' aws
+alias c='cmdx'
+alias cf='cmdx pick'
+export PATH="$HOME/.local/bin:$PATH"

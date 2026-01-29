@@ -1,461 +1,112 @@
 #compdef cmdx
 
-autoload -U is-at-least
+_cmdx_complete_entries() {
+    local prefix="${CMDX_STORE:-$HOME/.config/cmdx/store}"
+    local -a entries
+    
+    # Get all files and directories, format as completion entries
+    entries=(${(f)"$(find -L "$prefix" -mindepth 1 2>/dev/null | sed "s#${prefix}/##" | sort)"})
+    
+    # Use compadd with slash suffix for directories
+    local entry fullpath
+    for entry in $entries; do
+        fullpath="$prefix/$entry"
+        if [[ -d "$fullpath" ]]; then
+            compadd -Q -S '/' -- "$entry"
+        elif [[ -f "$fullpath" ]]; then
+            compadd -Q -- "$entry"
+        fi
+    done
+}
 
 _cmdx() {
+    local curcontext="$curcontext" state line
     typeset -A opt_args
-    typeset -a _arguments_options
-    local ret=1
 
-    if is-at-least 5.2; then
-        _arguments_options=(-s -S -C)
+    local -a subcommands
+    subcommands=(
+        "init:Initialize the command store"
+        "add:Add a new command"
+        "show:Show a command"
+        "list:List commands (tree view)"
+        "ls:List commands (tree view)"
+        "find:Fuzzy search commands"
+        "copy:Copy command to clipboard"
+        "cp:Copy command to clipboard"
+        "run:Execute a command"
+        "edit:Edit a command in \$EDITOR"
+        "remove:Remove a command"
+        "rm:Remove a command"
+        "move:Move/rename a command"
+        "mv:Move/rename a command"
+        "export:Export all commands to JSON"
+        "import:Import commands from JSON"
+        "completions:Generate shell completions"
+        "pick:Interactive fuzzy finder"
+        "s:Interactive fuzzy finder"
+    )
+
+    if (( CURRENT > 2 )); then
+        local cmd=${words[2]}
+        curcontext="${curcontext%:*:*}:cmdx-$cmd"
+        (( CURRENT-- ))
+        shift words
+
+        case "$cmd" in
+            show|cp|copy|run|edit|rm|remove)
+                _arguments -C : \
+                    '-c[Show command and confirm before executing]' \
+                    '--confirm[Show command and confirm before executing]' \
+                    '-f[Skip confirmation / force]' \
+                    '--force[Skip confirmation / force]' \
+                    '*:command path:_cmdx_complete_entries'
+                ;;
+            add)
+                _arguments -C : \
+                    '-e[Single-line explanation]:explanation:' \
+                    '--explain[Single-line explanation]:explanation:' \
+                    '-f[Overwrite if exists]' \
+                    '--force[Overwrite if exists]' \
+                    '1:path:_cmdx_complete_entries' \
+                    '2:command:'
+                ;;
+            mv|move)
+                _arguments -C : \
+                    '1:source:_cmdx_complete_entries' \
+                    '2:destination:_cmdx_complete_entries'
+                ;;
+            ls|list)
+                _arguments -C : \
+                    '*:path prefix:_cmdx_complete_entries'
+                ;;
+            find)
+                _arguments '1:query:'
+                ;;
+            export)
+                _arguments : \
+                    '-o[Output file]:file:_files' \
+                    '--output[Output file]:file:_files'
+                ;;
+            import)
+                _arguments : \
+                    '-f[Overwrite existing]' \
+                    '--force[Overwrite existing]' \
+                    '1:input file:_files -g "*.json"'
+                ;;
+            completions)
+                _arguments '1:shell:(bash zsh fish elvish powershell)'
+                ;;
+            init|pick|s)
+                ;;
+        esac
     else
-        _arguments_options=(-s -C)
+        _describe -t commands 'cmdx commands' subcommands
+        _arguments : \
+            '-h[Print help]' \
+            '--help[Print help]' \
+            '-V[Print version]' \
+            '--version[Print version]'
     fi
-
-    local context curcontext="$curcontext" state line
-    _arguments "${_arguments_options[@]}" : \
-'-h[Print help (see more with '\''--help'\'')]' \
-'--help[Print help (see more with '\''--help'\'')]' \
-'-V[Print version]' \
-'--version[Print version]' \
-'::path -- Command path for direct access (e.g., cmdx docker/prune):_default' \
-":: :_cmdx_commands" \
-"*::: :->cmdx" \
-&& ret=0
-    case $state in
-    (cmdx)
-        words=($line[2] "${words[@]}")
-        (( CURRENT += 1 ))
-        curcontext="${curcontext%:*:*}:cmdx-command-$line[2]:"
-        case $line[2] in
-            (init)
-_arguments "${_arguments_options[@]}" : \
-'-h[Print help (see more with '\''--help'\'')]' \
-'--help[Print help (see more with '\''--help'\'')]' \
-'-V[Print version]' \
-'--version[Print version]' \
-&& ret=0
-;;
-(add)
-_arguments "${_arguments_options[@]}" : \
-'-e+[Single-line explanation of what the command does]:EXPLAIN:_default' \
-'--explain=[Single-line explanation of what the command does]:EXPLAIN:_default' \
-'-f[Overwrite if the command already exists]' \
-'--force[Overwrite if the command already exists]' \
-'-h[Print help (see more with '\''--help'\'')]' \
-'--help[Print help (see more with '\''--help'\'')]' \
-'-V[Print version]' \
-'--version[Print version]' \
-':path -- Command path (e.g., docker/prune, git/stash/pop):_default' \
-'::command -- The command to store (opens $EDITOR if omitted):_default' \
-&& ret=0
-;;
-(show)
-_arguments "${_arguments_options[@]}" : \
-'-h[Print help (see more with '\''--help'\'')]' \
-'--help[Print help (see more with '\''--help'\'')]' \
-'-V[Print version]' \
-'--version[Print version]' \
-':path -- Command path:_default' \
-&& ret=0
-;;
-(list)
-_arguments "${_arguments_options[@]}" : \
-'-h[Print help (see more with '\''--help'\'')]' \
-'--help[Print help (see more with '\''--help'\'')]' \
-'-V[Print version]' \
-'--version[Print version]' \
-'::path -- Filter by path prefix (e.g., '\''docker'\'' shows only docker/* commands):_default' \
-&& ret=0
-;;
-(ls)
-_arguments "${_arguments_options[@]}" : \
-'-h[Print help (see more with '\''--help'\'')]' \
-'--help[Print help (see more with '\''--help'\'')]' \
-'-V[Print version]' \
-'--version[Print version]' \
-'::path -- Filter by path prefix (e.g., '\''docker'\'' shows only docker/* commands):_default' \
-&& ret=0
-;;
-(find)
-_arguments "${_arguments_options[@]}" : \
-'-h[Print help (see more with '\''--help'\'')]' \
-'--help[Print help (see more with '\''--help'\'')]' \
-'-V[Print version]' \
-'--version[Print version]' \
-':query -- Search query (matches against path and command content):_default' \
-&& ret=0
-;;
-(copy)
-_arguments "${_arguments_options[@]}" : \
-'-h[Print help (see more with '\''--help'\'')]' \
-'--help[Print help (see more with '\''--help'\'')]' \
-'-V[Print version]' \
-'--version[Print version]' \
-':query -- Command path or search query:_default' \
-&& ret=0
-;;
-(cp)
-_arguments "${_arguments_options[@]}" : \
-'-h[Print help (see more with '\''--help'\'')]' \
-'--help[Print help (see more with '\''--help'\'')]' \
-'-V[Print version]' \
-'--version[Print version]' \
-':query -- Command path or search query:_default' \
-&& ret=0
-;;
-(run)
-_arguments "${_arguments_options[@]}" : \
-'-c[Show command and confirm before executing]' \
-'--confirm[Show command and confirm before executing]' \
-'-h[Print help (see more with '\''--help'\'')]' \
-'--help[Print help (see more with '\''--help'\'')]' \
-'-V[Print version]' \
-'--version[Print version]' \
-':query -- Command path or search query:_default' \
-&& ret=0
-;;
-(edit)
-_arguments "${_arguments_options[@]}" : \
-'-h[Print help (see more with '\''--help'\'')]' \
-'--help[Print help (see more with '\''--help'\'')]' \
-'-V[Print version]' \
-'--version[Print version]' \
-':path -- Command path:_default' \
-&& ret=0
-;;
-(remove)
-_arguments "${_arguments_options[@]}" : \
-'-f[Skip confirmation prompt]' \
-'--force[Skip confirmation prompt]' \
-'-h[Print help (see more with '\''--help'\'')]' \
-'--help[Print help (see more with '\''--help'\'')]' \
-'-V[Print version]' \
-'--version[Print version]' \
-':path -- Command path:_default' \
-&& ret=0
-;;
-(rm)
-_arguments "${_arguments_options[@]}" : \
-'-f[Skip confirmation prompt]' \
-'--force[Skip confirmation prompt]' \
-'-h[Print help (see more with '\''--help'\'')]' \
-'--help[Print help (see more with '\''--help'\'')]' \
-'-V[Print version]' \
-'--version[Print version]' \
-':path -- Command path:_default' \
-&& ret=0
-;;
-(move)
-_arguments "${_arguments_options[@]}" : \
-'-h[Print help (see more with '\''--help'\'')]' \
-'--help[Print help (see more with '\''--help'\'')]' \
-'-V[Print version]' \
-'--version[Print version]' \
-':src -- Source path:_default' \
-':dst -- Destination path:_default' \
-&& ret=0
-;;
-(mv)
-_arguments "${_arguments_options[@]}" : \
-'-h[Print help (see more with '\''--help'\'')]' \
-'--help[Print help (see more with '\''--help'\'')]' \
-'-V[Print version]' \
-'--version[Print version]' \
-':src -- Source path:_default' \
-':dst -- Destination path:_default' \
-&& ret=0
-;;
-(export)
-_arguments "${_arguments_options[@]}" : \
-'-o+[Output file (prints to stdout if omitted)]:OUTPUT:_default' \
-'--output=[Output file (prints to stdout if omitted)]:OUTPUT:_default' \
-'-h[Print help (see more with '\''--help'\'')]' \
-'--help[Print help (see more with '\''--help'\'')]' \
-'-V[Print version]' \
-'--version[Print version]' \
-&& ret=0
-;;
-(import)
-_arguments "${_arguments_options[@]}" : \
-'-f[Overwrite existing commands]' \
-'--force[Overwrite existing commands]' \
-'-h[Print help (see more with '\''--help'\'')]' \
-'--help[Print help (see more with '\''--help'\'')]' \
-'-V[Print version]' \
-'--version[Print version]' \
-'::input -- Input file (reads from stdin if omitted):_default' \
-&& ret=0
-;;
-(completions)
-_arguments "${_arguments_options[@]}" : \
-'-h[Print help (see more with '\''--help'\'')]' \
-'--help[Print help (see more with '\''--help'\'')]' \
-'-V[Print version]' \
-'--version[Print version]' \
-':shell -- Shell to generate completions for:(bash elvish fish powershell zsh)' \
-&& ret=0
-;;
-(help)
-_arguments "${_arguments_options[@]}" : \
-":: :_cmdx__help_commands" \
-"*::: :->help" \
-&& ret=0
-
-    case $state in
-    (help)
-        words=($line[1] "${words[@]}")
-        (( CURRENT += 1 ))
-        curcontext="${curcontext%:*:*}:cmdx-help-command-$line[1]:"
-        case $line[1] in
-            (init)
-_arguments "${_arguments_options[@]}" : \
-&& ret=0
-;;
-(add)
-_arguments "${_arguments_options[@]}" : \
-&& ret=0
-;;
-(show)
-_arguments "${_arguments_options[@]}" : \
-&& ret=0
-;;
-(list)
-_arguments "${_arguments_options[@]}" : \
-&& ret=0
-;;
-(find)
-_arguments "${_arguments_options[@]}" : \
-&& ret=0
-;;
-(copy)
-_arguments "${_arguments_options[@]}" : \
-&& ret=0
-;;
-(run)
-_arguments "${_arguments_options[@]}" : \
-&& ret=0
-;;
-(edit)
-_arguments "${_arguments_options[@]}" : \
-&& ret=0
-;;
-(remove)
-_arguments "${_arguments_options[@]}" : \
-&& ret=0
-;;
-(move)
-_arguments "${_arguments_options[@]}" : \
-&& ret=0
-;;
-(export)
-_arguments "${_arguments_options[@]}" : \
-&& ret=0
-;;
-(import)
-_arguments "${_arguments_options[@]}" : \
-&& ret=0
-;;
-(completions)
-_arguments "${_arguments_options[@]}" : \
-&& ret=0
-;;
-(help)
-_arguments "${_arguments_options[@]}" : \
-&& ret=0
-;;
-        esac
-    ;;
-esac
-;;
-        esac
-    ;;
-esac
 }
 
-(( $+functions[_cmdx_commands] )) ||
-_cmdx_commands() {
-    local commands; commands=(
-'init:Initialize the command store' \
-'add:Add a new command' \
-'show:Show a command' \
-'list:List commands (tree view)' \
-'ls:List commands (tree view)' \
-'find:Fuzzy search commands' \
-'copy:Copy command to clipboard' \
-'cp:Copy command to clipboard' \
-'run:Execute a command' \
-'edit:Edit a command in \$EDITOR' \
-'remove:Remove a command' \
-'rm:Remove a command' \
-'move:Move/rename a command' \
-'mv:Move/rename a command' \
-'export:Export all commands to JSON' \
-'import:Import commands from JSON' \
-'completions:Generate shell completions' \
-'help:Print this message or the help of the given subcommand(s)' \
-    )
-    _describe -t commands 'cmdx commands' commands "$@"
-}
-(( $+functions[_cmdx__add_commands] )) ||
-_cmdx__add_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx add commands' commands "$@"
-}
-(( $+functions[_cmdx__completions_commands] )) ||
-_cmdx__completions_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx completions commands' commands "$@"
-}
-(( $+functions[_cmdx__copy_commands] )) ||
-_cmdx__copy_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx copy commands' commands "$@"
-}
-(( $+functions[_cmdx__edit_commands] )) ||
-_cmdx__edit_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx edit commands' commands "$@"
-}
-(( $+functions[_cmdx__export_commands] )) ||
-_cmdx__export_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx export commands' commands "$@"
-}
-(( $+functions[_cmdx__find_commands] )) ||
-_cmdx__find_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx find commands' commands "$@"
-}
-(( $+functions[_cmdx__help_commands] )) ||
-_cmdx__help_commands() {
-    local commands; commands=(
-'init:Initialize the command store' \
-'add:Add a new command' \
-'show:Show a command' \
-'list:List commands (tree view)' \
-'find:Fuzzy search commands' \
-'copy:Copy command to clipboard' \
-'run:Execute a command' \
-'edit:Edit a command in \$EDITOR' \
-'remove:Remove a command' \
-'move:Move/rename a command' \
-'export:Export all commands to JSON' \
-'import:Import commands from JSON' \
-'completions:Generate shell completions' \
-'help:Print this message or the help of the given subcommand(s)' \
-    )
-    _describe -t commands 'cmdx help commands' commands "$@"
-}
-(( $+functions[_cmdx__help__add_commands] )) ||
-_cmdx__help__add_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx help add commands' commands "$@"
-}
-(( $+functions[_cmdx__help__completions_commands] )) ||
-_cmdx__help__completions_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx help completions commands' commands "$@"
-}
-(( $+functions[_cmdx__help__copy_commands] )) ||
-_cmdx__help__copy_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx help copy commands' commands "$@"
-}
-(( $+functions[_cmdx__help__edit_commands] )) ||
-_cmdx__help__edit_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx help edit commands' commands "$@"
-}
-(( $+functions[_cmdx__help__export_commands] )) ||
-_cmdx__help__export_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx help export commands' commands "$@"
-}
-(( $+functions[_cmdx__help__find_commands] )) ||
-_cmdx__help__find_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx help find commands' commands "$@"
-}
-(( $+functions[_cmdx__help__help_commands] )) ||
-_cmdx__help__help_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx help help commands' commands "$@"
-}
-(( $+functions[_cmdx__help__import_commands] )) ||
-_cmdx__help__import_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx help import commands' commands "$@"
-}
-(( $+functions[_cmdx__help__init_commands] )) ||
-_cmdx__help__init_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx help init commands' commands "$@"
-}
-(( $+functions[_cmdx__help__list_commands] )) ||
-_cmdx__help__list_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx help list commands' commands "$@"
-}
-(( $+functions[_cmdx__help__move_commands] )) ||
-_cmdx__help__move_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx help move commands' commands "$@"
-}
-(( $+functions[_cmdx__help__remove_commands] )) ||
-_cmdx__help__remove_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx help remove commands' commands "$@"
-}
-(( $+functions[_cmdx__help__run_commands] )) ||
-_cmdx__help__run_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx help run commands' commands "$@"
-}
-(( $+functions[_cmdx__help__show_commands] )) ||
-_cmdx__help__show_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx help show commands' commands "$@"
-}
-(( $+functions[_cmdx__import_commands] )) ||
-_cmdx__import_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx import commands' commands "$@"
-}
-(( $+functions[_cmdx__init_commands] )) ||
-_cmdx__init_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx init commands' commands "$@"
-}
-(( $+functions[_cmdx__list_commands] )) ||
-_cmdx__list_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx list commands' commands "$@"
-}
-(( $+functions[_cmdx__move_commands] )) ||
-_cmdx__move_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx move commands' commands "$@"
-}
-(( $+functions[_cmdx__remove_commands] )) ||
-_cmdx__remove_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx remove commands' commands "$@"
-}
-(( $+functions[_cmdx__run_commands] )) ||
-_cmdx__run_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx run commands' commands "$@"
-}
-(( $+functions[_cmdx__show_commands] )) ||
-_cmdx__show_commands() {
-    local commands; commands=()
-    _describe -t commands 'cmdx show commands' commands "$@"
-}
-
-if [ "$funcstack[1]" = "_cmdx" ]; then
-    _cmdx "$@"
-else
-    compdef _cmdx cmdx
-fi
+_cmdx "$@"

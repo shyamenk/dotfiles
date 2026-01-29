@@ -1,0 +1,2 @@
+rclone mount gdrive: ~/GoogleDrive --vfs-cache-mode writes --daemon
+Clone Google drive to local system
