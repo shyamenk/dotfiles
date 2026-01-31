@@ -1,0 +1,86 @@
+# Catppuccin theme
+include catppuccin-mocha
+
+# General settings
+set selection-clipboard clipboard
+set adjust-open "best-fit"
+set pages-per-row 1
+set scroll-page-aware "true"
+set scroll-full-overlap 0.01
+set scroll-step 100
+
+# Zoom settings
+set zoom-min 10
+set zoom-max 1000
+set zoom-step 10
+
+# UI settings
+set guioptions "sv"
+set statusbar-home-tilde true
+set window-title-home-tilde true
+set window-title-basename true
+
+# Search settings
+set incremental-search true
+set search-hadjust true
+
+# Recolor (dark mode for PDFs)
+set recolor true
+set recolor-keephue true
+set recolor-reverse-video true
+
+# Statusbar padding (cleaner footer look)
+set statusbar-h-padding 10
+set statusbar-v-padding 5
+set page-padding 2
+
+# Font (statusbar uses this too)
+set font "JetBrainsMono Nerd Font 11"
+
+# Keybindings
+# Navigation
+map j scroll down
+map k scroll up
+map h scroll left
+map l scroll right
+map <C-d> scroll half-down
+map <C-u> scroll half-up
+map gg goto top
+map G goto bottom
+map <C-g> goto top
+
+# Zoom
+map zi zoom in
+map zo zoom out
+map zz zoom 100%
+map <C-=> zoom in
+map <C--> zoom out
+map K zoom in
+map J zoom out
+
+# Page navigation
+map <C-n> navigate next
+map <C-p> navigate previous
+map <Space> navigate next
+map <S-Space> navigate previous
+
+# Actions
+map r reload
+map R rotate
+map i recolor
+map p print
+map <C-r> recolor
+map f toggle_fullscreen
+map F toggle_fullscreen
+
+# Index/TOC
+map <Tab> toggle_index
+
+# Fit modes
+map a adjust_window best-fit
+map s adjust_window width
+map d toggle_page_mode
+
+# Marks
+map m mark_add
+map ' mark_evaluate

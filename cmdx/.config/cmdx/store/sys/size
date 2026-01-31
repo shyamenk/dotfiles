@@ -1,0 +1,2 @@
+df -Th
+Display disk space usage for all mounted filesystems in human-readable format

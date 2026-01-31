@@ -1,0 +1,2 @@
+du -sh pipeline
+Display the total disk usage of the pipeline directory in human-readable format
