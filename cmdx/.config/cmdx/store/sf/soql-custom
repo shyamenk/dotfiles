@@ -1,0 +1,2 @@
+sf data query --query "SELECT Id, Name FROM CustomObject__c LIMIT 10"
+Query custom object template

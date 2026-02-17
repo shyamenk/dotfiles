@@ -1,0 +1,2 @@
+sf apex generate trigger --name MyTrigger --sobject Account --output-dir force-app/main/default/triggers
+Generate new Apex trigger

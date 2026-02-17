@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+case "${1:-tail}" in
+  tail)
+    echo "Streaming debug logs (Ctrl+C to stop)..."
+    sf apex tail log --color
+    ;;
+  list)
+    sf apex log list
+    ;;
+  get)
+    if [[ -n "${2:-}" ]]; then
+      sf apex log get --log-id "$2" | bat --language=java --style=plain
+    else
+      sf apex log get --number 1 | bat --language=java --style=plain
+    fi
+    ;;
+  *)
+    echo "Usage: sflog [tail|list|get [log-id]]"
+    exit 1
+    ;;
+esac

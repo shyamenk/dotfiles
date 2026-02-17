@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "Deploying to org..."
+if sf project deploy start "$@" 2>&1; then
+  notify-send -u normal "Salesforce Deploy" "Deployment successful" 2>/dev/null || true
+  echo "✓ Deploy complete"
+else
+  notify-send -u critical "Salesforce Deploy" "Deployment FAILED" 2>/dev/null || true
+  echo "✗ Deploy failed"
+  exit 1
+fi

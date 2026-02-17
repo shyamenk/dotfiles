@@ -1,0 +1,2 @@
+sf data create record --sobject Account --values "Name='Test Account'"
+Create a record

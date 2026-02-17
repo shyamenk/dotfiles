@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ -n "${1:-}" ]]; then
+  sf org open --path "$1"
+else
+  sf org open
+fi

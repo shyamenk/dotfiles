@@ -1,0 +1,2 @@
+sf org login web --alias myorg
+Login to org via browser

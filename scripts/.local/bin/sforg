@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+orgs=$(sf org list --json 2>/dev/null | jq -r '
+  [.result.nonScratchOrgs[]?, .result.scratchOrgs[]?] |
+  .[] | [.alias // "no-alias", .username, .connectedStatus // "Unknown"] | @tsv
+')
+
+if [[ -z "$orgs" ]]; then
+  echo "No orgs found. Run: sf org login web --alias myorg"
+  exit 1
+fi
+
+selected=$(echo "$orgs" | fzf --header="ALIAS	USERNAME	STATUS" --prompt="Switch org> " --height=40% --reverse)
+
+if [[ -n "$selected" ]]; then
+  alias=$(echo "$selected" | awk '{print $1}')
+  sf config set target-org "$alias" 2>/dev/null
+  notify-send "Salesforce" "Switched to org: $alias" 2>/dev/null || true
+  echo "✓ Default org set to: $alias"
+fi

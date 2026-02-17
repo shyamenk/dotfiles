@@ -1,0 +1,2 @@
+sf data import tree --files data/Account.json
+Import data from JSON tree

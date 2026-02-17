@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+types="apex-class
+apex-trigger
+lwc-component
+aura-component"
+
+selected=$(echo "$types" | fzf --prompt="Create> " --height=40% --reverse)
+[[ -z "$selected" ]] && exit 0
+
+read -rp "Name: " name
+[[ -z "$name" ]] && { echo "Name required."; exit 1; }
+
+read -rp "Output directory [force-app/main/default]: " outdir
+outdir="${outdir:-force-app/main/default}"
+
+case "$selected" in
+  apex-class)
+    sf apex generate class --name "$name" --output-dir "$outdir/classes"
+    ;;
+  apex-trigger)
+    read -rp "sObject (e.g., Account): " sobject
+    sf apex generate trigger --name "$name" --sobject "$sobject" --output-dir "$outdir/triggers"
+    ;;
+  lwc-component)
+    sf lightning generate component --name "$name" --type lwc --output-dir "$outdir/lwc"
+    ;;
+  aura-component)
+    sf lightning generate component --name "$name" --type aura --output-dir "$outdir/aura"
+    ;;
+esac
+
+echo "✓ Created $selected: $name"
+notify-send "Salesforce" "Created $selected: $name" 2>/dev/null || true

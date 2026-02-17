@@ -1,0 +1,2 @@
+sf data query --query "SELECT Id, Name, Email, Status, Company FROM Lead LIMIT 10"
+Query Leads

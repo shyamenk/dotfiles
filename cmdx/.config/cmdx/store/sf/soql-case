@@ -1,0 +1,2 @@
+sf data query --query "SELECT Id, CaseNumber, Subject, Status, Priority FROM Case LIMIT 10"
+Query Cases

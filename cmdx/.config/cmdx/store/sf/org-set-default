@@ -1,0 +1,2 @@
+sf config set target-org myorg
+Set default target org

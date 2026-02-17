@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "Retrieving from org..."
+if sf project retrieve start "$@" 2>&1; then
+  notify-send -u normal "Salesforce Retrieve" "Retrieve successful" 2>/dev/null || true
+  echo "✓ Retrieve complete"
+else
+  notify-send -u critical "Salesforce Retrieve" "Retrieve FAILED" 2>/dev/null || true
+  echo "✗ Retrieve failed"
+  exit 1
+fi

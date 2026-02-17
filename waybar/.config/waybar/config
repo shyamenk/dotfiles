@@ -27,7 +27,7 @@
     "clock": {
         "format": "󰥔 {:%a, %b %d %I:%M %p}",
         "format-alt": "󰃭 {:%A, %B %d, %Y}",
-        "tooltip-format": "<span size='x-large' weight='bold'>{:%B %Y}</span>\n\n<span font='JetBrainsMono Nerd Font 14'>{calendar}</span>",
+        "tooltip-format": "<span size='x-large' weight='bold'>{:%B %Y}</span>\n\n<span font='VictorMono Nerd Font 14'>{calendar}</span>",
         "calendar": {
             "mode": "month",
             "format": {

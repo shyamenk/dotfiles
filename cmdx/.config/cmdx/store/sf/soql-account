@@ -1,0 +1,2 @@
+sf data query --query "SELECT Id, Name, Industry, Phone FROM Account LIMIT 10"
+Query Accounts

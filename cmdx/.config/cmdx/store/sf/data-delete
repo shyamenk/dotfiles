@@ -1,0 +1,2 @@
+sf data delete record --sobject Account --record-id 001XXXX
+Delete a record by Id

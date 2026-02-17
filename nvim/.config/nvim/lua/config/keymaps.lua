@@ -91,7 +91,50 @@ keymap.set("n", "<leader>ol", "<cmd>ObsidianLinks<CR>", { desc = "Show ObsidianL
 keymap.set("n", "<leader>on", "<cmd>ObsidianNew<CR>", { desc = "Create New Note" })
 keymap.set("n", "<leader>os", "<cmd>ObsidianSearch<CR>", { desc = "Search Obsidian Notes" })
 keymap.set("n", "<leader>oq", "<cmd>ObsidianQuickSwitch<CR>", { desc = "Quick Switch Obsidian Notes" })
-keymap.set("n", "<leader>ot", "<cmd>ObsidianTemplate<CR>", { desc = "Create New Note from Template" })
+keymap.set("n", "<leader>oy", "<cmd>ObsidianToday<CR>", { desc = "Today's Daily Note" })
+
+-- Template picker: select template -> enter name -> creates note with template
+keymap.set("n", "<leader>ot", function()
+  local pickers = require("telescope.pickers")
+  local finders = require("telescope.finders")
+  local conf = require("telescope.config").values
+  local actions = require("telescope.actions")
+  local action_state = require("telescope.actions.state")
+
+  local template_dir = vim.fn.expand("~/Documents/Second Brain/12-templates")
+  local templates = vim.fn.glob(template_dir .. "/*.md", false, true)
+
+  pickers.new({}, {
+    prompt_title = "Select Template",
+    finder = finders.new_table({
+      results = templates,
+      entry_maker = function(entry)
+        return {
+          value = entry,
+          display = vim.fn.fnamemodify(entry, ":t:r"),
+          ordinal = vim.fn.fnamemodify(entry, ":t:r"),
+        }
+      end,
+    }),
+    sorter = conf.generic_sorter({}),
+    attach_mappings = function(prompt_bufnr)
+      actions.select_default:replace(function()
+        local selection = action_state.get_selected_entry()
+        actions.close(prompt_bufnr)
+        vim.ui.input({ prompt = "Note name: " }, function(name)
+          if name and name ~= "" then
+            local slug = name:gsub(" ", "-"):lower()
+            local note_path = vim.fn.expand("~/Documents/Second Brain/inbox/" .. slug .. ".md")
+            local template_content = vim.fn.readfile(selection.value)
+            vim.fn.writefile(template_content, note_path)
+            vim.cmd("edit " .. note_path)
+          end
+        end)
+      end)
+      return true
+    end,
+  }):find()
+end, { desc = "New Note from Template" })
 
 -----------------------
 -- Markdown Keymaps --

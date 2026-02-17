@@ -1,0 +1,2 @@
+sf apex run test --class-names MyTestClass --result-format human
+Run specific test class

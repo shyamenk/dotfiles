@@ -77,7 +77,7 @@ cd "$DOTFILES_DIR"
 STOW_PACKAGES=(
     zsh tmux nvim alacritty wezterm
     hyprland waybar wofi dunst
-    yazi bat scripts cmdx
+    yazi bat scripts cmdx sfdocs kitty
 )
 
 for pkg in "${STOW_PACKAGES[@]}"; do
@@ -141,7 +141,10 @@ PACMAN_PKGS=(
     flatpak
 
     # Fonts
-    ttf-jetbrains-mono-nerd noto-fonts noto-fonts-emoji
+    ttf-jetbrains-mono-nerd ttf-victor-mono-nerd noto-fonts noto-fonts-emoji
+
+    # Terminals
+    kitty
 
     # GPU Drivers - NVIDIA Primary
     linux-headers

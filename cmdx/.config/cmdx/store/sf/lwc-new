@@ -1,0 +1,2 @@
+sf lightning generate component --name myComponent --type lwc --output-dir force-app/main/default/lwc
+Generate new LWC component

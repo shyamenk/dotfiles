@@ -1,0 +1,2 @@
+sf project deploy start --test-level RunLocalTests
+Deploy with local test run

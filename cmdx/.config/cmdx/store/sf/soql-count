@@ -1,0 +1,2 @@
+sf data query --query "SELECT COUNT() FROM Account"
+Count records in object

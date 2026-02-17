@@ -1,0 +1,2 @@
+sf data query --query "SELECT Id, Name, Email, Profile.Name, IsActive FROM User WHERE IsActive = true"
+Query active Users

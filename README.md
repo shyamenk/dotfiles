@@ -75,6 +75,7 @@ stow tmux        # Tmux
 stow yazi        # File manager
 stow bat         # Better cat
 stow scripts     # Custom scripts (~/.local/bin)
+stow sfdocs      # Salesforce CLI docs (~/.local/share/sfdocs)
 ```
 
 ### Stow All
@@ -99,6 +100,7 @@ dotfiles/
 ├── yazi/         # File manager
 ├── bat/          # Syntax highlighting
 ├── scripts/      # ~/.local/bin scripts
+├── sfdocs/       # Salesforce developer reference docs
 ├── wallpaper/    # Wallpapers (copied to ~/Pictures/wallpaper)
 └── .archive/     # Legacy (i3, polybar, rofi, picom) - hidden, not stowed
 ```
@@ -140,6 +142,31 @@ dotfiles/
 | `screen-recording.sh` | wf-recorder toggle |
 | `text-extractor.sh` | OCR with tesseract |
 | `color-picker.sh` | hyprpicker color picker |
+
+### Salesforce Scripts
+
+| Script | Description |
+|--------|-------------|
+| `sfdoc` | Man-page style Salesforce docs browser (fzf + glow) |
+| `sforg` | Fuzzy org switcher |
+| `sfpush` | Deploy with dunst notification |
+| `sfpull` | Retrieve with dunst notification |
+| `sflog` | Debug log streaming/viewer |
+| `sftest` | Auto-discover and run test classes (fzf picker) |
+| `sfquery` | Interactive SOQL console |
+| `sfnew` | Scaffold Apex class/trigger/LWC/Aura |
+| `sfopen` | Open org in browser |
+
+### sfdoc Usage
+
+```bash
+sfdoc                     # Browse all docs (fzf with preview)
+sfdoc triggers            # Open triggers reference directly
+sfdoc -s "batch"          # Search all docs for a term
+sfdoc -l                  # List all topics
+sfdoc lwc wire            # Jump to section in a topic
+sfdoc --help              # Man-page style help
+```
 
 ## Apps Installed
 

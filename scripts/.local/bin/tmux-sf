@@ -1,0 +1,30 @@
+#!/bin/bash
+
+SESSION="salesforce"
+PROJECT_DIR="${1:-$HOME/Desktop/sales-force-dev}"
+
+if tmux has-session -t $SESSION 2>/dev/null; then
+    echo "Session '$SESSION' already exists. Attaching..."
+    tmux attach -t $SESSION
+    exit 0
+fi
+
+tmux new-session -d -s $SESSION -n code -c "$PROJECT_DIR"
+tmux split-window -v -t $SESSION:1 -p 30 -c "$PROJECT_DIR"
+tmux select-pane -t $SESSION:1.0
+tmux send-keys -t $SESSION:1.0 "nvim" C-m
+
+tmux new-window -t $SESSION:2 -n logs -c "$PROJECT_DIR"
+tmux send-keys -t $SESSION:2 "sf apex tail log --color" C-m
+tmux split-window -h -t $SESSION:2 -c "$PROJECT_DIR"
+
+tmux new-window -t $SESSION:3 -n query -c "$PROJECT_DIR"
+tmux send-keys -t $SESSION:3 "sfquery" C-m
+tmux split-window -h -t $SESSION:3 -c "$PROJECT_DIR"
+
+tmux new-window -t $SESSION:4 -n shell -c "$PROJECT_DIR"
+tmux send-keys -t $SESSION:4 "sf org display" C-m
+
+tmux select-window -t $SESSION:1
+tmux select-pane -t $SESSION:1.0
+tmux attach -t $SESSION

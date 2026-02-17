@@ -1,0 +1,2 @@
+sf data query --query "SELECT Id, FirstName, LastName, Email, AccountId FROM Contact LIMIT 10"
+Query Contacts

@@ -4,7 +4,7 @@ return {
 	color_scheme = "Catppuccin Mocha",
 	enable_tab_bar = false,
 	font_size = 15.0,
-	font = wezterm.font("JetBrainsMono Nerd Font"),
+	font = wezterm.font("VictorMono Nerd Font"),
 	-- macos_window_background_blur = 40,
 	-- macos_window_background_blur = ,
 

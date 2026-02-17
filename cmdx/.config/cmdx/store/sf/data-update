@@ -1,0 +1,2 @@
+sf data update record --sobject Account --record-id 001XXXX --values "Name='Updated'"
+Update a record by Id

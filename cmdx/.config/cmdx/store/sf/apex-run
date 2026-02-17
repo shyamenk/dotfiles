@@ -1,0 +1,2 @@
+sf apex run --file scripts/apex/hello.apex
+Execute anonymous Apex from file

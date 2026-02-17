@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+format="${1:-human}"
+
+echo "Interactive SOQL Console (type 'exit' to quit)"
+echo "Format: $format | Tip: use --json for raw output"
+echo "─────────────────────────────────────────────────"
+
+while true; do
+  printf "\nSOQL> "
+  read -r query
+  [[ "$query" == "exit" || "$query" == "quit" || -z "$query" ]] && { echo "Bye."; break; }
+
+  if [[ "$format" == "json" ]]; then
+    sf data query --query "$query" --json 2>&1 | bat --language=json --style=plain --paging=never
+  else
+    sf data query --query "$query" --result-format "$format" 2>&1
+  fi
+done

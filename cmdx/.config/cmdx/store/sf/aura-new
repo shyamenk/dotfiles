@@ -1,0 +1,2 @@
+sf lightning generate component --name myComponent --type aura --output-dir force-app/main/default/aura
+Generate new Aura component

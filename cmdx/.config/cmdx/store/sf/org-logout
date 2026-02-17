@@ -1,0 +1,2 @@
+sf org logout --target-org myorg
+Logout from an org

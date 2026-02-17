@@ -1,0 +1,2 @@
+sf apex log get --number 1
+Get most recent debug log

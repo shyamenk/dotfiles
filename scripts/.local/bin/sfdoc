@@ -1,0 +1,181 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DOCS_DIR="$HOME/.local/share/sfdocs"
+
+view_in_nvim() {
+  local file="$1"
+  local search="${2:-}"
+  if [[ -n "$search" ]]; then
+    nvim -R -c "set filetype=markdown" -c "set conceallevel=0" -c "/$search" "$file"
+  else
+    nvim -R -c "set filetype=markdown" -c "set conceallevel=0" "$file"
+  fi
+}
+
+usage() {
+  cat <<'EOF'
+SFDOC(1)                   Salesforce Reference                   SFDOC(1)
+
+NAME
+    sfdoc - Salesforce developer documentation browser
+
+SYNOPSIS
+    sfdoc                     Browse all docs (fzf picker)
+    sfdoc -s <term>           Search inside all docs for a term
+    sfdoc -l                  List all available topics
+    sfdoc <topic>             Open topic directly (partial match)
+    sfdoc <topic> <section>   Jump to section within a topic
+
+TOPICS
+    apex-basics       Data types, collections, control flow, exceptions
+    apex-oop          Classes, interfaces, patterns, annotations
+    soql-sosl         Queries, relationships, aggregates, SOSL
+    dml-database      DML ops, savepoints, bulk patterns
+    triggers          Events, handler pattern, execution order
+    async-apex        Future, Queueable, Batch, Schedulable
+    testing           Test classes, mocks, coverage, runAs
+    lwc               Components, wire, events, navigation
+    integration       REST, callouts, Named Credentials, OAuth
+    governor-limits   All limits, avoidance strategies
+    security          Sharing, CRUD/FLS, Shield, injection
+    deployment        CLI, scratch orgs, packages, CI/CD
+
+EXAMPLES
+    sfdoc triggers              Open triggers reference
+    sfdoc soql                  Open SOQL/SOSL reference
+    sfdoc -s "batch"            Search all docs for "batch"
+    sfdoc triggers handler      Jump to handler section in triggers doc
+    sfdoc lwc wire              Jump to wire section in LWC doc
+
+NAVIGATION (nvim)
+    /pattern        Search forward
+    ?pattern        Search backward
+    n / N           Next / previous match
+    gg / G          Top / bottom
+    q               Quit
+
+EOF
+}
+
+list_topics() {
+  printf "%-20s %s\n" "TOPIC" "DESCRIPTION"
+  printf "%-20s %s\n" "────────────────────" "─────────────────────────────────────────"
+  printf "%-20s %s\n" "apex-basics"    "Data types, collections, control flow, exceptions"
+  printf "%-20s %s\n" "apex-oop"       "Classes, interfaces, patterns, annotations"
+  printf "%-20s %s\n" "soql-sosl"      "Queries, relationships, aggregates, SOSL"
+  printf "%-20s %s\n" "dml-database"   "DML ops, savepoints, bulk patterns"
+  printf "%-20s %s\n" "triggers"       "Events, handler pattern, execution order"
+  printf "%-20s %s\n" "async-apex"     "Future, Queueable, Batch, Schedulable"
+  printf "%-20s %s\n" "testing"        "Test classes, mocks, coverage, runAs"
+  printf "%-20s %s\n" "lwc"            "Components, wire, events, navigation"
+  printf "%-20s %s\n" "integration"    "REST, callouts, Named Credentials, OAuth"
+  printf "%-20s %s\n" "governor-limits" "All limits, avoidance strategies"
+  printf "%-20s %s\n" "security"       "Sharing, CRUD/FLS, Shield, injection"
+  printf "%-20s %s\n" "deployment"     "CLI, scratch orgs, packages, CI/CD"
+}
+
+find_doc() {
+  local query="$1"
+  find "$DOCS_DIR" -name '*.md' | sort | while read -r f; do
+    local base
+    base=$(basename "$f" .md | sed 's/^[0-9]*-//')
+    if [[ "$base" == *"$query"* ]]; then
+      echo "$f"
+      return
+    fi
+  done
+}
+
+search_docs() {
+  local term="$1"
+  local results
+  results=$(grep -rniH --include='*.md' "$term" "$DOCS_DIR" 2>/dev/null | \
+    sed "s|$DOCS_DIR/[0-9]*-||" | \
+    sed 's/\.md:/  ➜  /' || true)
+
+  if [[ -z "$results" ]]; then
+    echo "No results for: $term"
+    return 1
+  fi
+
+  local selected
+  selected=$(echo "$results" | \
+    fzf --prompt="sfdoc [$term]> " \
+        --height=80% --reverse --ansi \
+        --preview-window=right:60%:wrap \
+        --preview '
+          topic=$(echo {} | cut -d" " -f1);
+          match=$(find '"$DOCS_DIR"' -name "*${topic}*" 2>/dev/null | head -1);
+          [[ -n "$match" ]] && glow -s dark "$match" || echo "no preview"
+        ')
+
+  if [[ -n "$selected" ]]; then
+    local topic
+    topic=$(echo "$selected" | cut -d' ' -f1)
+    local match
+    match=$(find "$DOCS_DIR" -name "*${topic}*" 2>/dev/null | head -1)
+    [[ -n "$match" ]] && view_in_nvim "$match" "$term"
+  fi
+}
+
+fzf_browse() {
+  local selected
+  selected=$(find "$DOCS_DIR" -name '*.md' | sort | \
+    while read -r f; do
+      local base desc
+      base=$(basename "$f" .md | sed 's/^[0-9]*-//')
+      desc=$(head -1 "$f" | sed 's/^#* //')
+      printf "%-20s │ %s\n" "$base" "$desc"
+    done | \
+    fzf --prompt="sfdoc> " \
+        --height=90% --reverse --ansi \
+        --header="TOPIC                │ DESCRIPTION" \
+        --preview-window=right:65%:wrap \
+        --preview '
+          topic=$(echo {} | awk "{print \$1}");
+          match=$(find '"$DOCS_DIR"' -name "*${topic}*" 2>/dev/null | head -1);
+          [[ -n "$match" ]] && glow -s dark "$match" || echo "no preview"
+        ')
+
+  if [[ -n "$selected" ]]; then
+    local topic match
+    topic=$(echo "$selected" | awk '{print $1}')
+    match=$(find "$DOCS_DIR" -name "*${topic}*" 2>/dev/null | head -1)
+    [[ -n "$match" ]] && view_in_nvim "$match"
+  fi
+}
+
+# --- Main ---
+if [[ ! -d "$DOCS_DIR" ]]; then
+  echo "sfdoc: docs not found at $DOCS_DIR"
+  echo "Run: cd ~/dotfiles && stow sfdocs"
+  exit 1
+fi
+
+case "${1:-}" in
+  -h|--help)
+    usage
+    ;;
+  -l|--list)
+    list_topics
+    ;;
+  -s|--search)
+    [[ -z "${2:-}" ]] && { echo "Usage: sfdoc -s <term>"; exit 1; }
+    search_docs "$2"
+    ;;
+  "")
+    fzf_browse
+    ;;
+  *)
+    doc=$(find_doc "$1")
+    if [[ -n "$doc" ]]; then
+      view_in_nvim "$doc" "${2:-}"
+    else
+      echo "sfdoc: unknown topic '$1'"
+      echo
+      list_topics
+      exit 1
+    fi
+    ;;
+esac

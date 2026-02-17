@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+run_test() {
+  local class="$1"
+  echo "Running tests for: $class"
+  if sf apex run test --class-names "$class" --result-format human --wait 10 "$@"; then
+    notify-send -u normal "Salesforce Tests" "$class: PASSED" 2>/dev/null || true
+  else
+    notify-send -u critical "Salesforce Tests" "$class: FAILED" 2>/dev/null || true
+  fi
+}
+
+case "${1:-pick}" in
+  all)
+    shift 2>/dev/null || true
+    echo "Running all local tests..."
+    sf apex run test --test-level RunLocalTests --result-format human --wait 10
+    ;;
+  pick)
+    classes=$(grep -rlE '@isTest|testMethod' --include='*.cls' . 2>/dev/null | \
+      sed 's|.*/||;s|\.cls||' | sort -u)
+    if [[ -z "$classes" ]]; then
+      echo "No test classes found in current directory tree."
+      echo "Make sure you're in a Salesforce project root."
+      exit 1
+    fi
+    selected=$(echo "$classes" | fzf --prompt="Test class> " --height=40% --reverse --multi)
+    if [[ -n "$selected" ]]; then
+      while IFS= read -r class; do
+        run_test "$class"
+      done <<< "$selected"
+    fi
+    ;;
+  *)
+    run_test "$1"
+    ;;
+esac

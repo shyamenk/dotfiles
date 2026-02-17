@@ -1,0 +1,2 @@
+sf data export tree --query "SELECT Id, Name FROM Account LIMIT 50" --output-dir data
+Export data as JSON tree

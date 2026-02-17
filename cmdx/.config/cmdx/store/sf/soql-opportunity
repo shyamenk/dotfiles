@@ -1,0 +1,2 @@
+sf data query --query "SELECT Id, Name, StageName, Amount, CloseDate FROM Opportunity LIMIT 10"
+Query Opportunities

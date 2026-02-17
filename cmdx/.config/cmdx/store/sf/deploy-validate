@@ -1,0 +1,2 @@
+sf project deploy validate --test-level RunLocalTests
+Validate deployment without deploying

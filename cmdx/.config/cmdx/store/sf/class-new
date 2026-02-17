@@ -1,0 +1,2 @@
+sf apex generate class --name MyClass --output-dir force-app/main/default/classes
+Generate new Apex class
