@@ -175,16 +175,6 @@ fi
 # ============================================================================
 log "PHASE 4: Installing binary tools..."
 
-# eksctl
-if ! command -v eksctl &>/dev/null; then
-    curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-    mv /tmp/eksctl /usr/local/bin/
-    chmod +x /usr/local/bin/eksctl
-    SUCCESSFUL+=("eksctl")
-else
-    SKIPPED+=("eksctl - already installed")
-fi
-
 # AWS Vault
 if ! command -v aws-vault &>/dev/null; then
     curl -L -o /usr/local/bin/aws-vault https://github.com/99designs/aws-vault/releases/latest/download/aws-vault-linux-amd64
@@ -192,33 +182,6 @@ if ! command -v aws-vault &>/dev/null; then
     SUCCESSFUL+=("aws-vault")
 else
     SKIPPED+=("aws-vault - already installed")
-fi
-
-# Terragrunt
-if ! command -v terragrunt &>/dev/null; then
-    curl -L -o /usr/local/bin/terragrunt https://github.com/gruntwork-io/terragrunt/releases/latest/download/terragrunt_linux_amd64
-    chmod +x /usr/local/bin/terragrunt
-    SUCCESSFUL+=("terragrunt")
-else
-    SKIPPED+=("terragrunt - already installed")
-fi
-
-# Helm
-if ! command -v helm &>/dev/null; then
-    curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-    SUCCESSFUL+=("helm")
-else
-    SKIPPED+=("helm - already installed")
-fi
-
-# kubectx & kubens
-if ! command -v kubectx &>/dev/null; then
-    git clone https://github.com/ahmetb/kubectx /opt/kubectx
-    ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx
-    ln -s /opt/kubectx/kubens /usr/local/bin/kubens
-    SUCCESSFUL+=("kubectx & kubens")
-else
-    SKIPPED+=("kubectx - already installed")
 fi
 
 # Dive
@@ -498,6 +461,6 @@ echo -e "${YELLOW}POST-INSTALL:${NC}"
 echo "  1. Restart shell to use new tools"
 echo "  2. Configure Salesforce CLI: sf config set"
 echo "  3. Configure AWS CLI: aws configure"
-echo "  4. Test tools: sf --version, aws --version, kubectl version"
+echo "  4. Test tools: sf --version, aws --version"
 echo
 log "Setup complete! Report: $LOG_FILE"

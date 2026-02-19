@@ -134,9 +134,10 @@ log "PHASE 3: Installing DNF packages..."
 DNF_PKGS=(
     # Hyprland Stack (from COPR)
     hyprland hyprpaper hypridle hyprlock waybar wofi dunst
+    hyprpicker cliphist swww
 
     # Wayland Essentials
-    grim slurp wl-clipboard brightnessctl
+    grim slurp wl-clipboard brightnessctl wf-recorder wtype
     qt5-qtwayland qt6-qtwayland xdg-desktop-portal-hyprland
     polkit-gnome xdg-user-dirs xdg-user-dirs-gtk
 
@@ -149,11 +150,11 @@ DNF_PKGS=(
     iwd network-manager-applet
 
     # Shell & Terminals
-    zsh alacritty util-linux-user
+    zsh alacritty util-linux-user atuin
 
     # Dev Tools - Core
     neovim tmux ripgrep fzf bat fd-find jq tree
-    unzip zip p7zip htop btop openssh git-delta
+    unzip zip p7zip htop btop openssh
     man-db man-pages
 
     # File Manager
@@ -173,7 +174,6 @@ DNF_PKGS=(
     liberation-fonts
 
     # System utilities
-    ansible ansible-core
     util-linux
 
     # Compression
@@ -189,6 +189,8 @@ DNF_PKGS=(
     trash-cli
     fastfetch
     zoxide
+    pass
+    zathura zathura-pdf-mupdf
 )
 
 dnf install -y "${DNF_PKGS[@]}" && \
@@ -334,6 +336,11 @@ FLATPAK_APPS=(
     org.signal.Signal
     com.slack.Slack
     org.telegram.desktop
+    io.beekeeperstudio.Studio
+    org.qbittorrent.qBittorrent
+    com.calibre_ebook.calibre
+    com.github.johnfactotum.Foliate
+    com.usebruno.Bruno
 )
 
 for app in "${FLATPAK_APPS[@]}"; do
@@ -556,39 +563,6 @@ if ! command -v aws &>/dev/null; then
     SUCCESSFUL+=("AWS CLI v2")
 else
     SKIPPED+=("AWS CLI - already installed")
-fi
-
-# Terraform
-if ! command -v terraform &>/dev/null; then
-    dnf config-manager --add-repo https://rpm.releases.hashicorp.com/fedora/hashicorp.repo
-    dnf install -y terraform && \
-        SUCCESSFUL+=("Terraform") || warn "Terraform failed"
-else
-    SKIPPED+=("Terraform - already installed")
-fi
-
-# kubectl
-if ! command -v kubectl &>/dev/null; then
-    cat > /etc/yum.repos.d/kubernetes.repo << 'EOF'
-[kubernetes]
-name=Kubernetes
-baseurl=https://pkgs.k8s.io/core:/stable:/v1.31/rpm/
-enabled=1
-gpgcheck=1
-gpgkey=https://pkgs.k8s.io/core:/stable:/v1.31/rpm/repodata/repomd.xml.key
-EOF
-    dnf install -y kubectl && \
-        SUCCESSFUL+=("kubectl") || warn "kubectl failed"
-else
-    SKIPPED+=("kubectl - already installed")
-fi
-
-# k9s (Kubernetes TUI)
-if ! command -v k9s &>/dev/null; then
-    curl -sS https://webinstall.dev/k9s | bash
-    SUCCESSFUL+=("k9s")
-else
-    SKIPPED+=("k9s - already installed")
 fi
 
 # ============================================================================
