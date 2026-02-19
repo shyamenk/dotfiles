@@ -3,7 +3,7 @@
 # Project launcher for Hyprland with wofi
 
 PROJECT_DIRS=(
-  "$HOME/Desktop/Development/Projects-Private"   # Private/personal projects
+  "$HOME/Desktop/sales-force-dev/"   # Private/personal projects
   "$HOME/Desktop/Development/Projects-Public"    # Open source/public projects
   "$HOME/Desktop/Development/Projects-Lab"       # Learning/practicing/experiments
 )

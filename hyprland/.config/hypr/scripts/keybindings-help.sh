@@ -15,6 +15,7 @@ Super + Shift + E       Exit Hyprland
 Super + G               Google Chrome
 Super + Shift + N       File Manager (Thunar)
 Super + P               Project Launcher
+Super + S               Salesforce Org Picker
 Super + .               Emoji Picker
 Super + N               Scratchpad Notes
 
