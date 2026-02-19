@@ -20,195 +20,232 @@ Reproducible Arch Linux installation for Hyprland Wayland environment.
 3. Backup important data
 4. Disable Secure Boot in BIOS
 
-## Boot & Network Setup
+---
 
-1. Boot from USB in UEFI mode
-2. Connect to internet:
-   ```bash
-   # WiFi
-   iwctl
-   station wlan0 connect "Your-SSID"
-   exit
+## Step 1: Boot the USB
 
-   # Verify connection
-   ping -c 3 archlinux.org
-   ```
+1. Plug in the USB, restart laptop
+2. Press **F12** (Lenovo LOQ) to open boot menu
+3. Select the USB drive (UEFI mode)
+4. Select **Arch Linux install medium** and press Enter
+5. You'll land at a root shell: `root@archiso ~ #`
 
-## Automated Installation with archinstall
-
-### Option 1: Using JSON Config (Recommended)
-
-Save this configuration as `user_configuration.json`:
-
-```json
-{
-  "additional-repositories": ["multilib"],
-  "audio_config": {
-    "audio": "pipewire"
-  },
-  "bootloader": "systemd-boot",
-  "config_version": "2.8.1",
-  "debug": false,
-  "disk_config": {
-    "config_type": "default_layout",
-    "device_modifications": [
-      {
-        "device": "/dev/nvme0n1",
-        "partitions": [
-          {
-            "btrfs": [],
-            "flags": ["Boot"],
-            "fs_type": "fat32",
-            "mount_options": [],
-            "mountpoint": "/boot",
-            "size": {
-              "sector_size": null,
-              "unit": "MiB",
-              "value": 1024
-            },
-            "type": "primary"
-          },
-          {
-            "btrfs": [
-              {
-                "mountpoint": "/",
-                "name": "@"
-              },
-              {
-                "mountpoint": "/home",
-                "name": "@home"
-              },
-              {
-                "mountpoint": "/var",
-                "name": "@var"
-              },
-              {
-                "mountpoint": "/.snapshots",
-                "name": "@snapshots"
-              }
-            ],
-            "flags": [],
-            "fs_type": "btrfs",
-            "mount_options": ["compress=zstd", "noatime"],
-            "mountpoint": null,
-            "size": {
-              "sector_size": null,
-              "unit": "Percent",
-              "value": 100
-            },
-            "type": "primary"
-          }
-        ],
-        "wipe": true
-      }
-    ]
-  },
-  "hostname": "archlinux",
-  "kernels": ["linux"],
-  "locale_config": {
-    "kb_layout": "us",
-    "sys_enc": "UTF-8",
-    "sys_lang": "en_US"
-  },
-  "network_config": {
-    "type": "nm"
-  },
-  "no_pkg_lookups": false,
-  "ntp": true,
-  "packages": [
-    "git",
-    "base-devel",
-    "stow",
-    "networkmanager",
-    "bluez",
-    "bluez-utils"
-  ],
-  "parallel_downloads": 5,
-  "profile_config": {
-    "profile": {
-      "main": "minimal"
-    }
-  },
-  "swap": true,
-  "timezone": "Asia/Kolkata",
-  "uki": false
-}
-```
-
-Run the installation:
+## Step 2: Connect to WiFi
 
 ```bash
-# Download or create the config file
-curl -O https://raw.githubusercontent.com/shyamenk/dotfiles/main/user_configuration.json
-# OR create it manually with nano/vim
-
-# Run archinstall with config
-archinstall --config user_configuration.json
+iwctl
 ```
 
-During installation, you'll be prompted to:
-- Set root password
-- Create a user account (add to wheel group, enable sudo)
+Inside the `iwctl` prompt:
+```
+station wlan0 scan
+station wlan0 get-networks
+station wlan0 connect "Your-SSID"
+# Enter WiFi password when prompted
+exit
+```
 
-### Option 2: Interactive archinstall
+Verify connection:
+```bash
+ping -c 3 archlinux.org
+```
+
+## Step 3: Update archinstall (recommended)
+
+The ISO may ship an older version. Get the latest:
+```bash
+pacman -Sy archinstall
+```
+
+## Step 4: Run archinstall
+
+### Option A: Interactive (recommended for first time)
 
 ```bash
 archinstall
 ```
 
-Select these options:
-- **Bootloader**: systemd-boot
-- **Filesystem**: btrfs
-- **Profile**: minimal
-- **Audio**: pipewire
-- **Network**: NetworkManager
-- **Additional packages**: git base-devel stow
+You'll see the main menu with these options. Configure each one:
 
-## Post-Installation
+---
 
-After rebooting into your new system:
+### Screen 1: Archinstall language
+→ **English** (default, just press Enter)
+
+---
+
+### Screen 2: Locales
+→ Keyboard layout: **us**
+→ System language: **en_US**
+→ Encoding: **UTF-8**
+
+---
+
+### Screen 3: Mirrors
+→ Select your closest region (e.g., **India**)
+→ This speeds up package downloads significantly
+
+---
+
+### Screen 4: Disk configuration
+→ Select **Use a best-effort default partition layout**
+→ Select your NVMe drive: `/dev/nvme0n1`
+→ Filesystem: **btrfs**
+→ Subvolumes will be created automatically: `@`, `@home`, `@var`, `@.snapshots`
+→ Compression: **zstd** (recommended)
+→ Confirm **wipe the disk** when prompted
+
+> ⚠️ This erases everything on the selected drive!
+
+---
+
+### Screen 5: Disk encryption
+→ **Skip** (press Enter to leave empty)
+→ Unless you want full-disk encryption
+
+---
+
+### Screen 6: Bootloader
+→ **Systemd-boot** (default, recommended for UEFI)
+→ Unified kernel images: **No**
+
+---
+
+### Screen 7: Swap
+→ **True** (enabled, uses zram by default)
+
+---
+
+### Screen 8: Hostname
+→ Type: `archlinux` (or whatever you prefer)
+
+---
+
+### Screen 9: Root password
+→ Set a root password
+→ Or leave blank to disable root (sudo only)
+
+---
+
+### Screen 10: User account
+→ **Add a user**
+→ Username: `shyamenk` (your username)
+→ Password: enter your password
+→ Should this user be a superuser (sudo)?: **Yes**
+
+---
+
+### Screen 11: Profile
+→ Select: **Minimal**
+→ Do NOT pick Desktop or any DE — `setup.sh` handles Hyprland
+
+---
+
+### Screen 12: Audio
+→ **pipewire**
+
+---
+
+### Screen 13: Kernels
+→ **linux** (default)
+
+---
+
+### Screen 14: Additional packages
+Type these space-separated:
+```
+git linux-headers base-devel stow bluez bluez-utils
+```
+
+> These are the minimum needed for `setup.sh` to work. NetworkManager is auto-installed via network config.
+
+---
+
+### Screen 15: Network configuration
+→ **Use NetworkManager**
+→ This installs and enables NetworkManager automatically
+
+---
+
+### Screen 16: Timezone
+→ **Asia/Kolkata** (or your timezone)
+
+---
+
+### Screen 17: Automatic time sync (NTP)
+→ **True**
+
+---
+
+### Screen 18: Optional repositories
+→ Enable **multilib** (needed for 32-bit NVIDIA libs)
+
+---
+
+### Screen 19: Save configuration
+→ **Yes** — saves your config to `/var/log/archinstall/` for future use
+→ Save to a USB if you want to reuse it
+
+---
+
+### Screen 20: Install
+→ Review the summary
+→ Select **Install** and press Enter
+→ Installation takes ~10-30 minutes depending on your internet
+
+---
+
+### Option B: Using JSON config (automated)
+
+Upload `user_configuration.json` from this repo to the ISO:
 
 ```bash
-# 1. Clone dotfiles
+# From another machine, copy to USB or download
+curl -O https://raw.githubusercontent.com/shyamenk/dotfiles/main/user_configuration.json
+
+# Run with config
+archinstall --config user_configuration.json
+```
+
+During installation you'll still be prompted for:
+- Root password
+- User account + password
+
+## Step 5: Reboot
+
+When installation completes:
+```bash
+# Say "No" when asked about chroot
+reboot
+```
+
+Remove the USB drive during reboot.
+
+## Step 6: First Boot — Login & Setup
+
+You'll boot to a TTY login. Log in with your username and password.
+
+```bash
+# 1. Connect to WiFi (NetworkManager is now installed)
+nmcli device wifi connect "Your-SSID" password "your-password"
+
+# 2. Clone dotfiles
 git clone https://github.com/shyamenk/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 
-# 2. Run setup script (installs all packages + AUR helper)
+# 3. Run the setup script (installs everything)
 sudo bash setup.sh
 
-# 3. Stow all configurations
-stow hyprland waybar wofi dunst alacritty wezterm nvim zsh tmux yazi bat scripts
-
-# 4. Change default shell to zsh
-chsh -s /bin/zsh
-
-# 5. Reboot
+# 4. Reboot
 sudo reboot
-
-# 6. After reboot, start Hyprland from TTY
-Hyprland
 ```
 
-## NVIDIA Configuration
+## Step 7: Start Hyprland
 
-The `setup.sh` script handles NVIDIA setup automatically. For reference, it:
-
-1. Installs NVIDIA drivers:
-   ```bash
-   nvidia-dkms nvidia-utils lib32-nvidia-utils nvidia-settings
-   ```
-
-2. Configures kernel modules in `/etc/mkinitcpio.conf`:
-   ```
-   MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)
-   ```
-
-3. Creates `/etc/modprobe.d/nvidia.conf`:
-   ```
-   options nvidia_drm modeset=1 fbdev=1
-   ```
-
-4. Sets environment variables in Hyprland config for proper Wayland support
+After reboot, log into TTY and run:
+```bash
+Hyprland
+```
 
 ## Verification Checklist
 
@@ -218,13 +255,20 @@ After completing the installation, verify:
 - [ ] Waybar is visible at the top
 - [ ] Audio works (test with `wpctl status`)
 - [ ] WiFi connected (check with `nmcli`)
+- [ ] Bluetooth works (`bluetoothctl power on`)
 - [ ] NVIDIA detected (`nvidia-smi`)
 - [ ] Terminal opens (`Super + Return`)
 - [ ] Wofi launcher works (`Super + Space`)
 - [ ] Brightness controls work (`Fn` keys)
-- [ ] Screenshot tool works (`Super + Shift + S`)
+- [ ] Screenshot tool works (`Print`)
 
 ## Troubleshooting
+
+### Can't connect to WiFi after boot
+```bash
+sudo systemctl enable --now NetworkManager
+nmcli device wifi connect "SSID" password "password"
+```
 
 ### Hyprland won't start
 ```bash
@@ -233,19 +277,22 @@ cat ~/.local/share/hyprland/hyprland.log
 
 # Ensure NVIDIA modules loaded
 lsmod | grep nvidia
+
+# Rebuild initramfs
+sudo mkinitcpio -P
+sudo reboot
 ```
 
 ### No audio
 ```bash
-# Restart PipeWire
 systemctl --user restart pipewire pipewire-pulse wireplumber
 ```
 
-### WiFi not working
+### Black screen on boot
 ```bash
-# Enable NetworkManager
-sudo systemctl enable --now NetworkManager
-nmcli device wifi connect "SSID" password "password"
+# Switch to TTY: Ctrl+Alt+F2
+sudo mkinitcpio -P
+sudo reboot
 ```
 
 ## File Structure After Installation
@@ -254,14 +301,22 @@ nmcli device wifi connect "SSID" password "password"
 ~/dotfiles/
 ├── alacritty/      # Terminal emulator
 ├── bat/            # Better cat
+├── cmdx/           # Command runner
 ├── dunst/          # Notifications
 ├── hyprland/       # Window manager + hyprlock, hypridle
+├── kitty/          # Terminal emulator
 ├── nvim/           # Neovim (LazyVim)
-├── scripts/        # Utility scripts
+├── scripts/        # Utility scripts (~/.local/bin)
+├── sfdocs/         # Salesforce CLI docs
+├── starship/       # Shell prompt
 ├── tmux/           # Terminal multiplexer
+├── wallpapers/     # Wallpapers (copied to ~/Pictures/wallpaper)
 ├── waybar/         # Status bar
-├── wezterm/        # Alt terminal
+├── wezterm/        # Terminal (alt)
 ├── wofi/           # App launcher
 ├── yazi/           # File manager
-└── zsh/            # Shell config
+├── zathura/        # PDF viewer
+├── zsh/            # Shell config
+├── setup.sh        # Automated setup script
+└── user_configuration.json  # archinstall config
 ```

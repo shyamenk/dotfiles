@@ -40,6 +40,15 @@ USER_HOME=$(getent passwd "$REGULAR_USER" | cut -d: -f6)
 log "Installing for user: $REGULAR_USER ($USER_HOME)"
 
 # ============================================================================
+# Grant temporary NOPASSWD for the regular user (reverted at end)
+# This avoids repeated password prompts during yay/makepkg
+# ============================================================================
+SUDOERS_TMP="/etc/sudoers.d/zzz-setup-nopasswd"
+echo "$REGULAR_USER ALL=(ALL) NOPASSWD: ALL" > "$SUDOERS_TMP"
+chmod 440 "$SUDOERS_TMP"
+trap 'rm -f "$SUDOERS_TMP"' EXIT
+
+# ============================================================================
 # PHASE 1: System Update + Prerequisites
 # ============================================================================
 log "PHASE 1: System update + prerequisites..."
@@ -59,6 +68,8 @@ fi
 
 # ============================================================================
 # PHASE 2: Clone & Stow Dotfiles
+# Stow BEFORE package installs — apps create default .config dirs that
+# conflict with stow symlinks if they run first.
 # ============================================================================
 log "PHASE 2: Setting up dotfiles..."
 
@@ -74,15 +85,19 @@ fi
 
 cd "$DOTFILES_DIR"
 
+# Create target dirs BEFORE stow to prevent package-created defaults from conflicting
+sudo -u "$REGULAR_USER" mkdir -p "$USER_HOME/.config"
+
 STOW_PACKAGES=(
-    zsh tmux nvim alacritty wezterm
+    zsh tmux nvim alacritty wezterm kitty
     hyprland waybar wofi dunst
-    yazi bat scripts cmdx sfdocs kitty
+    yazi bat scripts cmdx sfdocs
+    starship zathura
 )
 
 for pkg in "${STOW_PACKAGES[@]}"; do
     if [ -d "$pkg" ]; then
-        sudo -u "$REGULAR_USER" stow -R "$pkg" 2>/dev/null && \
+        sudo -u "$REGULAR_USER" stow --adopt -R "$pkg" 2>/dev/null && \
             SUCCESSFUL+=("stow: $pkg") || SKIPPED+=("stow: $pkg - conflicts")
     fi
 done
@@ -91,7 +106,7 @@ cd /
 SUCCESSFUL+=("Dotfiles stowed")
 
 # Copy wallpapers to Pictures
-WALLPAPER_SRC="$DOTFILES_DIR/wallpaper"
+WALLPAPER_SRC="$DOTFILES_DIR/wallpapers"
 WALLPAPER_DEST="$USER_HOME/Pictures/wallpaper"
 if [ -d "$WALLPAPER_SRC" ]; then
     sudo -u "$REGULAR_USER" mkdir -p "$WALLPAPER_DEST"
@@ -106,50 +121,65 @@ fi
 log "PHASE 3: Installing pacman packages..."
 
 PACMAN_PKGS=(
-    # Hyprland Stack
-    hyprland hypridle hyprlock hyprpaper waybar wofi dunst
+    # ---- Hyprland Stack ----
+    hyprland hypridle hyprlock waybar wofi dunst
 
-    # Wayland Essentials
+    # ---- Wayland Essentials ----
     grim slurp wl-clipboard brightnessctl
-    qt5-wayland qt6-wayland xdg-desktop-portal-hyprland
-    polkit-gnome xdg-user-dirs
+    qt5-wayland qt6-wayland
+    xdg-desktop-portal-hyprland xdg-desktop-portal-gtk
+    xdg-user-dirs xdg-utils
+    polkit-gnome qt5ct
 
-    # Audio
+    # ---- Wayland Tools (all in extra/) ----
+    swww hyprpicker wtype cliphist wf-recorder
+
+    # ---- Audio ----
     pipewire pipewire-pulse pipewire-alsa wireplumber
     pavucontrol
 
-    # Network (using iwd backend for impala TUI)
+    # ---- Bluetooth (bluez installed by archinstall, add GUI) ----
+    blueman
+
+    # ---- Network (using iwd backend for impala TUI) ----
     networkmanager iwd impala
 
-    # Shell & Terminals
-    zsh alacritty wezterm
+    # ---- Shell & Terminals ----
+    zsh alacritty wezterm kitty
 
-    # Dev Tools
+    # ---- Dev Tools ----
     neovim tmux ripgrep fzf bat zoxide fd jq tree unzip zip
-    htop btop openssh github-cli lazydocker man-db
+    htop btop openssh github-cli lazydocker lazygit man-db
+    eza starship
 
-    # File Manager
+    # ---- File Manager ----
     thunar tumbler ffmpegthumbnailer
 
-    # OCR
+    # ---- OCR ----
     tesseract tesseract-data-eng
 
-    # Office & Productivity
+    # ---- Office & Productivity ----
     libreoffice-fresh xournalpp
 
-    # Flatpak
+    # ---- Flatpak ----
     flatpak
 
-    # Fonts
+    # ---- Fonts ----
     ttf-jetbrains-mono-nerd ttf-victor-mono-nerd noto-fonts noto-fonts-emoji
 
-    # Terminals
-    kitty
-
-    # GPU Drivers - NVIDIA Primary
+    # ---- GPU Drivers - NVIDIA (Lenovo LOQ / RTX 4050) ----
     linux-headers
     nvidia-dkms nvidia-utils nvidia-settings
     libva-nvidia-driver
+
+    # ---- Docker ----
+    docker docker-compose
+
+    # ---- Referenced in dotfiles ----
+    pass trash-cli libnotify
+    zathura zathura-pdf-poppler
+    atuin nushell yazi
+    go jdk17-openjdk
 )
 
 pacman -S --needed --noconfirm "${PACMAN_PKGS[@]}" && \
@@ -174,24 +204,11 @@ else
 fi
 
 # ============================================================================
-# PHASE 5: AUR Packages (-bin preferred)
+# PHASE 5: AUR Packages (only truly AUR-only packages)
 # ============================================================================
 log "PHASE 5: Installing AUR packages..."
 
 AUR_PKGS=(
-    # Wayland Tools
-    swww
-    wf-recorder
-    hyprpicker
-    wtype
-    cliphist
-
-    # Dev Tools
-    eza
-    yazi
-    lazygit
-    starship-bin
-
     # Browser
     google-chrome
 
@@ -212,13 +229,17 @@ AUR_PKGS=(
 
     # GPU Management
     envycontrol
+
+    # Dev tools
+    bun-bin
+    spicetify-cli
 )
 
 for pkg in "${AUR_PKGS[@]}"; do
-    if pacman -Q "$pkg" &>/dev/null || yay -Q "$pkg" &>/dev/null 2>&1; then
+    if pacman -Q "$pkg" &>/dev/null; then
         SKIPPED+=("$pkg - already installed")
     else
-        if sudo -u "$REGULAR_USER" yay -S --noconfirm "$pkg" 2>/dev/null; then
+        if sudo -u "$REGULAR_USER" yay -S --noconfirm --sudoloop "$pkg" 2>/dev/null; then
             SUCCESSFUL+=("$pkg")
         else
             FAILED+=("$pkg")
@@ -227,7 +248,7 @@ for pkg in "${AUR_PKGS[@]}"; do
 done
 
 # ============================================================================
-# PHASE 6: Dev Runtimes (nvm, uv)
+# PHASE 6: Dev Runtimes (nvm, uv, tpm)
 # ============================================================================
 log "PHASE 6: Installing dev runtimes..."
 
@@ -246,28 +267,37 @@ else
 fi
 
 # uv (Python)
-if ! command -v uv &>/dev/null; then
+if ! sudo -u "$REGULAR_USER" bash -c 'command -v uv' &>/dev/null; then
     sudo -u "$REGULAR_USER" bash -c 'curl -LsSf https://astral.sh/uv/install.sh | sh'
     SUCCESSFUL+=("uv")
 else
     SKIPPED+=("uv - already installed")
 fi
 
+# Tmux Plugin Manager (tpm)
+TPM_DIR="$USER_HOME/.tmux/plugins/tpm"
+if [ ! -d "$TPM_DIR" ]; then
+    sudo -u "$REGULAR_USER" git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
+    SUCCESSFUL+=("tpm (tmux plugin manager)")
+else
+    SKIPPED+=("tpm - already installed")
+fi
+
 # ============================================================================
-# PHASE 7: Docker
+# PHASE 7: Docker Setup
 # ============================================================================
 log "PHASE 7: Docker setup..."
 
-if ! command -v docker &>/dev/null; then
-    pacman -S --needed --noconfirm docker docker-compose
-    systemctl enable docker
-    systemctl start docker
+systemctl enable docker
+systemctl start docker
+if ! id -nG "$REGULAR_USER" | grep -qw docker; then
     usermod -aG docker "$REGULAR_USER"
-    SUCCESSFUL+=("docker")
+    SUCCESSFUL+=("docker group added")
     warn "Log out and back in for docker group"
 else
-    SKIPPED+=("docker - already installed")
+    SKIPPED+=("docker group - already member")
 fi
+SUCCESSFUL+=("docker service enabled")
 
 # ============================================================================
 # PHASE 8: NVIDIA Configuration
@@ -304,6 +334,10 @@ systemctl enable nvidia-suspend.service nvidia-hibernate.service nvidia-resume.s
 # ============================================================================
 log "PHASE 9: Enabling services..."
 
+# ---- Bluetooth ----
+systemctl enable bluetooth && SUCCESSFUL+=("bluetooth service") || SKIPPED+=("bluetooth - already enabled or not available")
+
+# ---- Network ----
 # Enable iwd first (required for NetworkManager iwd backend)
 systemctl enable iwd && SUCCESSFUL+=("iwd service") || FAILED+=("iwd service")
 
@@ -317,25 +351,36 @@ SUCCESSFUL+=("NetworkManager iwd backend config")
 
 systemctl enable NetworkManager && SUCCESSFUL+=("NetworkManager service") || FAILED+=("NetworkManager service")
 
-# Note: pipewire user services are enabled by default, no need to enable system-wide
-
-# Flatpak remote
+# ---- Flatpak ----
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo && \
     SUCCESSFUL+=("Flathub remote") || warn "Flathub remote already exists or failed"
 
-# Create XDG user directories
+# ---- XDG dirs ----
 sudo -u "$REGULAR_USER" xdg-user-dirs-update 2>/dev/null || true
 
 # ============================================================================
-# PHASE 10: Create directories
+# PHASE 10: Shell & Directories
 # ============================================================================
-log "PHASE 10: Creating directories..."
+log "PHASE 10: Final setup..."
 
 sudo -u "$REGULAR_USER" mkdir -p "$USER_HOME"/{Pictures,Videos,Documents,Projects,.local/bin}
+
+# Auto set zsh as default shell
+CURRENT_SHELL=$(getent passwd "$REGULAR_USER" | cut -d: -f7)
+if [ "$CURRENT_SHELL" != "/bin/zsh" ] && [ "$CURRENT_SHELL" != "/usr/bin/zsh" ]; then
+    chsh -s /bin/zsh "$REGULAR_USER"
+    SUCCESSFUL+=("Default shell set to zsh")
+else
+    SKIPPED+=("zsh - already default shell")
+fi
 
 # ============================================================================
 # FINAL REPORT
 # ============================================================================
+
+# Remove temporary sudoers (trap also handles this on exit)
+rm -f "$SUDOERS_TMP"
+
 echo
 echo -e "${BLUE}=====================================================================
                          INSTALLATION REPORT
@@ -360,8 +405,8 @@ LOG_FILE="/var/log/hyprland-setup-$(date +%Y%m%d-%H%M%S).log"
 
 echo
 echo -e "${YELLOW}POST-INSTALL:${NC}"
-echo "  1. Set zsh as default shell: chsh -s /bin/zsh"
-echo "  2. Log out/in for docker group + shell change"
-echo "  3. Start Hyprland: Hyprland"
+echo "  1. Log out/in for docker group + shell change"
+echo "  2. Start Hyprland: Hyprland"
+echo "  3. Run tmux and press prefix + I to install tmux plugins"
 echo
 log "Setup complete! Report: $LOG_FILE"
