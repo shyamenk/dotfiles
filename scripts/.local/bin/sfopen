@@ -1,8 +1,45 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ -n "${1:-}" ]]; then
-  sf org open --path "$1"
+# Resolve target org: arg > default config > fzf picker
+resolve_org() {
+  local default_org
+  default_org=$(sf config get target-org --json 2>/dev/null | jq -r '.result[0].value // empty' 2>/dev/null || true)
+
+  if [[ -n "$default_org" ]]; then
+    # Verify the org actually exists
+    if sf org display --target-org "$default_org" --json 2>/dev/null | jq -e '.result' >/dev/null 2>&1; then
+      echo "$default_org"
+      return
+    fi
+  fi
+
+  # Fallback: fzf picker
+  local orgs
+  orgs=$(sf org list --json 2>/dev/null | jq -r '
+    [.result.nonScratchOrgs[]?, .result.scratchOrgs[]?] |
+    .[] | [.alias // "no-alias", .username, .connectedStatus // "Unknown"] | @tsv
+  ')
+  [[ -z "$orgs" ]] && { echo "No orgs found. Run: sf org login web --alias myorg" >&2; exit 1; }
+
+  local selected
+  selected=$(echo "$orgs" | fzf --header="ALIAS   USERNAME        STATUS" --prompt="Open org> " --height=40% --reverse)
+  [[ -z "$selected" ]] && exit 0
+  echo "$selected" | awk '{print $1}'
+}
+
+if [[ -n "${2:-}" ]]; then
+  # sfopen <org> <path>
+  sf org open --target-org "$1" --path "$2"
+elif [[ -n "${1:-}" ]]; then
+  # Could be a path or an org alias — check if it looks like a path
+  if [[ "$1" == /* || "$1" == lightning* || "$1" == setup* ]]; then
+    org=$(resolve_org)
+    sf org open --target-org "$org" --path "$1"
+  else
+    sf org open --target-org "$1"
+  fi
 else
-  sf org open
+  org=$(resolve_org)
+  sf org open --target-org "$org"
 fi

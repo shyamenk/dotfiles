@@ -1,0 +1,1272 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ╔══════════════════════════════════════════════════════════╗
+# ║  sfproject — Salesforce 2GP Project Scaffolder           ║
+# ║  Creates SFDX project + .claude/ intelligence layer      ║
+# ╚══════════════════════════════════════════════════════════╝
+
+# ─── Prompts ───────────────────────────────────────────────
+read -rp "Project name: " name
+[[ -z "$name" ]] && { echo "Name required."; exit 1; }
+
+read -rp "Namespace (empty for none): " namespace
+namespace="${namespace:-}"
+
+read -rp "Dev Hub [amd-dev-hub]: " devhub
+devhub="${devhub:-amd-dev-hub}"
+
+template=$(printf "standard\n2gp-managed\nunlocked-package" | \
+  fzf --prompt="Template> " --height=40% --reverse)
+[[ -z "$template" ]] && exit 0
+
+echo ""
+echo "  Project:   $name"
+echo "  Namespace: ${namespace:-<none>}"
+echo "  Dev Hub:   $devhub"
+echo "  Template:  $template"
+echo ""
+read -rp "Create project? [Y/n]: " confirm
+[[ "${confirm:-Y}" =~ ^[Nn] ]] && { echo "Aborted."; exit 0; }
+
+# ─── Generate SFDX project ────────────────────────────────
+sf project generate -n "$name" --template standard
+cd "$name"
+
+# Inject namespace into sfdx-project.json if provided
+if [[ -n "$namespace" ]]; then
+  tmp=$(mktemp)
+  jq --arg ns "$namespace" '.namespace = $ns' sfdx-project.json > "$tmp" && mv "$tmp" sfdx-project.json
+fi
+
+# ─── Directory structure ──────────────────────────────────
+mkdir -p .claude/{memory,rules}
+mkdir -p .claude/skills/{create-2gp-version,run-apex-tests,deploy-validate,generate-test-factory,metadata-audit,architect,appexchange-research/scripts}
+mkdir -p .claude/agents
+mkdir -p scripts/{hooks,automation}
+
+# ═══════════════════════════════════════════════════════════
+#  .claude/CLAUDE.md
+# ═══════════════════════════════════════════════════════════
+cat > .claude/CLAUDE.md << EOF
+# CLAUDE — Project Brain
+
+## Project
+- type: salesforce-2gp
+- name: ${name}
+- namespace: ${namespace:-<not-set>}
+- devhub: ${devhub}
+- cli: sf (Salesforce unified CLI only — never use sfdx)
+
+## Workflow
+- default-mode: interactive
+- plan-mode: required for multi-file edits
+- edit-mode: safe-write (confirm large writes)
+
+## Token Discipline
+- max-inline-metadata-lines: 40
+- compaction-interval-steps: 4
+- research-agent: allowed to call MCP endpoints and web-search only
+
+## Agent Workflow (Design & Build Loop)
+1. Write/edit code
+2. Spawn code-review-agent → returns issues (read-only, no fixes)
+3. Spawn qa-agent → generates tests, runs them (read-only, no fixes)
+4. Parent agent reads reports and applies all fixes
+5. Ship only after review passes and tests pass
+
+Subagents are read-only reporters. All code changes happen in the parent agent.
+
+## Self-Annealing Loop
+When something breaks: fix → test → update SKILL.md with learnings → system is stronger.
+
+## References
+- rules/: coding and security standards
+- skills/: executable checklists (SKILL.md + scripts/)
+- agents/: sub-agent configurations (read-only reporters)
+- memory/: small persistent facts only (never secrets)
+EOF
+
+# ═══════════════════════════════════════════════════════════
+#  .claude/settings.local.json
+# ═══════════════════════════════════════════════════════════
+cat > .claude/settings.local.json << 'SETTINGS'
+{
+  "permissions": {
+    "allow": [
+      "Bash(sf:*)",
+      "Bash(npx prettier:*)",
+      "Bash(npx eslint:*)",
+      "Bash(git:*)",
+      "Bash(jq:*)",
+      "Bash(curl:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
+SETTINGS
+
+# ═══════════════════════════════════════════════════════════
+#  .claude/memory/
+# ═══════════════════════════════════════════════════════════
+cat > .claude/memory/org-context.md << EOF
+# Org Context
+
+- devhub-alias: ${devhub}
+- namespace: ${namespace:-<not-set>}
+- packageId: <run sf package list to populate>
+- default-scratch-duration: 7
+EOF
+
+cat > .claude/memory/package-constraints.md << 'MEM'
+# Package Constraints
+
+- 2GP managed packaging only; no unmanaged metadata in production
+- Never modify standard object labels inside the package
+- Avoid hardcoded record type IDs — use Schema.SObjectType methods
+- Custom settings used for subscriber config must be hierarchy type
+- Custom metadata types preferred over custom settings for static config
+MEM
+
+# ═══════════════════════════════════════════════════════════
+#  .claude/rules/
+# ═══════════════════════════════════════════════════════════
+cat > .claude/rules/apex-standards.md << 'RULE'
+# Apex Standards
+
+- Bulkify all public methods handling collections — design for 200+ records
+- No SOQL or DML inside loops — collect and execute outside
+- Use `with sharing` by default; document every `without sharing` exception
+- Use `WITH USER_MODE` in all SOQL queries accessing platform data
+- Prefer bind variables in SOQL — never concatenate user input into queries
+- Service layer pattern: separate domain logic from controllers/triggers
+- Use TestDataFactory for test data — never `@isTest(SeeAllData=true)`
+- One trigger per object, delegate to handler class (Kevin O'Hara pattern)
+- Guard all collection access: check `.isEmpty()` before `.get(0)`
+- Limit method complexity: max 40 lines per method, extract helpers
+RULE
+
+cat > .claude/rules/lwc-standards.md << 'RULE'
+# LWC Standards
+
+- Prefer `@wire` for read operations where applicable
+- Use `@AuraEnabled(cacheable=true)` for read-heavy Apex endpoints
+- Keep JS modules under 200 lines; split complex logic into utility modules
+- Every component must have Jest tests; target 80%+ coverage for critical UI
+- Follow SLDS design tokens — never hardcode colors, spacing, or fonts
+- Use lightning-record-form / lightning-record-edit-form where possible
+- All user-facing strings must use custom labels for i18n readiness
+- Follow WAI-ARIA accessibility guidelines; test with screen readers
+- Use NavigationMixin for navigation — never window.location
+- Wire adapters over imperative calls unless mutation is needed
+RULE
+
+cat > .claude/rules/security-rules.md << 'RULE'
+# Security Rules
+
+## CRUD/FLS Enforcement
+- Check `Schema.sObjectType.*.isAccessible()` before SOQL reads
+- Check `isCreateable()`, `isUpdateable()`, `isDeletable()` before DML
+- Use `WITH USER_MODE` in SOQL as preferred approach (Spring '23+)
+- Use `Security.stripInaccessible()` for field-level stripping
+
+## SOQL Injection Prevention
+- Always use bind variables: `WHERE Name = :userInput`
+- If dynamic SOQL is unavoidable: `String.escapeSingleQuotes()`
+- Whitelist-validate field names and sort directions in dynamic queries
+
+## Data Protection
+- Never log PII, passwords, keys, or tokens via `System.debug()`
+- Never return secrets or credentials in agent/MCP responses
+- Store secrets in Named Credentials or Protected Custom Metadata
+- No hardcoded URLs, IPs, or credentials in source code
+
+## XSS / CSRF
+- In Visualforce: always use `HTMLENCODE()`, `JSENCODE()`, `URLENCODE()`
+- In LWC: never use `innerHTML` with user-supplied content
+- Custom REST endpoints must validate CSRF tokens
+
+## Hooks and Automation
+- Shell hooks must have audited command whitelists
+- MCP endpoints must never expose org credentials
+RULE
+
+cat > .claude/rules/2gp-packaging.md << 'RULE'
+# 2GP Packaging Rules
+
+- Version control is the source of truth — never develop in packaging org
+- Package versions are beta until explicitly promoted
+- Run `sf package version create --code-coverage` to enforce 75%+ coverage
+- Promote only after all tests pass: `sf package version promote`
+- Use `--installation-key` for all managed package versions
+- Ancestor version must be set correctly for upgrades
+- Never remove public/global Apex classes or methods in upgrades
+- Test install/upgrade paths in scratch orgs before promoting
+- Package dependencies must pin exact versions, not ranges
+- Use `sf package version list` to audit version history before release
+RULE
+
+cat > .claude/rules/cli-usage.md << 'RULE'
+# CLI Usage Rules
+
+- Always use `sf` (unified CLI) — never legacy `sfdx`
+- Deploy: `sf project deploy start` (not `force:source:push`)
+- Retrieve: `sf project retrieve start` (not `force:source:pull`)
+- Test: `sf apex run test --code-coverage --result-format human`
+- Scratch org: `sf org create scratch -f config/project-scratch-def.json`
+- Auth: `sf org login web --alias <alias>`
+- Set default: `sf config set target-org <alias>`
+- Package: `sf package version create -p <alias> -w 30 --code-coverage`
+- Always pass `--json` when parsing output programmatically
+- Use `--wait` flags to avoid polling loops in scripts
+RULE
+
+cat > .claude/rules/source-tracking.md << 'RULE'
+# Source-Driven Workflow
+
+## Principles
+- Version control (Git) is the single source of truth — not any org
+- All metadata changes must flow through source control
+- No manual changes in production — deploy only via CI/CD or CLI
+
+## Development Flow
+1. Create feature branch from main
+2. Create scratch org: `sf org create scratch`
+3. Push source: `sf project deploy start`
+4. Develop in scratch org + local IDE (bidirectional sync)
+5. Pull changes: `sf project retrieve start`
+6. Run tests locally + in scratch org
+7. Commit, push, PR, merge
+
+## Conflict Resolution
+- Preview before deploy: `sf project deploy preview`
+- Use `.forceignore` to exclude environment-specific metadata
+- Resolve merge conflicts in source format, never in org
+
+## .forceignore Essentials
+- Exclude profiles unless explicitly managed in package
+- Exclude user-specific settings (compactLayouts, listViews)
+- Include in git: `.forceignore`, `sfdx-project.json`, `config/`
+RULE
+
+# ═══════════════════════════════════════════════════════════
+#  .claude/skills/
+# ═══════════════════════════════════════════════════════════
+cat > .claude/skills/create-2gp-version/SKILL.md << 'SKILL'
+---
+name: create-2gp-version
+description: Create and optionally promote a 2GP package version.
+allowed-tools: Bash, Read
+---
+
+# Steps
+1. Validate source deploys cleanly:
+   `sf project deploy start --dry-run --target-org <scratch>`
+2. Run full test suite via `run-apex-tests` skill
+3. Create package version:
+   `sf package version create -p <packageAlias> -w 30 --code-coverage --installation-key-bypass`
+4. Verify version created:
+   `sf package version list --released-versions-only --json`
+5. If promoting: `sf package version promote -p <subscriberPackageVersionId>`
+6. Return JSON: `{status, subscriberPackageVersionId, coveragePercent, warnings[]}`
+
+# Guards
+- Never promote without 75%+ code coverage
+- Verify ancestor version is correct for upgrade path
+- Test install in fresh scratch org before promoting
+SKILL
+
+cat > .claude/skills/run-apex-tests/SKILL.md << 'SKILL'
+---
+name: run-apex-tests
+description: Run Apex tests and return coverage summary.
+allowed-tools: Bash, Read
+---
+
+# Steps
+1. Run tests:
+   `sf apex run test --test-level RunLocalTests --code-coverage --result-format json --wait 10`
+2. Parse results and return:
+   `{status, coveragePercent, failures:[{class,method,message}], slowTests:[{class,time}]}`
+3. If failures exist, include stack traces
+4. Flag any class below 75% individual coverage
+
+# Options
+- `--class-names <name>` for single class testing
+- `--suite-names <suite>` for test suite execution
+SKILL
+
+cat > .claude/skills/deploy-validate/SKILL.md << 'SKILL'
+---
+name: deploy-validate
+description: Validate a deployment without committing changes to the org.
+allowed-tools: Bash, Read
+---
+
+# Steps
+1. Run validation:
+   `sf project deploy start --dry-run --test-level RunLocalTests --wait 30`
+2. If validation fails, parse error output and return structured failures
+3. If validation passes, return:
+   `{status:"success", componentsDeployed:N, testsRun:N, coveragePercent:N}`
+
+# Use Cases
+- Pre-PR validation against scratch org
+- Pre-package-version sanity check
+- CI/CD pipeline gate
+SKILL
+
+cat > .claude/skills/generate-test-factory/SKILL.md << 'SKILL'
+---
+name: generate-test-factory
+description: Generate or update TestDataFactory class with methods for project sObjects.
+allowed-tools: Bash, Read, Write
+---
+
+# Steps
+1. Scan `force-app/` for custom objects and standard object usage
+2. Check if `TestDataFactory.cls` exists — update if so, create if not
+3. For each sObject found, generate a `create<ObjectName>()` method that:
+   - Sets all required fields with sensible defaults
+   - Accepts optional parameter overrides via Map<String,Object>
+   - Returns the inserted record
+4. Include a `createBulk<ObjectName>(Integer count)` variant for bulk testing
+5. Class must use `@isTest` visibility and `with sharing`
+
+# Template Pattern
+```apex
+public with sharing class TestDataFactory {
+    public static Account createAccount(Map<String,Object> overrides) {
+        Account a = new Account(Name = 'Test Account');
+        for (String field : overrides.keySet()) {
+            a.put(field, overrides.get(field));
+        }
+        insert a;
+        return a;
+    }
+}
+```
+SKILL
+
+cat > .claude/skills/metadata-audit/SKILL.md << 'SKILL'
+---
+name: metadata-audit
+description: Identify deprecated metadata and suggest modern replacements.
+allowed-tools: Bash, Read
+---
+
+# Steps
+1. Scan `force-app/` for deprecated metadata types:
+   - WorkflowRule → recommend Flow
+   - WorkflowFieldUpdate → recommend Record-Triggered Flow
+   - WorkflowAlert → recommend Flow + Email Action
+   - Process Builder → recommend Flow
+   - Aura components → recommend LWC migration
+2. For each item found, assess migration complexity (low/medium/high)
+3. Return: `{deprecated:[{fullName,type,replacement,complexity}], summary:{total,low,medium,high}}`
+
+# Priority
+- Workflow Rules: high (Salesforce retiring support)
+- Process Builder: high (no new creation allowed)
+- Aura: medium (still supported but LWC preferred)
+SKILL
+
+cat > .claude/skills/architect/SKILL.md << 'SKILL'
+---
+name: architect
+description: Solution architecture advisor for Salesforce projects. Covers data model, trigger framework, integrations, governor limits, security architecture, and package design.
+allowed-tools: Read, Bash
+---
+
+# Capabilities
+
+## Data Model Design
+- Evaluate lookup vs master-detail relationships (cascade delete, rollups, sharing)
+- Recommend junction objects for many-to-many
+- Custom Metadata Types for static config; Hierarchy Custom Settings for org/profile overrides
+- Big Objects for high-volume archival (100M+ records)
+- External Objects with Salesforce Connect for external data
+
+## Trigger Framework (Recommended: Kevin O'Hara Pattern)
+- One trigger per object, delegates to handler class
+- Handler extends TriggerHandler base class
+- Override context methods: beforeInsert, afterUpdate, etc.
+- Built-in recursion prevention via static flags
+- Structure:
+  ```
+  triggers/   → AccountTrigger.trigger (one-liner delegation)
+  classes/    → AccountTriggerHandler.cls extends TriggerHandler
+  classes/    → TriggerHandler.cls (base class)
+  ```
+- Reference: github.com/kevinohara80/sfdc-trigger-framework
+
+## Integration Patterns
+- Platform Events: async event-driven (pub/sub, replay support)
+- Change Data Capture (CDC): real-time data change streaming
+- REST callouts: use Named Credentials (never hardcode endpoints)
+- Composite API: batch multiple operations in single request
+- Outbound Messages: legacy — avoid for new development
+
+## Governor Limits Planning
+- 100 SOQL queries per transaction → batch + aggregate queries
+- 150 DML statements per transaction → collect and bulkify
+- 6MB heap (sync) / 12MB heap (async) → stream large data sets
+- 10-second CPU time → offload to async (Queueable, Batch)
+- Callout limits: 100 per transaction, 120s total timeout
+
+## Security Architecture
+- Sharing model: OWD → Role Hierarchy → Sharing Rules → Manual/Apex Sharing
+- Permission Sets over Profiles for granular access
+- Custom Permissions for feature flags
+- Shield Platform Encryption for sensitive fields
+- Event Monitoring for audit trails
+
+## Package Dependency Design
+- Base package: shared objects, utilities, trigger framework
+- Feature packages: depend on base, independent of each other
+- Keep dependency graph shallow (max 2 levels deep)
+SKILL
+
+cat > .claude/skills/appexchange-research/SKILL.md << 'SKILL'
+---
+name: appexchange-research
+description: Research competitor apps on Salesforce AppExchange. Scrape listings, analyze features, ratings, and market positioning.
+allowed-tools: Bash, Read
+---
+
+# Steps
+1. Run scraper: `bash .claude/skills/appexchange-research/scripts/scrape_appexchange.sh "<search-term>"`
+2. Parse results and analyze:
+   - App name, developer, rating, review count
+   - Categories and supported products
+   - Pricing model (free/freemium/paid)
+3. Return competitive analysis:
+   `{apps:[{name,developer,rating,reviews,pricing,categories}], gaps:[], opportunities:[]}`
+
+# Use Cases
+- Pre-development market research
+- Feature gap analysis against existing solutions
+- Pricing strategy research
+SKILL
+
+cat > .claude/skills/appexchange-research/scripts/scrape_appexchange.sh << 'SCRAPER'
+#!/usr/bin/env bash
+set -euo pipefail
+# Scrape AppExchange listings via public search
+# Usage: scrape_appexchange.sh "search term" [max_results]
+
+query="${1:?Usage: scrape_appexchange.sh \"search term\" [max_results]}"
+max="${2:-10}"
+encoded=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$query'))" 2>/dev/null || echo "$query")
+
+echo "Searching AppExchange for: $query (max: $max)"
+
+# Fetch search results page
+url="https://appexchange.salesforce.com/appxSearchKeywordResults?keywords=${encoded}"
+html=$(curl -sL "$url" --max-time 15 || { echo "Failed to fetch AppExchange"; exit 1; })
+
+# Extract listing URLs from search results
+echo "$html" | grep -oP 'href="/appxListingDetail\?listingId=[^"]+' | \
+  head -n "$max" | \
+  sed 's|^href="||' | \
+  while read -r path; do
+    listing_url="https://appexchange.salesforce.com${path}"
+    listing_html=$(curl -sL "$listing_url" --max-time 10 2>/dev/null || continue)
+    title=$(echo "$listing_html" | grep -oP '<title>[^<]+' | sed 's/<title>//' | head -1)
+    echo "  → $title"
+    echo "    URL: $listing_url"
+  done
+
+echo ""
+echo "Done. For deeper analysis, use Apify: jungle_synthesizer/salesforce-appexchange-scraper"
+SCRAPER
+chmod +x .claude/skills/appexchange-research/scripts/scrape_appexchange.sh
+
+# ═══════════════════════════════════════════════════════════
+#  .claude/agents/
+# ═══════════════════════════════════════════════════════════
+cat > .claude/agents/code-review-agent.md << 'AGENT'
+---
+name: code-review-agent
+description: Static analysis for Apex and LWC changes. Returns structured violations — never modifies code.
+model: sonnet
+tools: Read, Grep, Glob
+---
+
+# Code Review Agent
+
+Role: Unbiased code reviewer with zero prior context.
+
+## Checks
+- Bulkification: SOQL/DML inside loops
+- SOQL injection: dynamic queries with unescaped input
+- Governor limit risks: unbounded queries, missing LIMIT
+- Missing CRUD/FLS: operations without security checks
+- Sharing violations: classes without `with sharing`
+- Debug leaks: `System.debug()` with sensitive data
+- LWC: imperative calls where @wire suffices, missing error handling
+
+## Output Format
+```
+## Summary
+One sentence assessment.
+
+## Issues
+- **[BLOCK|WARN|INFO]** [category]: Description. Suggested fix.
+
+## Verdict
+PASS | PASS WITH NOTES | NEEDS CHANGES
+```
+
+Constraints: Never modify code. Report only.
+AGENT
+
+cat > .claude/agents/qa-agent.md << 'AGENT'
+---
+name: qa-agent
+description: Generate Apex/Jest tests, run them, report coverage. Never modifies source code.
+model: sonnet
+tools: Read, Bash, Write
+---
+
+# QA Agent
+
+## Process
+1. Read the target class/component
+2. Check if TestDataFactory exists — scaffold if missing (via generate-test-factory skill)
+3. Generate test class covering:
+   - Positive path (expected behavior)
+   - Negative path (error conditions)
+   - Bulk path (200+ records)
+   - Security path (running as restricted user via System.runAs)
+4. Run tests: `sf apex run test --class-names <TestClass> --code-coverage --result-format json`
+5. Report results
+
+## Output Format
+```
+## Test Results
+**Status: PASS | FAIL | PARTIAL**
+Tests: N | Passed: N | Failed: N | Coverage: N%
+
+## Cases
+- [PASS] testName: description
+- [FAIL] testName: description — error
+
+## Notes
+Observations about coverage gaps or untestable areas.
+```
+
+Constraints: Write test files only. Never modify source code.
+AGENT
+
+cat > .claude/agents/research-agent.md << 'AGENT'
+---
+name: research-agent
+description: Fetch docs, metadata, and Salesforce references via MCP and web search. Low-cost model.
+model: haiku
+tools: Read, Grep, WebSearch, WebFetch, MCP
+---
+
+# Research Agent
+
+Role: Targeted information retrieval. Returns structured JSON only.
+
+## Allowed Sources
+- Salesforce DX MCP Server endpoints
+- developer.salesforce.com documentation
+- trailhead.salesforce.com modules
+- Local sfdoc files (~/.local/share/sfdocs/)
+
+## Output Format
+```json
+{
+  "topic": "Brief topic name",
+  "findings": [
+    {"source": "URL or path", "summary": "One-line finding"}
+  ],
+  "recommendation": "One-line actionable recommendation"
+}
+```
+
+Constraints:
+- Max 300 tokens in response
+- Never return raw XML, WSDL, or package.xml
+- Never expose org credentials
+AGENT
+
+cat > .claude/agents/packaging-agent.md << 'AGENT'
+---
+name: packaging-agent
+description: 2GP package lifecycle specialist. Manages version creation, promotion, and install testing.
+model: sonnet
+tools: Read, Bash
+---
+
+# Packaging Agent
+
+## Capabilities
+- Create package versions with code coverage enforcement
+- Validate upgrade paths (ancestor version checks)
+- Test install/uninstall in scratch orgs
+- Audit version history and dependency graph
+- Pre-promotion checklist validation
+
+## Pre-Promotion Checklist
+1. All tests pass with 75%+ coverage
+2. No BLOCK issues from code-review-agent
+3. Ancestor version correctly set
+4. No removed public/global API members
+5. Installation key configured
+6. Tested install in fresh scratch org
+7. Tested upgrade from previous version
+
+## Output Format
+```
+## Package Version Report
+- Version: X.Y.Z
+- Status: READY | BLOCKED
+- Coverage: N%
+- Blockers: [list or "none"]
+- Warnings: [list or "none"]
+```
+
+Constraints: Never promotes without explicit confirmation.
+AGENT
+
+cat > .claude/agents/security-review-agent.md << 'AGENT'
+---
+name: security-review-agent
+description: Audits codebase against Salesforce AppExchange security review requirements. Use before submitting for security review.
+model: sonnet
+tools: Read, Grep, Glob, Bash
+---
+
+# Security Review Agent
+
+Role: Pre-submission auditor mapping to Salesforce Product Security team's actual checklist.
+
+## Audit Categories
+
+### 1. Sharing Enforcement
+- Every class accessing/modifying sObjects must declare `with sharing`
+- Document and justify every `without sharing` exception
+- Verify inner classes inherit sharing from outer class
+
+### 2. CRUD/FLS Compliance
+- All SOQL reads: use `WITH USER_MODE` or check `isAccessible()`
+- All DML writes: check `isCreateable()` / `isUpdateable()` / `isDeletable()`
+- Use `Security.stripInaccessible()` for field-level enforcement
+- Acceptable bypasses: rollup summaries, system logs, custom metadata
+
+### 3. SOQL Injection
+- No string concatenation in dynamic SOQL with user input
+- Bind variables required: `WHERE Name = :input`
+- Dynamic field names: whitelist against Schema.describe()
+
+### 4. Sensitive Data Exposure
+- No PII, passwords, keys, or tokens in `System.debug()`
+- No secrets in error messages returned to UI
+- No hardcoded credentials or endpoints in source
+
+### 5. XSS Prevention
+- Visualforce: `HTMLENCODE()`, `JSENCODE()`, `URLENCODE()` on all output
+- LWC: no `innerHTML` with user-supplied content
+- Aura: use `$A.util.escapeHtml()` for dynamic content
+
+### 6. CSRF Protection
+- Custom REST endpoints must validate origin
+- Visualforce pages: CSRF token automatically included (verify not disabled)
+
+### 7. Code Scanner Compliance
+- Must pass Salesforce Code Analyzer: `sf scanner run --target force-app/`
+- All HIGH severity findings must be resolved
+- Document false positives with justification
+
+### 8. Package Constraints
+- No `@isTest(SeeAllData=true)` — auto-fail
+- No standard object label modifications
+- Named Credentials for all external callouts
+- Remote Site Settings documented and minimized
+
+## Output Format
+```
+## Security Audit Report
+**Verdict: READY | NEEDS FIXES | CRITICAL**
+
+## Findings
+- **[BLOCK]** category: description → fix
+- **[WARN]** category: description → recommendation
+- **[INFO]** category: note
+
+## Pre-Submission Checklist
+- [ ] Code Analyzer scan attached (no HIGH severity)
+- [ ] Web app scan for external domains (ZAP/Burp/Chimera)
+- [ ] All `without sharing` exceptions documented
+- [ ] Test org credentials prepared for review team
+- [ ] Usage documentation complete
+```
+
+Constraints: Read-only reporter. Never modifies code.
+AGENT
+
+cat > .claude/agents/git-agent.md << 'AGENT'
+---
+name: git-agent
+description: Git worktree manager for parallel feature development. Creates, manages, and cleans up worktrees.
+model: sonnet
+tools: Bash, Read
+---
+
+# Git Agent
+
+Role: Orchestrate parallel development via git worktrees (sibling directory strategy).
+
+## Worktree Strategy
+- Location: `../<project>-wt-<feature>/` (sibling directories)
+- Branch naming: `feature/<name>`, `bugfix/<name>`, `release/<version>`
+- Each worktree is isolated — separate scratch org per worktree
+
+## Commands
+
+### Create Worktree
+```bash
+git worktree add "../${PROJECT}-wt-${FEATURE}" -b "feature/${FEATURE}"
+```
+
+### List Active Worktrees
+```bash
+git worktree list
+```
+
+### Run Task in Worktree
+```bash
+cd "../${PROJECT}-wt-${FEATURE}" && <command>
+```
+
+### Clean Up After Merge
+```bash
+git worktree remove "../${PROJECT}-wt-${FEATURE}"
+git branch -d "feature/${FEATURE}"
+```
+
+### Prune Stale Worktrees
+```bash
+git worktree prune
+```
+
+## Parallel Execution Pattern
+1. Create worktree per feature
+2. Deploy/test independently in each
+3. Merge back to main when complete
+4. Clean up worktree and branch
+
+## Output Format
+```
+## Worktree Status
+| Path | Branch | Status |
+|------|--------|--------|
+| ../project-wt-feat1 | feature/feat1 | active |
+```
+
+Constraints: Never force-pushes. Never deletes unmerged branches without confirmation.
+AGENT
+
+cat > .claude/agents/learn-agent.md << 'AGENT'
+---
+name: learn-agent
+description: Learn-by-doing explainer. After writing code, invoke manually to understand what was built and why. Concise, resource-linked.
+model: sonnet
+tools: Read, Grep, WebSearch
+---
+
+# Learn Agent
+
+Role: Explain code you just wrote. Teach concepts in context. Manually invoked only — never auto-triggered.
+
+## Input
+A file path or code snippet you just wrote or modified.
+
+## Output Format (strict — minimize tokens)
+
+```
+## Why This Exists
+One sentence: the business/technical reason this code is needed.
+
+## What It Does
+- Step 1 of logic
+- Step 2 of logic
+- Step 3 of logic
+
+## Key Concepts
+- 🔑 ConceptName → one-line explanation
+  📚 trailhead.salesforce.com/... or developer.salesforce.com/...
+- 🔑 ConceptName → one-line explanation
+  📚 resource link
+
+## Watch Out
+- ⚠️ Gotcha or common mistake related to this code
+
+## Level Up
+- 💡 Related topic to explore next → [resource link]
+```
+
+## Rules
+- Max 200 tokens output
+- Prioritize local sfdoc references first, then Trailhead, then developer docs
+- Focus on concepts the developer will encounter again
+- Flag governor limit implications if relevant
+- Never suggest code changes — explain only
+
+## Example Topics to Surface
+- Trigger context variables (Trigger.new, Trigger.oldMap)
+- Wire vs imperative Apex calls in LWC
+- Sharing model implications of `with sharing`
+- Bulk design patterns (why we collect before DML)
+- Test isolation (why @isTest and TestDataFactory matter)
+- USER_MODE and its security implications
+AGENT
+
+cat > .claude/agents/doc-writer-agent.md << 'AGENT'
+---
+name: doc-writer-agent
+description: Generate concise inline and file-level documentation for Apex classes, LWC components, and triggers. Manually invoked.
+model: sonnet
+tools: Read, Write
+---
+
+# Doc Writer Agent
+
+Role: Generate clean documentation for Apex classes, LWC components, triggers. Manually invoked only.
+
+## Input
+A file path to the class/component to document.
+
+## What It Generates
+
+### For Apex Classes
+- File-level `/** */` block: purpose, author placeholder, date
+- Method-level `/** */`: `@description`, `@param`, `@return`, `@throws`
+- Inline comments only for non-obvious logic
+
+### For LWC Components
+- JSDoc blocks for public `@api` properties and methods
+- Component-level comment block: purpose, usage example
+- Event documentation: name, detail payload
+
+### For Triggers
+- File-level comment: which object, which events, what it does
+- Reference to handler class
+
+## Style Rules
+- One line per annotation (`@param`, `@return` on own lines)
+- Description max 80 chars — be precise, not verbose
+- Never state the obvious (`// increment counter` on `i++`)
+- Use active voice: "Retrieves accounts" not "This method is used to retrieve"
+
+## Output
+Writes documentation directly into the target file. Returns summary:
+```
+## Documented
+- ClassName.cls: N methods documented
+- Added: file header, 3 method docs, 1 inline comment
+```
+
+Constraints: Only adds/updates comments and JSDoc blocks. Never changes logic.
+AGENT
+
+# ═══════════════════════════════════════════════════════════
+#  .claude/checkpoints.json
+# ═══════════════════════════════════════════════════════════
+cat > .claude/checkpoints.json << 'CHECKPOINTS'
+{
+  "_description": "Project checkpoints and milestones. Quick-lookup reference for progress tracking.",
+  "phases": {
+    "setup": {
+      "label": "Project Setup",
+      "tasks": [
+        {"id": "S1", "task": "Dev Hub authenticated", "status": "pending", "notes": "sf org login web --alias <devhub>"},
+        {"id": "S2", "task": "Namespace registered", "status": "pending", "notes": "Link namespace org to Dev Hub"},
+        {"id": "S3", "task": "Scratch org created", "status": "pending", "notes": "bash scripts/automation/scratch-org-setup.sh"},
+        {"id": "S4", "task": "CI/CD pipeline configured", "status": "pending", "notes": ""}
+      ]
+    },
+    "development": {
+      "label": "Core Development",
+      "tasks": [
+        {"id": "D1", "task": "Data model designed", "status": "pending", "notes": "Use architect skill"},
+        {"id": "D2", "task": "Trigger framework implemented", "status": "pending", "notes": "Kevin O'Hara TriggerHandler"},
+        {"id": "D3", "task": "Service layer built", "status": "pending", "notes": ""},
+        {"id": "D4", "task": "LWC components built", "status": "pending", "notes": ""},
+        {"id": "D5", "task": "Test coverage 75%+", "status": "pending", "notes": "sf apex run test --code-coverage"},
+        {"id": "D6", "task": "Security review passed (internal)", "status": "pending", "notes": "Run security-review-agent"}
+      ]
+    },
+    "packaging": {
+      "label": "2GP Packaging",
+      "tasks": [
+        {"id": "P1", "task": "Package created", "status": "pending", "notes": "sf package create -n <name> -t Managed"},
+        {"id": "P2", "task": "Beta version built", "status": "pending", "notes": "sf package version create"},
+        {"id": "P3", "task": "Install tested in scratch org", "status": "pending", "notes": ""},
+        {"id": "P4", "task": "Upgrade path tested", "status": "pending", "notes": ""},
+        {"id": "P5", "task": "Version promoted", "status": "pending", "notes": "sf package version promote"}
+      ]
+    },
+    "appexchange": {
+      "label": "AppExchange Publishing",
+      "tasks": [
+        {"id": "A1", "task": "Partner agreement signed", "status": "pending", "notes": "partners.salesforce.com"},
+        {"id": "A2", "task": "Provider profile created", "status": "pending", "notes": "Partner Console > Provider Details"},
+        {"id": "A3", "task": "Listing created and approved", "status": "pending", "notes": ""},
+        {"id": "A4", "task": "Code Analyzer scan clean", "status": "pending", "notes": "sf scanner run --target force-app/"},
+        {"id": "A5", "task": "External domain scans (ZAP/Burp)", "status": "pending", "notes": "If app uses external APIs"},
+        {"id": "A6", "task": "Security review submitted", "status": "pending", "notes": "$999 fee for paid apps"},
+        {"id": "A7", "task": "Security review passed", "status": "pending", "notes": "4-6 weeks typical"},
+        {"id": "A8", "task": "LMA configured", "status": "pending", "notes": "License Management App"},
+        {"id": "A9", "task": "App published", "status": "pending", "notes": ""}
+      ]
+    }
+  },
+  "commands": {
+    "update": "jq '.phases.<phase>.tasks[] | select(.id==\"<ID>\") .status = \"done\"' .claude/checkpoints.json",
+    "view_pending": "jq '[.phases[].tasks[] | select(.status==\"pending\")] | length' .claude/checkpoints.json",
+    "view_phase": "jq '.phases.<phase>.tasks[]' .claude/checkpoints.json"
+  }
+}
+CHECKPOINTS
+
+# ═══════════════════════════════════════════════════════════
+#  .claude/hooks.md
+# ═══════════════════════════════════════════════════════════
+cat > .claude/hooks.md << 'HOOKS'
+# Hooks
+
+## Pre-Edit
+- run: scripts/hooks/pre-apex-format.sh
+- purpose: format Apex files with Prettier before write
+
+## Post-Deploy
+- run: scripts/hooks/post-deploy-validate.sh
+- purpose: run full test suite and validate coverage after deploy
+
+## Pre-Commit
+- run: scripts/hooks/lint-lwc.sh
+- purpose: lint LWC components before commit
+HOOKS
+
+# ═══════════════════════════════════════════════════════════
+#  .claude/mcp.md
+# ═══════════════════════════════════════════════════════════
+cat > .claude/mcp.md << 'MCP'
+# MCP — Salesforce DX MCP Server
+
+This project uses the official `@salesforce/mcp` server (Beta).
+Config: `.mcp.json` at project root.
+
+## Available Toolsets
+- `orgs` — manage authorized orgs (list, open, display)
+- `metadata` — deploy, retrieve, list metadata
+- `data` — run SOQL queries, manage records
+- `users` — assign permission sets, manage users
+- `testing` — run Apex tests, agent tests
+- `code-analysis` — Salesforce Code Analyzer (static analysis)
+- `lwc-experts` — LWC development guidance, best practices, Figma-to-LWC
+
+## Key Tools
+- `run_soql_query` — run SOQL against connected org
+- `run_apex_test` — execute Apex tests
+- `run_code_analyzer` — static analysis for security/quality
+- `assign_permission_set` — assign permsets to users
+- `guide_lwc_best_practices` — LWC coding standards
+
+## Usage
+Tools are auto-available via MCP protocol. Use natural language:
+- "Run all Apex tests in my scratch org"
+- "Deploy the Account trigger to my scratch org"
+- "Analyze my Apex code for security issues"
+
+## Docs
+- https://github.com/salesforcecli/mcp
+- https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_mcp.htm
+MCP
+
+# ═══════════════════════════════════════════════════════════
+#  .mcp.json (Salesforce DX MCP Server)
+# ═══════════════════════════════════════════════════════════
+cat > .mcp.json << EOF
+{
+  "mcpServers": {
+    "Salesforce DX": {
+      "command": "npx",
+      "args": [
+        "-y", "@salesforce/mcp",
+        "--orgs", "DEFAULT_TARGET_ORG,DEFAULT_TARGET_DEV_HUB",
+        "--toolsets", "orgs,metadata,data,users,testing,code-analysis,lwc-experts",
+        "--allow-non-ga-tools"
+      ]
+    }
+  }
+}
+EOF
+
+# ═══════════════════════════════════════════════════════════
+#  scripts/hooks/
+# ═══════════════════════════════════════════════════════════
+cat > scripts/hooks/pre-apex-format.sh << 'HOOK'
+#!/usr/bin/env bash
+set -euo pipefail
+if command -v prettier >/dev/null 2>&1; then
+  npx prettier --plugin=prettier-plugin-apex --write "force-app/**/*.cls" "force-app/**/*.trigger" 2>/dev/null || true
+else
+  echo "⚠ prettier not found: npm install -D prettier prettier-plugin-apex"
+fi
+HOOK
+
+cat > scripts/hooks/post-deploy-validate.sh << 'HOOK'
+#!/usr/bin/env bash
+set -euo pipefail
+echo "Running post-deploy validation..."
+if sf apex run test --test-level RunLocalTests --code-coverage --result-format human --wait 10; then
+  echo "✓ All tests passed"
+  notify-send -u normal "Salesforce" "Post-deploy validation passed" 2>/dev/null || true
+else
+  echo "✗ Tests failed"
+  notify-send -u critical "Salesforce" "Post-deploy validation FAILED" 2>/dev/null || true
+  exit 1
+fi
+HOOK
+
+cat > scripts/hooks/lint-lwc.sh << 'HOOK'
+#!/usr/bin/env bash
+set -euo pipefail
+if command -v eslint >/dev/null 2>&1; then
+  npx eslint force-app/**/lwc/**/*.js --no-error-on-unmatched-pattern 2>/dev/null || true
+else
+  echo "⚠ eslint not found: npm install -D eslint @salesforce/eslint-config-lwc"
+fi
+HOOK
+
+chmod +x scripts/hooks/*.sh
+
+# ═══════════════════════════════════════════════════════════
+#  scripts/automation/
+# ═══════════════════════════════════════════════════════════
+cat > scripts/automation/generate-test-data.sh << TESTDATA
+#!/usr/bin/env bash
+set -euo pipefail
+outdir="force-app/main/default/classes"
+mkdir -p "\$outdir"
+
+cat > "\$outdir/TestDataFactory.cls" << 'APEX'
+@isTest
+public with sharing class TestDataFactory {
+
+    public static Account createAccount(Map<String,Object> overrides) {
+        Account a = new Account(Name = 'Test Account');
+        if (overrides != null) {
+            for (String field : overrides.keySet()) {
+                a.put(field, overrides.get(field));
+            }
+        }
+        insert a;
+        return a;
+    }
+
+    public static List<Account> createAccounts(Integer count) {
+        List<Account> accs = new List<Account>();
+        for (Integer i = 0; i < count; i++) {
+            accs.add(new Account(Name = 'Test Account ' + i));
+        }
+        insert accs;
+        return accs;
+    }
+
+    public static Contact createContact(Account acct, Map<String,Object> overrides) {
+        Contact c = new Contact(
+            FirstName = 'Test',
+            LastName = 'Contact',
+            AccountId = acct.Id
+        );
+        if (overrides != null) {
+            for (String field : overrides.keySet()) {
+                c.put(field, overrides.get(field));
+            }
+        }
+        insert c;
+        return c;
+    }
+}
+APEX
+
+cat > "\$outdir/TestDataFactory.cls-meta.xml" << 'META'
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexClass xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <status>Active</status>
+</ApexClass>
+META
+
+echo "✓ TestDataFactory scaffolded to \$outdir/"
+TESTDATA
+
+cat > scripts/automation/scratch-org-setup.sh << SCRATCH
+#!/usr/bin/env bash
+set -euo pipefail
+# Full scratch org bootstrap: create → push → assign permsets → load data
+
+ALIAS="\${1:-${name}-scratch}"
+DEVHUB="${devhub}"
+DURATION="\${2:-7}"
+DEF_FILE="config/project-scratch-def.json"
+
+echo "Creating scratch org: \$ALIAS (duration: \$DURATION days)"
+
+# Create scratch org
+sf org create scratch \\
+  --target-dev-hub "\$DEVHUB" \\
+  --definition-file "\$DEF_FILE" \\
+  --alias "\$ALIAS" \\
+  --duration-days "\$DURATION" \\
+  --set-default \\
+  --wait 10
+
+echo "✓ Scratch org created: \$ALIAS"
+
+# Push source
+echo "Deploying source..."
+sf project deploy start --target-org "\$ALIAS"
+echo "✓ Source deployed"
+
+# Run tests
+echo "Running tests..."
+sf apex run test --test-level RunLocalTests --result-format human --wait 10 --target-org "\$ALIAS" || true
+
+echo "✓ Scratch org \$ALIAS is ready"
+echo "  Open: sf org open --target-org \$ALIAS"
+notify-send "Salesforce" "Scratch org \$ALIAS ready ✓" 2>/dev/null || true
+SCRATCH
+
+chmod +x scripts/automation/*.sh
+
+# ═══════════════════════════════════════════════════════════
+#  Root CLAUDE.md (pointer)
+# ═══════════════════════════════════════════════════════════
+cat > CLAUDE.md << EOF
+# ${name}
+
+Salesforce 2GP project. AI-assisted development via \`.claude/\` intelligence layer.
+
+## Quick Reference
+- **Namespace:** ${namespace:-<not-set>}
+- **Dev Hub:** ${devhub}
+- **CLI:** \`sf\` (unified CLI only)
+- **MCP:** Salesforce DX MCP Server (see \`.mcp.json\`)
+
+## Agent Commands (manual invocation)
+- \`code-review-agent\` — static analysis for Apex changes
+- \`qa-agent\` — generate and run tests
+- \`security-review-agent\` — AppExchange security audit
+- \`learn-agent\` — explain what you just built (learn-by-doing)
+- \`git-agent\` — worktree parallel development
+- \`packaging-agent\` — 2GP version lifecycle
+- \`research-agent\` — fetch docs and metadata
+- \`doc-writer-agent\` — generate class/component documentation
+
+## Checkpoints
+- \`.claude/checkpoints.json\` — project milestone tracker (setup → dev → packaging → appexchange)
+- View: \`jq '.phases.development.tasks[]' .claude/checkpoints.json\`
+
+## Skills (auto-activated)
+- \`architect\` — solution design guidance
+- \`create-2gp-version\` — package version lifecycle
+- \`run-apex-tests\` — test execution
+- \`deploy-validate\` — deployment validation
+- \`generate-test-factory\` — TestDataFactory scaffolding
+- \`metadata-audit\` — deprecated metadata detection
+- \`appexchange-research\` — competitor analysis
+
+## Rules (always enforced)
+- \`apex-standards\` — bulkify, no DML in loops, with sharing
+- \`lwc-standards\` — @wire, SLDS, Jest, a11y
+- \`security-rules\` — CRUD/FLS, SOQL injection, no secrets
+- \`2gp-packaging\` — version, promote, dependencies
+- \`cli-usage\` — sf CLI patterns
+- \`source-tracking\` — source-driven workflow
+EOF
+
+# ═══════════════════════════════════════════════════════════
+#  README.md
+# ═══════════════════════════════════════════════════════════
+cat > README.md << EOF
+# ${name}
+
+Salesforce 2GP managed package project.
+
+## Setup
+
+1. **Authenticate Dev Hub:**
+   \`\`\`bash
+   sf org login web --alias ${devhub} --set-default-dev-hub
+   \`\`\`
+
+2. **Create scratch org:**
+   \`\`\`bash
+   bash scripts/automation/scratch-org-setup.sh
+   \`\`\`
+
+3. **Deploy source:**
+   \`\`\`bash
+   sf project deploy start
+   \`\`\`
+
+4. **Run tests:**
+   \`\`\`bash
+   sf apex run test --test-level RunLocalTests --code-coverage
+   \`\`\`
+
+## Project Structure
+
+\`\`\`
+force-app/main/default/    Source metadata (Apex, LWC, objects, etc.)
+.claude/                   AI intelligence layer (rules, skills, agents)
+.mcp.json                  Salesforce DX MCP Server config
+scripts/hooks/             Pre-commit and post-deploy hooks
+scripts/automation/        Scratch org setup, test data generation
+\`\`\`
+
+## AI-Assisted Development
+
+This project includes a \`.claude/\` directory with:
+- **Rules** — enforced coding and security standards
+- **Skills** — executable checklists for common tasks
+- **Agents** — specialized sub-agents for code review, QA, security audit
+- **Memory** — persistent project context
+
+See \`CLAUDE.md\` for full reference.
+
+## Security
+
+- Secrets go in Named Credentials or CI variables — never in source
+- Run \`security-review-agent\` before AppExchange submission
+- Run \`sf scanner run --target force-app/\` for Code Analyzer compliance
+EOF
+
+# ═══════════════════════════════════════════════════════════
+#  Git init + commit
+# ═══════════════════════════════════════════════════════════
+git init -q
+git add -A
+git commit -q -m "feat: scaffold ${name} with .claude intelligence layer"
+
+echo ""
+echo "✓ Project ${name} created at ./${name}"
+echo "  Namespace: ${namespace:-<none>}"
+echo "  Dev Hub:   ${devhub}"
+echo "  Template:  ${template}"
+echo ""
+echo "  Next steps:"
+echo "    cd ${name}"
+echo "    sf org login web --alias ${devhub} --set-default-dev-hub"
+echo "    bash scripts/automation/scratch-org-setup.sh"
+echo ""
+notify-send "Salesforce" "Project ${name} created ✓" 2>/dev/null || true
