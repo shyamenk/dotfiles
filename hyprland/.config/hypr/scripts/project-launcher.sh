@@ -3,9 +3,9 @@
 # Project launcher for Hyprland with wofi
 
 PROJECT_DIRS=(
-  "$HOME/Desktop/sales-force-dev/"   # Private/personal projects
-  "$HOME/Desktop/Development/Projects-Public"    # Open source/public projects
-  "$HOME/Desktop/Development/Projects-Lab"       # Learning/practicing/experiments
+  "$HOME/workspace/launcher" # Private/personal projects
+  # "$HOME/workspace/amd/"     # Open source/public projects
+  # "$HOME/workspace/labs/"    # Learning/practicing/experiments
 )
 
 # Temp file to store mappings
@@ -18,7 +18,7 @@ for dir in "${PROJECT_DIRS[@]}"; do
     find "$dir" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | while read -r path; do
       parent=$(basename "$(dirname "$path")" | sed 's/Projects-//')
       name=$(basename "$path")
-      echo "$name [$parent]	$path" >> "$TMPFILE"
+      echo "$name [$parent]	$path" >>"$TMPFILE"
     done
   fi
 done
