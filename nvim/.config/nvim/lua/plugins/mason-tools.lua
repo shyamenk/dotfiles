@@ -31,7 +31,6 @@ return {
         "hadolint",
 
         -- Markdown
-        "markdownlint",
         "markdown-toc",
 
         -- Shell

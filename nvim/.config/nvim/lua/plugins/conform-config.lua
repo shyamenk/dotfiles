@@ -4,7 +4,7 @@ return {
     opts = {
       formatters_by_ft = {
         -- Markdown formatting
-        markdown = { "prettier", "markdownlint" },
+        markdown = { "prettier" },
         -- Make sure other languages still work
         lua = { "stylua" },
         typescript = { "prettier" },
@@ -20,9 +20,6 @@ return {
       },
       formatters = {
         -- Custom markdown formatter settings
-        markdownlint = {
-          args = { "--fix", "--stdin" },
-        },
         prettier = {
           args = {
             "--stdin-filepath",

@@ -22,7 +22,7 @@ return {
         dockerfile = { "hadolint" },
 
         -- Markdown
-        markdown = { "markdownlint" },
+        markdown = {},
       }
 
       -- Create autocommand to trigger linting

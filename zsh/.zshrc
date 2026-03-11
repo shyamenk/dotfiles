@@ -22,19 +22,13 @@ ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
 # -----------------
 ZIM_HOME=${ZDOTDIR:-${HOME}}/.zim
 if [[ ! -e ${ZIM_HOME}/zimfw.zsh ]]; then
-  if (( ${+commands[curl]} )); then
-    curl -fsSL --create-dirs -o ${ZIM_HOME}/zimfw.zsh \
-        https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
-  else
-    mkdir -p ${ZIM_HOME} && wget -nv -O ${ZIM_HOME}/zimfw.zsh \
-        https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
-  fi
+  curl -fsSL --create-dirs -o ${ZIM_HOME}/zimfw.zsh \
+      https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
 fi
 if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
   source ${ZIM_HOME}/zimfw.zsh init -q
 fi
-# Custom completions (must be before Zim init)
-fpath=(~/.local/share/zsh/site-functions $fpath)
+fpath=(~/.local/share/zsh/site-functions ~/.cache/sf/autocomplete/functions/zsh $fpath)
 source ${ZIM_HOME}/init.zsh
 
 # -----------------
@@ -118,27 +112,20 @@ _fzf_comprun() {
 }
 
 # -----------------
-# LAZY LOAD NVM (major speedup ~300ms)
+# LAZY LOAD NVM
 # -----------------
 export NVM_DIR="$HOME/.nvm"
-nvm() {
-  unset -f nvm node npm npx
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-  nvm "$@"
-}
-node() { nvm --version >/dev/null 2>&1; unset -f node; node "$@"; }
-npm() { nvm --version >/dev/null 2>&1; unset -f npm; npm "$@"; }
-npx() { nvm --version >/dev/null 2>&1; unset -f npx; npx "$@"; }
 
-# -----------------
-# LAZY LOAD GVM (speedup ~100ms)
-# -----------------
-gvm() {
-  unset -f gvm
-  [[ -s "/home/shyamenk/.gvm/scripts/gvm" ]] && source "/home/shyamenk/.gvm/scripts/gvm"
-  gvm "$@"
+load_nvm() {
+  unset -f nvm node npm npx
+  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+  [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
 }
+
+nvm()  { load_nvm; nvm "$@"; }
+node() { load_nvm; node "$@"; }
+npm()  { load_nvm; npm "$@"; }
+npx()  { load_nvm; npx "$@"; }
 
 # -----------------
 # Git aliases
@@ -159,7 +146,7 @@ alias gr='git remote'
 alias gre='git reset'
 alias glg='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset" --abbrev-commit --date=relative'
 alias lg='lazygit'
-
+alias awsrag="export AWS_PROFILE=sf-rag"
 # -----------------
 # Eza aliases
 # -----------------
@@ -173,7 +160,6 @@ alias ls="eza --color=always --long --git --no-filesize --icons=always --no-time
 alias fb='z ~/Desktop/future-builds/'
 alias rm='trash-put'
 alias logs='cat /var/log/system-monitor/system_stats.log'
-alias cybersec="cd ~/cybersec"
 alias dcp='docker-compose up'
 alias dcd='docker-compose down'
 alias t="tmux -u"
@@ -181,7 +167,6 @@ alias n="nvim"
 alias cpd="db_connect prod"
 alias cdd="db_connect dev"
 alias yt="yt-insights"
-alias '??'=fabric_wrapper
 
 # AWS profile aliases
 alias aws-default='export AWS_PROFILE=default && echo "Switched to DEFAULT profile" && aws sts get-caller-identity --query "Account" --output text'
@@ -192,17 +177,6 @@ alias aws-current='echo "Current profile: ${AWS_PROFILE:-default}" && aws sts ge
 # -----------------
 # Functions (consolidated - single definitions)
 # -----------------
-
-# Auto-activate cybersec venv on cd
-function cd() {
-  builtin cd "$@" || return
-  local cybersec_path="$HOME/cybersec"
-  if [[ "$PWD" == "$cybersec_path"* ]]; then
-    [[ -z "$VIRTUAL_ENV" ]] && source "$HOME/cybersec/python-env/venv/bin/activate"
-  elif [[ -n "$VIRTUAL_ENV" && "$VIRTUAL_ENV" == *"cybersec/python-env/venv"* ]]; then
-    deactivate
-  fi
-}
 
 # Yazi file manager
 function y() {
@@ -233,15 +207,6 @@ pf() {
   [[ -n "$entry" ]] && pass -c "$entry"
 }
 
-# Fabric wrapper
-fabric_wrapper() {
-  if [[ -t 0 ]]; then
-    fabric "$@"
-  else
-    cat - | fabric "$@"
-  fi
-}
-
 # -----------------
 # Source external files (if they exist)
 # -----------------
@@ -249,11 +214,11 @@ fabric_wrapper() {
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # -----------------
-# Tool initializations (at end for speed)
+# Tool initializations (cached for speed — regenerate with: fzf --zsh > ~/.config/fzf_init.zsh etc.)
 # -----------------
-eval "$(fzf --zsh)" 2>/dev/null
-eval "$(zoxide init zsh)" 2>/dev/null
-eval "$(starship init zsh)"
+source ~/.config/fzf_init.zsh
+source ~/.config/zoxide_init.zsh
+source ~/.config/starship_init.zsh
 
 # Lazy load uv completions
 if (( ${+commands[uv]} )); then
@@ -266,14 +231,22 @@ if (( ${+commands[uv]} )); then
   }
   compdef _uv uv
 fi
-# AWS CLI auto-completion
-autoload bashcompinit && bashcompinit
-complete -C '/usr/local/bin/aws_completer' aws
+# AWS CLI auto-completion (lazy — loaded on first aws <TAB>)
+aws() {
+  unfunction aws
+  autoload -Uz bashcompinit && bashcompinit
+  complete -C '/usr/local/bin/aws_completer' aws
+  command aws "$@"
+}
 alias c='cmdx'
 alias cx='cmdx pick'
-export PATH="$HOME/.local/bin:$PATH"
-
-. "$HOME/.atuin/bin/env"
-
-eval "$(atuin init zsh)"
+source ~/.config/atuin_init.zsh
 alias nush='nu'
+alias ld="lazydocker"
+
+# bun completions (already sourced above)
+alias bt-cmf="bluetoothctl connect 3C:B0:ED:39:58:64"
+alias ag=antigravity
+alias exp="python3 ~/ex.py"
+
+

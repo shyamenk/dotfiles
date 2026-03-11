@@ -57,7 +57,7 @@ return {
         return out
       end,
       templates = {
-        subdir = "12-templates",
+        subdir = "templates",
         date_format = "%d-%m-%Y",
         time_format = "%H:%M",
         substitutions = {},
@@ -67,7 +67,7 @@ return {
         date_format = "%d-%m-%Y",
         alias_format = "%B %-d, %Y",
         default_tags = { "daily-notes" },
-        template = "Daily Note.md",
+        template = "daily-note.md",
       },
       completion = {
         nvim_cmp = false, -- Disable nvim-cmp integration since we use blink.cmp
@@ -96,43 +96,6 @@ return {
             return require("obsidian").util.smart_action()
           end,
           opts = { buffer = true, expr = true },
-        },
-      },
-      ui = {
-        enable = true,
-        update_debounce = 200,
-        checkboxes = {
-          [" "] = { char = "󰄱", hl_group = "ObsidianTodo" },
-          ["x"] = { char = "󰱒", hl_group = "ObsidianDone" },
-          ["-"] = { char = "󰥔", hl_group = "ObsidianPartiallyDone" },
-          ["~"] = { char = "󰪥", hl_group = "ObsidianInProgress" },
-          [">"] = { char = "󰪠", hl_group = "ObsidianForwarded" },
-          ["/"] = { char = "󰰱", hl_group = "ObsidianCancelled" },
-          ["!"] = { char = "󰀪", hl_group = "ObsidianImportant" },
-          ["?"] = { char = "󰘥", hl_group = "ObsidianQuestion" },
-        },
-        external_link_icon = { char = "󰌹", hl_group = "ObsidianExtLinkIcon" },
-        reference_text = { hl_group = "ObsidianRefText" },
-        highlight_text = { hl_group = "ObsidianHighlightText" },
-        tags = { hl_group = "ObsidianTag" },
-        block_ids = { hl_group = "ObsidianBlockID" },
-        hl_groups = {
-          ObsidianTodo = { bold = true, fg = "#f78c6c" },
-          ObsidianDone = { bold = true, fg = "#89ddff" },
-          ObsidianPartiallyDone = { bold = true, fg = "#ffcb6b" },
-          ObsidianInProgress = { bold = true, fg = "#ffb86c" },
-          ObsidianForwarded = { bold = true, fg = "#82aaff" },
-          ObsidianCancelled = { bold = true, fg = "#ff5370" },
-          ObsidianImportant = { bold = true, fg = "#ff5370" },
-          ObsidianQuestion = { bold = true, fg = "#c3e88d" },
-          ObsidianRightArrow = { bold = true, fg = "#f78c6c" },
-          ObsidianTilde = { bold = true, fg = "#ff5370" },
-          ObsidianBullet = { bold = true, fg = "#89ddff" },
-          ObsidianRefText = { underline = true, fg = "#c3e88d" },
-          ObsidianExtLinkIcon = { fg = "#c3e88d" },
-          ObsidianTag = { italic = true, fg = "#89ddff" },
-          ObsidianBlockID = { italic = true, fg = "#89ddff" },
-          ObsidianHighlightText = { bg = "#75662e" },
         },
       },
       follow_url_func = function(url)
