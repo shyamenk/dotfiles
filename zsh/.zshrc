@@ -147,6 +147,8 @@ alias gre='git reset'
 alias glg='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset" --abbrev-commit --date=relative'
 alias lg='lazygit'
 alias awsrag="export AWS_PROFILE=sf-rag"
+
+eval "$(tv init zsh)"
 # -----------------
 # Eza aliases
 # -----------------
@@ -250,3 +252,24 @@ alias ag=antigravity
 alias exp="python3 ~/ex.py"
 
 
+
+# ── Television (tv) shortcuts ────────────────────────────────────────────────
+# AWS
+alias tvp='tv aws-profiles'                  # browse/switch AWS profiles
+alias tvssm='tv aws-ssm-params'              # browse SSM parameters
+alias tvcw='tv aws-cw-logs'                  # browse CloudWatch log groups
+alias tvs3='tv aws-s3-buckets'               # browse S3 buckets
+alias tvec2='tv aws-ec2-instances'           # browse EC2 instances
+alias tvecs='tv aws-ecs-services'            # browse ECS services
+
+# Docker
+alias tvd='tv docker-containers'             # browse containers
+alias tvdi='tv docker-images'                # browse images
+
+# Git / Dev
+alias tvb='tv git-branch'                    # browse branches
+alias tvn='tv npm-scripts'                   # run npm scripts
+alias tvg='tv git-repos'                     # browse git repos
+
+# Quick on-the-fly AWS pickers (no channel file needed)
+tvtf() { tv --source-command "aws sts get-caller-identity --output yaml" --preview-command "aws configure list --profile {}" ; }
