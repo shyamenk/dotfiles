@@ -8,5 +8,5 @@ WALLPAPER_DIR="$HOME/Pictures/wallpaper"
 WALLPAPER=$(find "$WALLPAPER_DIR" -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" \) | shuf -n 1)
 
 if [ -n "$WALLPAPER" ]; then
-    swww img "$WALLPAPER" --transition-type fade --transition-duration 2
+    awww img "$WALLPAPER" --transition-type fade --transition-duration 2
 fi
