@@ -147,7 +147,7 @@ alias gre='git reset'
 alias glg='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset" --abbrev-commit --date=relative'
 alias lg='lazygit'
 alias awsrag="export AWS_PROFILE=sf-rag"
-
+source ~/.zsh/functions/cleanpaste.zsh
 eval "$(tv init zsh)"
 # -----------------
 # Eza aliases
@@ -273,3 +273,20 @@ alias tvg='tv git-repos'                     # browse git repos
 
 # Quick on-the-fly AWS pickers (no channel file needed)
 tvtf() { tv --source-command "aws sts get-caller-identity --output yaml" --preview-command "aws configure list --profile {}" ; }
+
+# Hooli-Box cluster config
+export KUBECONFIG=~/.kube/hooli-box.yaml
+alias k=kubectl
+# Lazy-load kubectl completion
+kubectl() {
+  unfunction kubectl
+  source <(command kubectl completion zsh)
+  command kubectl "$@"
+}
+
+# Lazy-load helm completion
+helm() {
+  unfunction helm
+  source <(command helm completion zsh)
+  command helm "$@"
+}
