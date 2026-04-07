@@ -149,6 +149,8 @@ alias lg='lazygit'
 alias awsrag="export AWS_PROFILE=sf-rag"
 source ~/.zsh/functions/cleanpaste.zsh
 eval "$(tv init zsh)"
+
+alias ssm-staging='aws ssm start-session --target i-0b4b015023a60d195 --region ap-south-1 --profile xed-staging --document-name AWS-StartInteractiveCommand --parameters command="sudo -iu ubuntu"'
 # -----------------
 # Eza aliases
 # -----------------
