@@ -292,3 +292,10 @@ helm() {
   source <(command helm completion zsh)
   command helm "$@"
 }
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/home/shyamenk/.lmstudio/bin"
+# End of LM Studio CLI section
+
+export PATH="$PATH:/home/shyamenk/.local/bin"
+export PATH=$PATH:/var/lib/snapd/snap/bin

@@ -13,6 +13,7 @@ Super + Shift + E       Exit Hyprland
 
  Applications
 Super + G               Google Chrome
+Super + Shift + G       Toggle Google Drive Mount
 Super + Shift + N       File Manager (Thunar)
 Super + P               Project Launcher
 Super + S               Salesforce Org Picker

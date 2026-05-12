@@ -9,7 +9,7 @@
 
     "modules-left": ["custom/launcher", "hyprland/workspaces"],
     "modules-center": ["clock"],
-    "modules-right": ["", "memory", "cpu", "pulseaudio", "backlight", "network", "battery", "custom/power"],
+    "modules-right": ["tray", "memory", "cpu", "pulseaudio", "network", "battery", "custom/power"],
 
     "custom/launcher": {
         "format": "󰣇 LinuX",
