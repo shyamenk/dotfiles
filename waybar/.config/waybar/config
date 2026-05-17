@@ -1,101 +1,113 @@
 {
-    "layer": "top",
-    "position": "top",
-    "height": 42,
-    "spacing": 10,
-    "margin-top": 8,
-    "margin-left": 12,
-    "margin-right": 12,
-
-    "modules-left": ["custom/launcher", "hyprland/workspaces"],
-    "modules-center": ["clock"],
-    "modules-right": ["tray", "memory", "cpu", "pulseaudio", "network", "battery", "custom/power"],
-
-    "custom/launcher": {
-        "format": "󰣇 LinuX",
-        "on-click": "wofi --show drun",
-        "tooltip": false
+  "layer": "top",
+  "position": "top",
+  "height": 42,
+  "spacing": 10,
+  "margin-top": 8,
+  "margin-left": 12,
+  "margin-right": 12,
+  "modules-left": [
+    "custom/launcher",
+    "hyprland/workspaces"
+  ],
+  "modules-center": [
+    "clock"
+  ],
+  "modules-right": [
+    "tray",
+    "memory",
+    "cpu",
+    "pulseaudio",
+    "network",
+    "battery",
+    "custom/power"
+  ],
+  "custom/launcher": {
+    "format": "󰊠 0xGhost",
+    "on-click": "wofi --show drun",
+    "tooltip": false
+  },
+  "hyprland/workspaces": {
+    "format": "{name}",
+    "on-click": "activate",
+    "sort-by-number": true,
+    "all-outputs": true
+  },
+  "clock": {
+    "format": "󰥔 {:%a, %b %d %I:%M %p}",
+    "format-alt": "󰃭 {:%A, %B %d, %Y}",
+    "tooltip-format": "<span size='x-large' weight='bold'>{:%B %Y}</span>\n\n<span font='JetBrainsMono Nerd Font 14'>{calendar}</span>",
+    "calendar": {
+      "mode": "month",
+      "format": {
+        "months": "<span color='#cba6f7'><b>{}</b></span>",
+        "weeks": "<span color='#89b4fa'><b>W{}</b></span>",
+        "weekdays": "<span color='#fab387'><b>{}</b></span>",
+        "today": "<span color='#a6e3a1'><b><u>{}</u></b></span>"
+      }
     },
-
-    "hyprland/workspaces": {
-        "format": "{name}",
-        "on-click": "activate",
-        "sort-by-number": true,
-        "all-outputs": true
-    },
-
-    "clock": {
-        "format": "󰥔 {:%a, %b %d %I:%M %p}",
-        "format-alt": "󰃭 {:%A, %B %d, %Y}",
-        "tooltip-format": "<span size='x-large' weight='bold'>{:%B %Y}</span>\n\n<span font='JetBrainsMono Nerd Font 14'>{calendar}</span>",
-        "calendar": {
-            "mode": "month",
-            "format": {
-                "months": "<span color='#cba6f7'><b>{}</b></span>",
-                "weeks": "<span color='#89b4fa'><b>W{}</b></span>",
-                "weekdays": "<span color='#fab387'><b>{}</b></span>",
-                "today": "<span color='#a6e3a1'><b><u>{}</u></b></span>"
-            }
-        },
-    },
-
-    "memory": {
-        "interval": 2,
-        "format": "󰍛 {percentage}%",
-        "format-alt": "󰍛 {used:0.1f}G/{total:0.1f}G",
-        "tooltip-format": "RAM: {used:0.1f}GB / {total:0.1f}GB ({percentage}%)\nSwap: {swapUsed:0.1f}GB / {swapTotal:0.1f}GB"
-    },
-
-    "cpu": {
-        "interval": 2,
-        "format": "󰻠 {usage}%",
-        "tooltip-format": "CPU: {usage}%"
-    },
-
-    "pulseaudio": {
-        "format": "󰕾 {volume}%",
-        "format-muted": "󰝟 MUTE",
-        "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
-        "on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ +5%",
-        "on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ -5%"
-    },
-
-    "backlight": {
-        "device": "amdgpu_bl2",
-        "format": "󰃟 {percent}%"
-    },
-
-    "network": {
+  },
+  "memory": {
+    "interval": 2,
+    "format": "󰍛 {percentage}%",
+    "format-alt": "󰍛 {used:0.1f}G/{total:0.1f}G",
+    "tooltip-format": "RAM: {used:0.1f}GB / {total:0.1f}GB ({percentage}%)\nSwap: {swapUsed:0.1f}GB / {swapTotal:0.1f}GB"
+  },
+  "cpu": {
+    "interval": 2,
+    "format": "󰻠 {usage}%",
+    "tooltip-format": "CPU: {usage}%"
+  },
+  "pulseaudio": {
+    "format": "󰕾 {volume}%",
+    "format-muted": "󰝟 MUTE",
+    "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+    "on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ +5%",
+    "on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ -5%"
+  },
+  "backlight": {
+    "device": "amdgpu_bl2",
+    "format": "󰃟 {percent}%"
+  },
+  "network": {
     "format-wifi": "󰖩 {essid}",
     "format-ethernet": "󰈀 {ipaddr}",
     "format-wifi": "󰖩 {essid} ({signalStrength}%)",
     "format-disconnected": "󰖪 Disconnected",
     "tooltip-format": "{ifname}: {ipaddr}/{cidr}",
     "on-click": "alacritty -e impala"
-   },
-
-    "battery": {
-        "bat": "BAT1",
-        "interval": 5,
-        "states": {
-            "warning": 30,
-            "critical": 10
-        },
-        "format": "{icon} {capacity}%",
-        "format-charging": "󰂄 {capacity}%",
-        "format-plugged": "󰂄 {capacity}%",
-        "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
-        "tooltip-format": "{timeTo}\n{power}W"
+  },
+  "battery": {
+    "bat": "BAT1",
+    "interval": 5,
+    "states": {
+      "warning": 30,
+      "critical": 10
     },
-
-    "tray": {
-        "icon-size": 18,
-        "spacing": 10
-    },
-
-    "custom/power": {
-        "format": "󰐥",
-        "on-click": "~/.config/hypr/scripts/power-menu.sh",
-        "tooltip": false
-    }
+    "format": "{icon} {capacity}%",
+    "format-charging": "󰂄 {capacity}%",
+    "format-plugged": "󰂄 {capacity}%",
+    "format-icons": [
+      "󰁺",
+      "󰁻",
+      "󰁼",
+      "󰁽",
+      "󰁾",
+      "󰁿",
+      "󰂀",
+      "󰂁",
+      "󰂂",
+      "󰁹"
+    ],
+    "tooltip-format": "{timeTo}\n{power}W"
+  },
+  "tray": {
+    "icon-size": 18,
+    "spacing": 10
+  },
+  "custom/power": {
+    "format": "󰐥",
+    "on-click": "~/.config/hypr/scripts/power-menu.sh",
+    "tooltip": false
+  }
 }
