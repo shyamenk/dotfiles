@@ -60,15 +60,4 @@ return {
     end,
   },
 
-  -- Telescope integration improvements
-  {
-    "nvim-telescope/telescope.nvim",
-    opts = {
-      defaults = {
-        completion = {
-          completeopt = "menu,menuone,noinsert",
-        },
-      },
-    },
-  },
 }

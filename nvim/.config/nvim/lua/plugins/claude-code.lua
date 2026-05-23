@@ -42,11 +42,11 @@ return {
       },
       keymaps = {
         toggle = {
-          normal = "<C-,>",
-          terminal = "<C-,>",
+          normal = "<leader>ai",
+          terminal = "<leader>ai",
           variants = {
-            continue = "<leader>cC",
-            verbose = "<leader>cV",
+            continue = "<leader>aC",
+            verbose = "<leader>aV",
           },
         },
         window_navigation = true,

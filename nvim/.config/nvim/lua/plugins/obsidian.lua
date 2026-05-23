@@ -34,7 +34,7 @@ return {
       workspaces = {
         {
           name = "vault2",
-          path = "~/Documents/Second Brain",
+          path = "~/Documents/second-brain",
         },
       },
       notes_subdir = "inbox",

@@ -6,7 +6,7 @@ vim.keymap.set("n", "<leader>log", function()
   require("telescope.builtin").live_grep({ default_text = "console\\.log\\(", initial_mode = "normal" })
 end, { desc = "List console.logs" })
 -- Claude Code
-keymap.set("n", "<leader>cc", "<cmd>ClaudeCode<CR>", { desc = "Toggle Claude Code" })
+keymap.set("n", "<leader>ai", "<cmd>ClaudeCode<CR>", { desc = "Toggle Claude Code" })
 
 -- General Keymaps
 keymap.set("n", "-", "<CMD>Oil --float<CR>", { desc = "Open parent directory" })
@@ -14,7 +14,10 @@ keymap.set("n", "<leader><left>", ":vertical resize +20<CR>", { desc = "Increase
 keymap.set("n", "<leader><right>", ":vertical resize -20<CR>", { desc = "Decrease Vertical Window Size" })
 keymap.set("n", "<leader><up>", ":resize +10<CR>", { desc = "Increase Horizontal Window Size" })
 keymap.set("n", "<leader><down>", ":resize -10<CR>", { desc = "Decrease Horizontal Window Size" })
-vim.keymap.set("n", "gp", "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", { noremap = true })
+vim.keymap.set("n", "gp", function()
+  vim.cmd("vsplit")
+  vim.lsp.buf.definition()
+end, { noremap = true, desc = "Peek Definition (split)" })
 -- Exit insert mode with 'jj'
 keymap.set("i", "jj", "<ESC>", { desc = "Exit Insert Mode" })
 
@@ -73,12 +76,14 @@ keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close Split Window" })
 keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go To Previous Diagnostic" })
 keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go To Next Diagnostic" })
 keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open Diagnostics List" })
-keymap.set(
-  "n",
-  "<leader><leader>",
-  "<cmd>lua require('goto-preview').close_all_win()<CR>",
-  { noremap = true, desc = "Close All Preview Windows" }
-)
+keymap.set("n", "<leader><leader>", function()
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local cfg = vim.api.nvim_win_get_config(win)
+    if cfg.relative ~= "" then
+      vim.api.nvim_win_close(win, false)
+    end
+  end
+end, { noremap = true, desc = "Close All Floating Windows" })
 
 -----------------------
 -- Obsidian Keymaps --
@@ -101,7 +106,7 @@ keymap.set("n", "<leader>ot", function()
   local actions = require("telescope.actions")
   local action_state = require("telescope.actions.state")
 
-  local template_dir = vim.fn.expand("~/Documents/Second Brain/12-templates")
+  local template_dir = vim.fn.expand("~/Documents/second-brain/12-templates")
   local templates = vim.fn.glob(template_dir .. "/*.md", false, true)
 
   pickers.new({}, {
@@ -124,7 +129,7 @@ keymap.set("n", "<leader>ot", function()
         vim.ui.input({ prompt = "Note name: " }, function(name)
           if name and name ~= "" then
             local slug = name:gsub(" ", "-"):lower()
-            local note_path = vim.fn.expand("~/Documents/Second Brain/inbox/" .. slug .. ".md")
+            local note_path = vim.fn.expand("~/Documents/second-brain/inbox/" .. slug .. ".md")
             local template_content = vim.fn.readfile(selection.value)
             vim.fn.writefile(template_content, note_path)
             vim.cmd("edit " .. note_path)
@@ -165,13 +170,10 @@ keymap.set("n", "<leader>tc", function()
   end
 end, { desc = "Toggle checkbox state" })
 
--- Bullets toggle
-keymap.set("n", "<leader>x", "<Plug>(bullets-toggle-checkbox)", { desc = "Toggle bullet checkbox" })
+
 
 -- Manual formatting
 keymap.set("n", "<leader>cf", function()
   require("conform").format({ async = true, lsp_fallback = true })
 end, { desc = "Format current buffer" })
 
--- Enable Twilight plugin
-keymap.set("n", "<leader>tw", ":Twilight<enter>", { desc = "Enable Twilight Mode" })

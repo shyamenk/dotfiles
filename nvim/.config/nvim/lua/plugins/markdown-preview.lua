@@ -8,4 +8,8 @@ return {
 	init = function()
 		vim.g.mkdp_theme = "dark"
 	end,
+	keys = {
+		{ "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", desc = "Markdown Preview (Browser)" },
+		{ "<leader>mps", "<cmd>MarkdownPreviewStop<cr>", desc = "Stop Markdown Preview" },
+	},
 }
