@@ -67,17 +67,19 @@ tooltip label {
 
 #workspaces {
   background-color: @surface0;
-  border-radius: 10px;
-  padding: 2px 6px;
-  margin: 4px 0;
+  border-radius: 8px;
+  padding: 1px 4px;
+  margin: 3px 0;
 }
 
 #workspaces button {
-  padding: 0 8px;
-  margin: 2px;
+  min-width: 24px;
+  padding: 2px 4px;
+  margin: 1px;
   color: @overlay0;
   background: transparent;
-  border-radius: 8px;
+  border-radius: 6px;
+  font-size: 13px;
   transition: all 0.2s ease;
 }
 
