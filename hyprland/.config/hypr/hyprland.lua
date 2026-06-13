@@ -253,6 +253,11 @@ hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd([[pkill -INT wf-recorder && n
 hl.bind(mainMod .. " + SHIFT + Y", hl.dsp.exec_cmd("~/.config/hypr/scripts/color-picker.sh"))
 hl.bind(mainMod .. " + SHIFT + O", hl.dsp.exec_cmd("~/.config/hypr/scripts/text-extractor.sh"))
 
+-- Speech to Text (Handy)
+hl.bind(mainMod .. " + T",         hl.dsp.exec_cmd("handy --toggle-transcription"))
+hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd("handy --toggle-post-process"))
+hl.bind(mainMod .. " + ALT + T",   hl.dsp.exec_cmd("handy --cancel"))
+
 -- Password Manager
 hl.bind(mainMod .. " + ALT + P", hl.dsp.exec_cmd("~/.config/hypr/scripts/rofi-pass.sh"))
 
@@ -320,6 +325,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
     hl.exec_cmd("hypridle")
     hl.exec_cmd("~/.config/hypr/scripts/battery_alert.sh")
+    hl.exec_cmd("handy --start-hidden")
     hl.exec_cmd("wl-paste --type text --watch cliphist store")
     hl.exec_cmd("wl-paste --type image --watch cliphist store")
     hl.exec_cmd("thunar --daemon")
@@ -337,7 +343,7 @@ end)
 -- 1. Toggleable Window Transparency Keybind
 local semi_transparent_windows = {}
 
-hl.bind(mainMod .. " + SHIFT + T", function()
+hl.bind(mainMod .. " + CTRL + O", function()
     local win = hl.get_active_window()
     if win and win.address then
         local addr = win.address

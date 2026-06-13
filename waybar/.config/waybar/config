@@ -31,7 +31,8 @@
     "format": "{name}",
     "on-click": "activate",
     "sort-by-number": true,
-    "all-outputs": true
+    "all-outputs": false,
+    "disable-scroll": true
   },
   "clock": {
     "format": "󰥔 {:%a, %b %d %I:%M %p}",
@@ -45,7 +46,7 @@
         "weekdays": "<span color='#fab387'><b>{}</b></span>",
         "today": "<span color='#a6e3a1'><b><u>{}</u></b></span>"
       }
-    },
+    }
   },
   "memory": {
     "interval": 2,
@@ -70,7 +71,6 @@
     "format": "󰃟 {percent}%"
   },
   "network": {
-    "format-wifi": "󰖩 {essid}",
     "format-ethernet": "󰈀 {ipaddr}",
     "format-wifi": "󰖩 {essid} ({signalStrength}%)",
     "format-disconnected": "󰖪 Disconnected",

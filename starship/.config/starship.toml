@@ -1,0 +1,3 @@
+# Starship configuration
+# Timeout for directory scanning (in milliseconds)
+scan_timeout = 500
