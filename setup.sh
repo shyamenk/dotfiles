@@ -24,8 +24,49 @@ echo -e "${BLUE}================================================================
        ARCH LINUX + HYPRLAND ENVIRONMENT SETUP
 =====================================================================${NC}"
 
-if [ "$(id -u)" -ne 0 ]; then
+# ============================================================================
+# DRY RUN mode — mock all destructive commands, show what would run
+# Usage: bash setup.sh --dry-run
+# ============================================================================
+DRY_RUN=false
+if [[ "${1:-}" == "--dry-run" ]]; then
+    DRY_RUN=true
+    shift
+    warn "DRY RUN — no commands will be executed"
+    echo
+
+    # Mock every destructive command used in this script
+    pacman()     { echo "  [DRY] pacman $*"; }
+    yay()        { echo "  [DRY] yay $*"; }
+    makepkg()    { echo "  [DRY] makepkg $*"; }
+    systemctl()  { echo "  [DRY] systemctl $*"; }
+    flatpak()    { echo "  [DRY] flatpak $*"; }
+    chpasswd()   { echo "  [DRY] chpasswd (setting password)"; }
+    chsh()       { echo "  [DRY] chsh $*"; }
+    usermod()    { echo "  [DRY] usermod $*"; }
+    mkinitcpio() { echo "  [DRY] mkinitcpio $*"; }
+    sed()        { echo "  [DRY] sed $*"; }
+    curl()       { echo "  [DRY] curl $*"; }
+    stow()       { echo "  [DRY] stow $*"; }
+    xdg-user-dirs-update() { echo "  [DRY] xdg-user-dirs-update"; }
+    atuin()      { echo "  [DRY] atuin $*"; }
+
+    # sudo -u in dry-run: extract and echo the actual command, skip execution
+    sudo() {
+        if [[ "$1" == "-u" ]]; then
+            echo "  [DRY] (as ${2}) ${*:3}"
+        else
+            echo "  [DRY] sudo $*"
+        fi
+    }
+
+    export -f pacman yay makepkg systemctl flatpak chpasswd chsh usermod
+    export -f mkinitcpio sed curl stow atuin sudo xdg-user-dirs-update
+fi
+
+if [ "$DRY_RUN" = false ] && [ "$(id -u)" -ne 0 ]; then
     error "Usage: sudo ./setup.sh [user-password]"
+    error "  Dry run: bash setup.sh --dry-run"
     exit 1
 fi
 
@@ -46,9 +87,13 @@ USER_PASS="${1:-}"
 # Password & NOPASSWD setup — eliminates ALL prompts during yay/makepkg/flatpak
 # ============================================================================
 SUDOERS_TMP="/etc/sudoers.d/zzz-setup-nopasswd"
-echo "$REGULAR_USER ALL=(ALL) NOPASSWD: ALL" > "$SUDOERS_TMP"
-chmod 440 "$SUDOERS_TMP"
-trap 'rm -f "$SUDOERS_TMP"; log "NOPASSWD sudoers removed."' EXIT
+if [ "$DRY_RUN" = false ]; then
+    echo "$REGULAR_USER ALL=(ALL) NOPASSWD: ALL" > "$SUDOERS_TMP"
+    chmod 440 "$SUDOERS_TMP"
+    trap 'rm -f "$SUDOERS_TMP"; log "NOPASSWD sudoers removed."' EXIT
+else
+    warn "[DRY] Would write NOPASSWD sudoers entry → $SUDOERS_TMP"
+fi
 
 # Set user password so sudo cache is valid from the start
 if [ -n "$USER_PASS" ]; then
@@ -329,10 +374,14 @@ if grep -q "^MODULES=" /etc/mkinitcpio.conf; then
 fi
 
 # Create NVIDIA modprobe config
-cat > /etc/modprobe.d/nvidia.conf << 'EOF'
+if [ "$DRY_RUN" = false ]; then
+    cat > /etc/modprobe.d/nvidia.conf << 'EOF'
 options nvidia_drm modeset=1 fbdev=1
 options nvidia NVreg_PreserveVideoMemoryAllocations=1
 EOF
+else
+    warn "[DRY] Would write /etc/modprobe.d/nvidia.conf"
+fi
 SUCCESSFUL+=("NVIDIA modprobe config")
 
 # Rebuild initramfs
@@ -356,11 +405,15 @@ systemctl enable bluetooth && SUCCESSFUL+=("bluetooth service") || SKIPPED+=("bl
 systemctl enable iwd && SUCCESSFUL+=("iwd service") || FAILED+=("iwd service")
 
 # Configure NetworkManager to use iwd backend
-mkdir -p /etc/NetworkManager/conf.d
-cat > /etc/NetworkManager/conf.d/wifi_backend.conf << 'EOF'
+if [ "$DRY_RUN" = false ]; then
+    mkdir -p /etc/NetworkManager/conf.d
+    cat > /etc/NetworkManager/conf.d/wifi_backend.conf << 'EOF'
 [device]
 wifi.backend=iwd
 EOF
+else
+    warn "[DRY] Would write /etc/NetworkManager/conf.d/wifi_backend.conf"
+fi
 SUCCESSFUL+=("NetworkManager iwd backend config")
 
 systemctl enable NetworkManager && SUCCESSFUL+=("NetworkManager service") || FAILED+=("NetworkManager service")
@@ -439,7 +492,7 @@ fi
 # ============================================================================
 
 # Remove temporary sudoers (trap also handles this on exit)
-rm -f "$SUDOERS_TMP"
+[ "$DRY_RUN" = false ] && rm -f "$SUDOERS_TMP" || true
 
 echo
 echo -e "${BLUE}=====================================================================
@@ -455,13 +508,17 @@ for item in "${SKIPPED[@]}"; do echo -e "  ${YELLOW}⚠${NC} $item"; done
 echo -e "\n${RED}Failed (${#FAILED[@]}):${NC}"
 for item in "${FAILED[@]}"; do echo -e "  ${RED}✗${NC} $item"; done
 
-LOG_FILE="/var/log/hyprland-setup-$(date +%Y%m%d-%H%M%S).log"
-{
-    echo "Setup Report - $(date)"
-    echo "Successful: ${SUCCESSFUL[*]}"
-    echo "Skipped: ${SKIPPED[*]}"
-    echo "Failed: ${FAILED[*]}"
-} > "$LOG_FILE"
+if [ "$DRY_RUN" = false ]; then
+    LOG_FILE="/var/log/hyprland-setup-$(date +%Y%m%d-%H%M%S).log"
+    {
+        echo "Setup Report - $(date)"
+        echo "Successful: ${SUCCESSFUL[*]}"
+        echo "Skipped: ${SKIPPED[*]}"
+        echo "Failed: ${FAILED[*]}"
+    } > "$LOG_FILE"
+else
+    LOG_FILE="(dry-run — no log written)"
+fi
 
 echo
 echo -e "${YELLOW}HOW TO RUN:${NC}"
