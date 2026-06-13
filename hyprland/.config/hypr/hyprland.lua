@@ -166,7 +166,8 @@ hl.env("WLR_NO_HARDWARE_CURSORS", "1")
 local mainMod = "SUPER"
 
 -- Core Binds
-hl.bind(mainMod .. " + Return", hl.dsp.exec_cmd("alacritty"))
+hl.bind(mainMod .. " + Return",         hl.dsp.exec_cmd("alacritty"))
+hl.bind(mainMod .. " + SHIFT + Return", hl.dsp.exec_cmd("wezterm"))
 hl.bind(mainMod .. " + Q",      hl.dsp.window.close())
 hl.bind(mainMod .. " + Space",  hl.dsp.exec_cmd("wofi --show drun"))
 hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprctl reload"))
