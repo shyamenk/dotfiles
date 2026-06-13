@@ -91,7 +91,7 @@ sudo -u "$REGULAR_USER" mkdir -p "$USER_HOME/.config"
 STOW_PACKAGES=(
     zsh tmux nvim alacritty wezterm kitty
     hyprland waybar wofi dunst
-    yazi bat scripts cmdx sfdocs
+    yazi bat scripts cmdx
     starship zathura
 )
 
@@ -355,15 +355,34 @@ systemctl enable NetworkManager && SUCCESSFUL+=("NetworkManager service") || FAI
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo && \
     SUCCESSFUL+=("Flathub remote") || warn "Flathub remote already exists or failed"
 
+# ---- rclone-gdrive user service ----
+RCLONE_SERVICE_SRC="$DOTFILES_DIR/systemd/rclone-gdrive.service"
+RCLONE_SERVICE_DEST="$USER_HOME/.config/systemd/user/rclone-gdrive.service"
+if [ -f "$RCLONE_SERVICE_SRC" ]; then
+    sudo -u "$REGULAR_USER" mkdir -p "$USER_HOME/.config/systemd/user"
+    sudo -u "$REGULAR_USER" cp "$RCLONE_SERVICE_SRC" "$RCLONE_SERVICE_DEST"
+    sudo -u "$REGULAR_USER" systemctl --user daemon-reload
+    sudo -u "$REGULAR_USER" systemctl --user enable rclone-gdrive.service
+    SUCCESSFUL+=("rclone-gdrive service enabled")
+else
+    warn "rclone-gdrive.service not found in dotfiles/systemd/ — skipping"
+    SKIPPED+=("rclone-gdrive service")
+fi
+
 # ---- XDG dirs ----
 sudo -u "$REGULAR_USER" xdg-user-dirs-update 2>/dev/null || true
 
 # ============================================================================
-# PHASE 10: Shell & Directories
+# PHASE 10: Shell, Directories & Dev Tooling
 # ============================================================================
 log "PHASE 10: Final setup..."
 
-sudo -u "$REGULAR_USER" mkdir -p "$USER_HOME"/{Pictures,Videos,Documents,Projects,.local/bin}
+# Workspace + standard dirs
+sudo -u "$REGULAR_USER" mkdir -p \
+    "$USER_HOME"/{Pictures/wallpaper,Videos,Documents,workspace,.local/bin} \
+    "$USER_HOME/workspace"/{personal,brand-levo,xed} \
+    "$USER_HOME/automations"
+SUCCESSFUL+=("Directory structure created")
 
 # Auto set zsh as default shell
 CURRENT_SHELL=$(getent passwd "$REGULAR_USER" | cut -d: -f7)
@@ -373,6 +392,35 @@ if [ "$CURRENT_SHELL" != "/bin/zsh" ] && [ "$CURRENT_SHELL" != "/usr/bin/zsh" ];
 else
     SKIPPED+=("zsh - already default shell")
 fi
+
+# ---- SSH key setup ----
+SSH_DIR="$USER_HOME/.ssh"
+if [ ! -f "$SSH_DIR/id_ed25519" ]; then
+    sudo -u "$REGULAR_USER" mkdir -p "$SSH_DIR"
+    chmod 700 "$SSH_DIR"
+    warn "No SSH key found. Generate one manually:"
+    warn "  ssh-keygen -t ed25519 -C \"$REGULAR_USER\" && gh auth login"
+    SKIPPED+=("SSH key — manual step required")
+else
+    chmod 700 "$SSH_DIR"
+    chmod 600 "$SSH_DIR"/id_* 2>/dev/null || true
+    chmod 644 "$SSH_DIR"/*.pub 2>/dev/null || true
+    SUCCESSFUL+=("SSH key permissions set")
+fi
+
+# ---- Atuin shell history ----
+if command -v atuin &>/dev/null; then
+    sudo -u "$REGULAR_USER" bash -c 'atuin init zsh > /dev/null 2>&1 || true'
+    # Import existing shell history into atuin
+    sudo -u "$REGULAR_USER" bash -c '
+        export HOME='"$USER_HOME"'
+        atuin import auto 2>/dev/null || true
+    '
+    SUCCESSFUL+=("atuin initialized")
+else
+    SKIPPED+=("atuin — not installed")
+fi
+
 
 # ============================================================================
 # FINAL REPORT
@@ -408,5 +456,8 @@ echo -e "${YELLOW}POST-INSTALL:${NC}"
 echo "  1. Log out/in for docker group + shell change"
 echo "  2. Start Hyprland: Hyprland"
 echo "  3. Run tmux and press prefix + I to install tmux plugins"
+echo "  4. SSH key: ssh-keygen -t ed25519 -C \"you@email.com\" && gh auth login"
+echo "  5. Atuin sync: atuin login && atuin sync"
+echo "  6. rclone: rclone config (restore gdrive remote) then start rclone-gdrive.service"
 echo
 log "Setup complete! Report: $LOG_FILE"
