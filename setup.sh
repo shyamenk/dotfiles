@@ -25,28 +25,40 @@ echo -e "${BLUE}================================================================
 =====================================================================${NC}"
 
 if [ "$(id -u)" -ne 0 ]; then
-    error "Run with sudo"
+    error "Usage: sudo ./setup.sh [user-password]"
     exit 1
 fi
 
-# Get regular user - try multiple methods
-REGULAR_USER="${SUDO_USER:-$(logname 2>/dev/null)}"
-if [ -z "$REGULAR_USER" ] || [ "$REGULAR_USER" = "root" ]; then
-    error "Cannot determine regular user. Run with: sudo ./setup.sh"
+# User is always shyamenk on this machine
+REGULAR_USER="shyamenk"
+USER_HOME="/home/$REGULAR_USER"
+
+if ! id "$REGULAR_USER" &>/dev/null; then
+    error "User '$REGULAR_USER' does not exist. Create it first during archinstall."
     exit 1
 fi
-USER_HOME=$(getent passwd "$REGULAR_USER" | cut -d: -f6)
 
-log "Installing for user: $REGULAR_USER ($USER_HOME)"
+# Accept password as first arg — used to pre-seed sudo and set account password.
+# Never hardcode here; pass at runtime: sudo ./setup.sh yourpassword
+USER_PASS="${1:-}"
 
 # ============================================================================
-# Grant temporary NOPASSWD for the regular user (reverted at end)
-# This avoids repeated password prompts during yay/makepkg
+# Password & NOPASSWD setup — eliminates ALL prompts during yay/makepkg/flatpak
 # ============================================================================
 SUDOERS_TMP="/etc/sudoers.d/zzz-setup-nopasswd"
 echo "$REGULAR_USER ALL=(ALL) NOPASSWD: ALL" > "$SUDOERS_TMP"
 chmod 440 "$SUDOERS_TMP"
-trap 'rm -f "$SUDOERS_TMP"' EXIT
+trap 'rm -f "$SUDOERS_TMP"; log "NOPASSWD sudoers removed."' EXIT
+
+# Set user password so sudo cache is valid from the start
+if [ -n "$USER_PASS" ]; then
+    echo "$REGULAR_USER:$USER_PASS" | chpasswd
+    log "Password set for $REGULAR_USER"
+    # Pre-seed sudo timestamp so yay's internal sudo calls don't prompt
+    sudo -u "$REGULAR_USER" sudo -S -v <<< "$USER_PASS" 2>/dev/null || true
+fi
+
+log "Installing for user: $REGULAR_USER ($USER_HOME)"
 
 # ============================================================================
 # PHASE 1: System Update + Prerequisites
@@ -195,7 +207,8 @@ if ! command -v yay &>/dev/null; then
     rm -rf "$TEMP_YAY"
     sudo -u "$REGULAR_USER" git clone https://aur.archlinux.org/yay-bin.git "$TEMP_YAY"
     cd "$TEMP_YAY"
-    sudo -u "$REGULAR_USER" makepkg -si --noconfirm
+    # --noconfirm: no prompts; NOPASSWD sudoers handles the pacman install step
+    sudo -u "$REGULAR_USER" makepkg -si --noconfirm --noprogressbar
     cd /
     rm -rf "$TEMP_YAY"
     SUCCESSFUL+=("yay-bin")
@@ -239,7 +252,8 @@ for pkg in "${AUR_PKGS[@]}"; do
     if pacman -Q "$pkg" &>/dev/null; then
         SKIPPED+=("$pkg - already installed")
     else
-        if sudo -u "$REGULAR_USER" yay -S --noconfirm --sudoloop "$pkg" 2>/dev/null; then
+        if sudo -u "$REGULAR_USER" yay -S --noconfirm --sudoloop --noprogressbar \
+                --answerclean None --answerdiff None --answeredit None "$pkg" 2>/dev/null; then
             SUCCESSFUL+=("$pkg")
         else
             FAILED+=("$pkg")
@@ -450,12 +464,17 @@ LOG_FILE="/var/log/hyprland-setup-$(date +%Y%m%d-%H%M%S).log"
 } > "$LOG_FILE"
 
 echo
+echo -e "${YELLOW}HOW TO RUN:${NC}"
+echo "  sudo ./setup.sh yourpassword"
+echo
 echo -e "${YELLOW}POST-INSTALL:${NC}"
-echo "  1. Log out/in for docker group + shell change"
+echo "  1. Reboot (docker group + shell change take effect)"
 echo "  2. Start Hyprland: Hyprland"
-echo "  3. Run tmux and press prefix + I to install tmux plugins"
-echo "  4. SSH key: ssh-keygen -t ed25519 -C \"you@email.com\" && gh auth login"
-echo "  5. Atuin sync: atuin login && atuin sync"
-echo "  6. rclone: rclone config (restore gdrive remote) then start rclone-gdrive.service"
+echo "  3. Tmux: prefix + I to install plugins"
+echo "  4. SSH: ssh-keygen -t ed25519 -C \"shyamenk@gmail.com\" && gh auth login"
+echo "  5. Atuin: atuin login && atuin sync"
+echo "  6. rclone: rclone config  →  systemctl --user start rclone-gdrive"
+echo "  7. pass: gpg --import gpg-private.asc  →  clone pass-store"
+echo "  See: ~/dotfiles/secrets-checklist.md"
 echo
 log "Setup complete! Report: $LOG_FILE"
