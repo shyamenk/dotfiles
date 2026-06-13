@@ -92,7 +92,7 @@ STOW_PACKAGES=(
     zsh tmux nvim alacritty wezterm kitty
     hyprland waybar wofi dunst
     yazi bat scripts cmdx
-    starship zathura
+    starship zathura systemd
 )
 
 for pkg in "${STOW_PACKAGES[@]}"; do
@@ -355,17 +355,15 @@ systemctl enable NetworkManager && SUCCESSFUL+=("NetworkManager service") || FAI
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo && \
     SUCCESSFUL+=("Flathub remote") || warn "Flathub remote already exists or failed"
 
-# ---- rclone-gdrive user service ----
-RCLONE_SERVICE_SRC="$DOTFILES_DIR/systemd/rclone-gdrive.service"
-RCLONE_SERVICE_DEST="$USER_HOME/.config/systemd/user/rclone-gdrive.service"
-if [ -f "$RCLONE_SERVICE_SRC" ]; then
-    sudo -u "$REGULAR_USER" mkdir -p "$USER_HOME/.config/systemd/user"
-    sudo -u "$REGULAR_USER" cp "$RCLONE_SERVICE_SRC" "$RCLONE_SERVICE_DEST"
+# ---- rclone-gdrive user service (stowed via systemd/ package) ----
+RCLONE_SERVICE="$USER_HOME/.config/systemd/user/rclone-gdrive.service"
+if [ -f "$RCLONE_SERVICE" ]; then
     sudo -u "$REGULAR_USER" systemctl --user daemon-reload
     sudo -u "$REGULAR_USER" systemctl --user enable rclone-gdrive.service
     SUCCESSFUL+=("rclone-gdrive service enabled")
+    warn "Run 'rclone config' then start rclone-gdrive.service (needs gdrive remote)"
 else
-    warn "rclone-gdrive.service not found in dotfiles/systemd/ — skipping"
+    warn "rclone-gdrive.service not stowed — check dotfiles/systemd package"
     SKIPPED+=("rclone-gdrive service")
 fi
 
