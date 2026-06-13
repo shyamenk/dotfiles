@@ -5,7 +5,8 @@ return {
 	-- ── Appearance ────────────────────────────────────────────────────────
 	color_scheme = "Catppuccin Mocha",
 	font = wezterm.font_with_fallback({
-		"Bitstream Vera Sans Mono",
+		"JetBrainsMono Nerd Font",
+		"VictorMono Nerd Font",
 		"Noto Color Emoji",
 	}),
 	font_size = 14.0,
