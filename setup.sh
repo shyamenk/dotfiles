@@ -222,7 +222,7 @@ PACMAN_PKGS=(
     flatpak
 
     # ---- Fonts ----
-    ttf-jetbrains-mono-nerd ttf-victor-mono-nerd noto-fonts noto-fonts-emoji
+    ttf-jetbrains-mono-nerd ttf-victor-mono-nerd ttf-bitstream-vera-mono-nerd noto-fonts noto-fonts-emoji
 
     # ---- GPU Drivers - NVIDIA (Lenovo LOQ / RTX 4050) ----
     linux-headers
