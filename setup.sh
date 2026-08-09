@@ -224,11 +224,6 @@ PACMAN_PKGS=(
     # ---- Fonts ----
     ttf-jetbrains-mono-nerd ttf-victor-mono-nerd ttf-bitstream-vera-mono-nerd noto-fonts noto-fonts-emoji
 
-    # ---- GPU Drivers - NVIDIA (Lenovo LOQ / RTX 4050) ----
-    linux-headers
-    nvidia-dkms nvidia-utils nvidia-settings
-    libva-nvidia-driver
-
     # ---- Docker ----
     docker docker-compose
 
@@ -359,38 +354,10 @@ fi
 SUCCESSFUL+=("docker service enabled")
 
 # ============================================================================
-# PHASE 8: NVIDIA Configuration
+# PHASE 8: NVIDIA Configuration (skipped — no NVIDIA GPU on this machine)
 # ============================================================================
-log "PHASE 8: Configuring NVIDIA drivers..."
-
-# Add NVIDIA modules to mkinitcpio
-if grep -q "^MODULES=" /etc/mkinitcpio.conf; then
-    if ! grep -q "nvidia" /etc/mkinitcpio.conf; then
-        sed -i 's/^MODULES=(/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm /' /etc/mkinitcpio.conf
-        SUCCESSFUL+=("mkinitcpio NVIDIA modules")
-    else
-        SKIPPED+=("mkinitcpio NVIDIA modules - already configured")
-    fi
-fi
-
-# Create NVIDIA modprobe config
-if [ "$DRY_RUN" = false ]; then
-    cat > /etc/modprobe.d/nvidia.conf << 'EOF'
-options nvidia_drm modeset=1 fbdev=1
-options nvidia NVreg_PreserveVideoMemoryAllocations=1
-EOF
-else
-    warn "[DRY] Would write /etc/modprobe.d/nvidia.conf"
-fi
-SUCCESSFUL+=("NVIDIA modprobe config")
-
-# Rebuild initramfs
-log "Rebuilding initramfs..."
-mkinitcpio -P && SUCCESSFUL+=("mkinitcpio rebuild") || FAILED+=("mkinitcpio rebuild")
-
-# Enable NVIDIA suspend/resume services
-systemctl enable nvidia-suspend.service nvidia-hibernate.service nvidia-resume.service 2>/dev/null && \
-    SUCCESSFUL+=("NVIDIA power services") || warn "NVIDIA power services not available"
+log "PHASE 8: Skipping NVIDIA configuration (Intel iGPU only, no NVIDIA hardware)..."
+SKIPPED+=("NVIDIA drivers/mkinitcpio/modprobe - no NVIDIA GPU present")
 
 # ============================================================================
 # PHASE 9: Services

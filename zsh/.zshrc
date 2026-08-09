@@ -74,7 +74,6 @@ export BUN_INSTALL="$HOME/.bun"
 export TESSDATA_PREFIX=/usr/share/
 export MANPAGER='nvim +Man!'
 export BAT_THEME="Catppuccin Mocha"
-export STARSHIP_CONFIG=~/.config/starship/starship.toml
 
 # -----------------
 # History setup
@@ -299,3 +298,10 @@ export PATH="$PATH:/home/shyamenk/.lmstudio/bin"
 
 export PATH="$PATH:/home/shyamenk/.local/bin"
 export PATH=$PATH:/var/lib/snapd/snap/bin
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/shyamenk/google-cloud-sdk/path.zsh.inc' ]; then . '/home/shyamenk/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/shyamenk/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/shyamenk/google-cloud-sdk/completion.zsh.inc'; fi
+source ~/google-cloud-sdk/path.zsh.inc
