@@ -18,6 +18,7 @@
     "memory",
     "cpu",
     "pulseaudio",
+    "backlight",
     "network",
     "battery",
     "custom/power"
@@ -67,8 +68,10 @@
     "on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ -5%"
   },
   "backlight": {
-    "device": "amdgpu_bl2",
-    "format": "󰃟 {percent}%"
+    "device": "intel_backlight",
+    "format": "󰃟 {percent}%",
+    "on-scroll-up": "brightnessctl set +5%",
+    "on-scroll-down": "brightnessctl set 5%-"
   },
   "network": {
     "format-ethernet": "󰈀 {ipaddr}",
@@ -78,7 +81,7 @@
     "on-click": "alacritty -e impala"
   },
   "battery": {
-    "bat": "BAT1",
+    "bat": "BAT0",
     "interval": 5,
     "states": {
       "warning": 30,
