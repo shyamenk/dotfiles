@@ -149,7 +149,7 @@ STOW_PACKAGES=(
     zsh tmux nvim alacritty wezterm kitty
     hyprland waybar wofi dunst
     yazi bat scripts cmdx
-    starship zathura systemd
+    starship zathura systemd voxtype
 )
 
 for pkg in "${STOW_PACKAGES[@]}"; do
