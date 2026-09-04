@@ -315,6 +315,31 @@ end)
 
 hl.bind(mainMod .. " + R", hl.dsp.submap("resize"))
 
+-- Voxtype dictation: hold to record, release to transcribe and type
+hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("voxtype record start"))
+hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("voxtype record stop"), { release = true })
+
+-- Recording submap: F12 cancels recording/transcription
+hl.define_submap("voxtype_recording", function()
+    hl.bind("F12", hl.dsp.exec_cmd("voxtype record cancel"))
+    hl.bind("F12", hl.dsp.submap("reset"))
+end)
+
+-- Output submap: blocks modifier keys while wtype is typing (avoids stray
+-- keybind triggers if a modifier is released mid-type). F12 is an escape
+-- hatch if voxtype crashes while this submap is active.
+hl.define_submap("voxtype_suppress", function()
+    hl.bind("SUPER_L",   hl.dsp.exec_cmd("true"))
+    hl.bind("SUPER_R",   hl.dsp.exec_cmd("true"))
+    hl.bind("Control_L", hl.dsp.exec_cmd("true"))
+    hl.bind("Control_R", hl.dsp.exec_cmd("true"))
+    hl.bind("Alt_L",     hl.dsp.exec_cmd("true"))
+    hl.bind("Alt_R",     hl.dsp.exec_cmd("true"))
+    hl.bind("Shift_L",   hl.dsp.exec_cmd("true"))
+    hl.bind("Shift_R",   hl.dsp.exec_cmd("true"))
+    hl.bind("F12", hl.dsp.submap("reset"))
+end)
+
 ----------------------------
 ---- STARTUP APPLICATIONS --
 ----------------------------
