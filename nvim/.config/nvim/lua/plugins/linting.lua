@@ -11,6 +11,9 @@ return {
         -- Python
         python = { "ruff" },
 
+        -- Go
+        go = { "golangcilint" },
+
         -- YAML
         yaml = { "yamllint" },
 

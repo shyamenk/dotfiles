@@ -305,3 +305,9 @@ if [ -f '/home/shyamenk/google-cloud-sdk/path.zsh.inc' ]; then . '/home/shyamenk
 # The next line enables shell command completion for gcloud.
 if [ -f '/home/shyamenk/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/shyamenk/google-cloud-sdk/completion.zsh.inc'; fi
 source ~/google-cloud-sdk/path.zsh.inc
+
+
+# Added by Antigravity CLI installer
+export PATH="/home/shyamenk/.local/bin:$PATH"
+export PATH="$HOME/.cargo/bin:$PATH"
+export PATH="$PATH:$(go env GOPATH)/bin"

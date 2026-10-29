@@ -19,6 +19,15 @@ return {
         "mypy",
         "debugpy",
 
+        -- Go
+        "gopls",
+        "goimports",
+        "gofumpt",
+        "golangci-lint",
+        "delve",
+        "gomodifytags",
+        "impl",
+
         -- Lua
         "lua-language-server",
         "stylua",

@@ -17,6 +17,8 @@ return {
         css = { "prettier" },
         -- Python formatting
         python = { "ruff_format" },
+        -- Go formatting
+        go = { "goimports", "gofumpt" },
       },
       formatters = {
         -- Custom markdown formatter settings

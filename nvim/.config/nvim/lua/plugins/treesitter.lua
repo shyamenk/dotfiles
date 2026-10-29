@@ -33,6 +33,12 @@ return {
         -- Python
         "python",
 
+        -- Go
+        "go",
+        "gomod",
+        "gowork",
+        "gosum",
+
         -- Shell
         "bash",
 

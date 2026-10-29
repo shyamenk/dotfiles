@@ -47,6 +47,7 @@ cd cmdx
 ### Prerequisites
 
 **Required:**
+
 - Rust toolchain (for building)
 
 ```bash
@@ -56,12 +57,12 @@ source ~/.cargo/env
 
 **Optional dependencies:**
 
-| Tool | Purpose | Install |
-|------|---------|---------|
-| `wl-copy` | Clipboard (Wayland) | `sudo pacman -S wl-clipboard` / `apt install wl-clipboard` |
-| `xclip` | Clipboard (X11) | `sudo pacman -S xclip` / `apt install xclip` |
-| `xsel` | Clipboard (X11 alternative) | `sudo pacman -S xsel` / `apt install xsel` |
-| `bat` | Syntax-highlighted output | `sudo pacman -S bat` / `apt install bat` |
+| Tool      | Purpose                     | Install                                                    |
+| --------- | --------------------------- | ---------------------------------------------------------- |
+| `wl-copy` | Clipboard (Wayland)         | `sudo pacman -S wl-clipboard` / `apt install wl-clipboard` |
+| `xclip`   | Clipboard (X11)             | `sudo pacman -S xclip` / `apt install xclip`               |
+| `xsel`    | Clipboard (X11 alternative) | `sudo pacman -S xsel` / `apt install xsel`                 |
+| `bat`     | Syntax-highlighted output   | `sudo pacman -S bat` / `apt install bat`                   |
 
 cmdx will automatically detect and use available clipboard tools. If none are installed, commands are printed to stdout instead.
 
@@ -263,14 +264,14 @@ tool = "auto"                          # auto | wl-copy | xclip | xsel
 
 ### Configuration Options
 
-| Section | Option | Values | Description |
-|---------|--------|--------|-------------|
-| `core` | `store_path` | path | Directory where commands are stored |
-| `core` | `default_action` | `copy`, `run`, `show` | Action when using shorthand (`cmdx docker/prune`) |
-| `core` | `shell` | `bash`, `zsh`, etc. | Shell used to execute commands |
-| `display` | `color` | `true`, `false` | Enable/disable colored output |
-| `display` | `tree_style` | `unicode`, `ascii` | Tree characters for `cmdx ls` |
-| `clipboard` | `tool` | `auto`, `wl-copy`, `xclip`, `xsel` | Clipboard tool preference |
+| Section     | Option           | Values                             | Description                                       |
+| ----------- | ---------------- | ---------------------------------- | ------------------------------------------------- |
+| `core`      | `store_path`     | path                               | Directory where commands are stored               |
+| `core`      | `default_action` | `copy`, `run`, `show`              | Action when using shorthand (`cmdx docker/prune`) |
+| `core`      | `shell`          | `bash`, `zsh`, etc.                | Shell used to execute commands                    |
+| `display`   | `color`          | `true`, `false`                    | Enable/disable colored output                     |
+| `display`   | `tree_style`     | `unicode`, `ascii`                 | Tree characters for `cmdx ls`                     |
+| `clipboard` | `tool`           | `auto`, `wl-copy`, `xclip`, `xsel` | Clipboard tool preference                         |
 
 ## File Format
 
@@ -285,6 +286,7 @@ Remove all unused Docker containers, images, and volumes
 - **Line 2**: Single-line explanation (optional)
 
 Files are stored in `~/.config/cmdx/store/` with the path structure matching the command path:
+
 - `docker/prune` → `~/.config/cmdx/store/docker/prune`
 - `git/stash/pop` → `~/.config/cmdx/store/git/stash/pop`
 
