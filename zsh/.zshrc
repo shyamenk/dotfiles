@@ -68,7 +68,6 @@ export PATH
 # Environment variables (fast)
 # -----------------
 export GOPATH=$HOME/go
-export GOROOT=/usr/lib/go
 export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
 export BUN_INSTALL="$HOME/.bun"
 export TESSDATA_PREFIX=/usr/share/
@@ -146,8 +145,8 @@ alias gre='git reset'
 alias glg='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset" --abbrev-commit --date=relative'
 alias lg='lazygit'
 alias awsrag="export AWS_PROFILE=sf-rag"
-source ~/.zsh/functions/cleanpaste.zsh
-eval "$(tv init zsh)"
+[[ -f ~/.zsh/functions/cleanpaste.zsh ]] && source ~/.zsh/functions/cleanpaste.zsh
+(( $+commands[tv] )) && eval "$(tv init zsh)"
 
 alias ssm-staging='aws ssm start-session --target i-0b4b015023a60d195 --region ap-south-1 --profile xed-staging --document-name AWS-StartInteractiveCommand --parameters command="sudo -iu ubuntu"'
 # -----------------
@@ -243,7 +242,7 @@ aws() {
 }
 alias c='cmdx'
 alias cx='cmdx pick'
-source ~/.config/atuin_init.zsh
+[[ -f ~/.config/atuin_init.zsh ]] && source ~/.config/atuin_init.zsh
 alias nush='nu'
 alias ld="lazydocker"
 
@@ -304,10 +303,10 @@ if [ -f '/home/shyamenk/google-cloud-sdk/path.zsh.inc' ]; then . '/home/shyamenk
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/home/shyamenk/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/shyamenk/google-cloud-sdk/completion.zsh.inc'; fi
-source ~/google-cloud-sdk/path.zsh.inc
+[[ -f ~/google-cloud-sdk/path.zsh.inc ]] && source ~/google-cloud-sdk/path.zsh.inc
 
 
 # Added by Antigravity CLI installer
 export PATH="/home/shyamenk/.local/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
-export PATH="$PATH:$(go env GOPATH)/bin"
+(( $+commands[go] )) && export PATH="$PATH:$(go env GOPATH)/bin"
