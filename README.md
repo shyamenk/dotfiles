@@ -63,7 +63,11 @@ sudo pacman -S git stow
 ```bash
 cd ~/dotfiles
 
-stow hyprland    # Hyprland, hypridle, hyprlock, hyprpaper
+stow hyprland    # Omarchy Hyprland Lua config (~/.config/hypr)
+stow omarchy     # Omarchy shell, menu extensions, hooks, own plugins, themes
+stow foot        # Foot terminal
+stow leaf        # leaf markdown viewer
+stow daily-note  # Daily notes: Super+Shift+N (leaf) / Super+Shift+S (quick note)
 stow waybar      # Status bar
 stow wofi        # Application launcher
 stow dunst       # Notifications
@@ -78,6 +82,17 @@ stow scripts     # Custom scripts (~/.local/bin)
 stow sfdocs      # Salesforce CLI docs (~/.local/share/sfdocs)
 ```
 
+### Omarchy packages
+
+`hyprland` and `omarchy` are stowed as whole-directory symlinks, so files Omarchy tools
+create (`*.bak.*` backups, downloaded backgrounds) land inside the repo and are kept out
+of git by `.gitignore`. To link them on a machine that already has real directories:
+
+```bash
+mv ~/.config/hypr ~/.config/hypr.pre-stow && mv ~/.config/omarchy ~/.config/omarchy.pre-stow
+stow hyprland omarchy && hyprctl reload
+```
+
 ### Stow All
 
 ```bash
@@ -88,7 +103,11 @@ stow */
 
 ```
 dotfiles/
-├── hyprland/     # Hyprland + hypr* configs + scripts
+├── hyprland/     # Omarchy Hyprland Lua config (bindings, input, monitors, looknfeel)
+├── omarchy/      # ~/.config/omarchy (backgrounds and third-party plugin clones are gitignored)
+├── foot/         # Foot terminal
+├── leaf/         # leaf markdown viewer config + theme
+├── daily-note/   # daily-note + quick-note scripts and the note template
 ├── waybar/       # Waybar config + styles
 ├── wofi/         # Wofi launcher
 ├── dunst/        # Notifications
@@ -125,7 +144,9 @@ dotfiles/
 | `Super+Space` | Wofi |
 | `Super+Q` | Kill window |
 | `Super+G` | Chrome |
-| `Super+Shift+N` | Thunar |
+| `Super+Shift+N` | Daily note (leaf) |
+| `Super+Shift+S` | Quick note into today's daily note |
+| `Super+Alt+N` | Netflix |
 | `Super+Shift+V` | Screen record |
 | `Super+Shift+O` | OCR text extract |
 | `Super+Shift+G` | Color picker |
