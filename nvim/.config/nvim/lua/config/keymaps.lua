@@ -41,8 +41,12 @@ keymap.set("n", "<leader>nh", ":nohl<CR>", { desc = "Clear Search Highlights" })
 -- Force quit without saving
 keymap.set("n", "QQ", ":q!<enter>", { desc = "Force Quit Without Saving" })
 
--- Save file
-keymap.set("n", "<C-s>", ":w<CR>", { desc = "Save File" })
+-- Format (Conform, LSP fallback) then save; saves anyway if formatting fails (e.g. syntax errors)
+keymap.set({ "n", "i" }, "<C-s>", function()
+  require("conform").format({ async = false, lsp_format = "fallback", timeout_ms = 3000 })
+  vim.cmd("silent! write")
+  vim.cmd("stopinsert")
+end, { desc = "Format and Save File" })
 
 -- Quick close
 keymap.set("n", "<leader>qq", ":q<CR>", { desc = "Quick Close" })

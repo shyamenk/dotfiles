@@ -9,7 +9,7 @@
 | Key          | Mode   | Description                        |
 | ------------ | ------ | ---------------------------------- |
 | `jj`         | Insert | Exit insert mode                   |
-| `<C-s>`      | Normal | Save file                          |
+| `<C-s>`      | Normal/Insert | Format (Conform) then save  |
 | `QQ`         | Normal | Force quit without saving          |
 | `<leader>qq` | Normal | Close window                       |
 | `==`         | Normal | Select all                         |
