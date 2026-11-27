@@ -39,6 +39,10 @@ return {
         "docker-compose-language-service",
         "hadolint",
 
+        -- Terraform
+        "terraform-ls",
+        "tflint",
+
         -- Markdown
         "markdown-toc",
 

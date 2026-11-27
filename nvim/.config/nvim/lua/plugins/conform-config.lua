@@ -17,6 +17,10 @@ return {
         css = { "prettier" },
         -- Python formatting
         python = { "ruff_format" },
+        -- Terraform / HCL formatting (terraform fmt)
+        terraform = { "terraform_fmt" },
+        tf = { "terraform_fmt" },
+        ["terraform-vars"] = { "terraform_fmt" },
         -- Go formatting
         go = { "goimports", "gofumpt" },
       },

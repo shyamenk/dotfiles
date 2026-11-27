@@ -22,6 +22,10 @@ return {
 
         -- Markdown
         markdown = {},
+
+        -- Terraform (terraform validate; tflint runs as an LSP via the terraform extra)
+        terraform = { "terraform_validate" },
+        tf = { "terraform_validate" },
       }
 
       -- Create autocommand to trigger linting
