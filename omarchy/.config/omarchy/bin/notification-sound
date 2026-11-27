@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Plays a sound for every desktop notification, except apps that make their own.
+SOUND=$HOME/.config/omarchy/sounds/notification.mp3
+STATE=$HOME/.local/state/omarchy/notifications.json
+SKIP_REGEX="slack"
+last=0
+
+dbus-monitor --session "interface='org.freedesktop.Notifications',member='Notify'" |
+while IFS= read -r line; do
+  [[ $line == *"member=Notify"* ]] && { n=0; continue; }
+  [[ $line =~ ^[[:space:]]+(string|uint32)[[:space:]]+(.*)$ ]] || continue
+  n=$((n + 1))
+  val=${BASH_REMATCH[2]}
+  if (( n == 1 )); then app=${val,,}; fi
+  if (( n == 2 )); then
+    # replaces_id != 0 means an update to an existing popup, not a new notification
+    [[ $val != 0 ]] && continue
+  fi
+  (( n == 2 )) || continue
+  [[ $app =~ $SKIP_REGEX ]] && continue
+  grep -q '"dnd": *true' "$STATE" 2>/dev/null && continue
+  now=$(date +%s%N)
+  (( now - last < 700000000 )) && continue
+  last=$now
+  pw-play "$SOUND" >/dev/null 2>&1 &
+done

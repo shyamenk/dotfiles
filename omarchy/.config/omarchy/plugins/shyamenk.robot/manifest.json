@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "shyamenk.robot",
+  "name": "Robot menu button",
+  "version": "1.0.0",
+  "author": "shyamenk",
+  "license": "MIT",
+  "description": "Robot icon in the bar that opens the Omarchy menu.",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Robot menu button",
+    "description": "Opens the Omarchy menu; right-click opens a terminal.",
+    "category": "Compositor",
+    "allowMultiple": false
+  }
+}

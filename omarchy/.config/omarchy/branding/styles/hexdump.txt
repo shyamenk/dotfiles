@@ -1,0 +1,18 @@
+0x007F3A00  E7 EE E7 61 5E F3 5F 30  E4 9B 48 2E 15 CA E7 50  |...a^._0..H....P|
+0x007F3A10  07 20 1E 12 61 7B 0F ED  A7 E1 64 77 96 FF 02 2B  |....a{....dw...+|
+0x007F3A20  EA 8E D0 2A 82 A1 75 93  0F 23 37 CD 37 94 C5 22  |...*..u..#7.7.."|
+0x007F3A30  08 00 6D 6B 1A F0 C0 CB  D6 25 65 8A AC 2C 9F AA  |..mk.....%e..,..|
+0x007F3A40  07 D1 3C 44 7E 33 05 1E  EE F9 5A 60 E5 61 43 D6  |..<D~3....Z`.aC.|
+0x007F3A50  C4 3B CA D7 6C 00 8A 9B  0A 6B 5F C9 33 15 4A 6D  |.;..l....k_.3.Jm|
+0x007F3A60  E2 84 04 A8 97 C5 25 26  2E 6A 7C 07 BC BE E8 41  |......%&.j|....A|
+                    ░▒▓█  A C C E S S   G R A N T E D  █▓▒░
+
+                       root@mainframe:~#  cat /etc/shadow
+
+0x007F3AB0  A3 45 25 26 E7 BC 16 42  AE B4 2B F2 27 D5 0F FF  |.E%&...B..+.'...|
+0x007F3AC0  07 C3 C2 06 24 29 2E 3B  83 D5 A9 C6 EA E1 EC 2A  |....$).;.......*|
+0x007F3AD0  0F 9E 2C F6 0B 75 39 FE  F8 82 05 BC 9A 49 67 56  |..,..u9......IgV|
+0x007F3AE0  AF E2 FF 7B A7 CF 80 65  DC 66 6D C4 70 A2 6B 45  |...{...e.fm.p.kE|
+0x007F3AF0  44 FE B3 14 20 8D 56 39  E6 F1 8C 6D D3 C3 FC A1  |D.....V9...m....|
+0x007F3B00  E7 A4 26 10 8E 15 8F B5  9E 09 45 CF E8 61 0C 88  |..&.......E..a..|
+0x007F3B10  79 48 18 3B E4 37 BC 27  65 66 F3 83 5B 05 F1 12  |yH.;.7.'ef..[...|

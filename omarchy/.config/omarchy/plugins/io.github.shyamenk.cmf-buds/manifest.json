@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.shyamenk.cmf-buds",
+  "name": "CMF Buds Pro 2",
+  "version": "0.1.0",
+  "author": "shyamenk",
+  "license": "MIT",
+  "description": "Noise control and battery for Nothing CMF Buds Pro 2, right from the bar.",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "CMF Buds Pro 2",
+    "description": "Switch noise cancellation modes and see earbud battery.",
+    "category": "Media",
+    "allowMultiple": false
+  }
+}
