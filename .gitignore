@@ -10,3 +10,19 @@ scripts/.local/state/
 
 # Environment files with secrets
 scripts/.local/bin/env
+
+# Edit backups left by Omarchy tools and manual edits (kept locally, never committed)
+*.bak
+*.bak.*
+*.bak-*
+
+# Omarchy: large wallpapers, runtime locks, and plugins provided by system packages
+omarchy/.config/omarchy/backgrounds/
+omarchy/.config/omarchy/defaults/*.lock
+omarchy/.config/omarchy/plugins/io.voxtype.settings
+
+# leaf: per-machine file history
+leaf/.config/leaf/history.toml
+# Third-party shell plugins are their own git clones; reinstall from their repos
+omarchy/.config/omarchy/plugins/io.github.mattwolfgang.simple-cliamp-bar-controls/
+omarchy/.config/omarchy/plugins/io.github.swadowmaster.spotify/
