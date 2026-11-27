@@ -1,0 +1,3 @@
+#!/bin/bash
+# Quick notes now live in today's daily note (old entries stay in ~/Notes/notes/inbox).
+exec daily-note --quick

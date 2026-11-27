@@ -1,0 +1,142 @@
+#!/bin/bash
+# One markdown file per day: ~/Documents/daily-notes/YYYY/YYYY-MM-DD.md
+#   daily-note            create today's note if missing, then view it in leaf (Ctrl+E edits in nvim)
+#   daily-note --quick    add a timestamped entry at the end of the Notes section and edit in nvim
+#   daily-note --toggle   focus the open note window, or launch a floating one (keybind entry point)
+#
+# A new day is built from the most recent earlier note, not just yesterday's,
+# so weekends and days off still carry forward:
+#   Top 3 / Today / Carried over -> unchecked items go to Carried over with ↻ incremented
+#   Backlog / Learn              -> copied without checked items (and their nested lines)
+#   everything else              -> fresh from the template
+
+set -euo pipefail
+
+notes_dir="${DAILY_NOTES_DIR:-$HOME/Documents/daily-notes}"
+template="${DAILY_NOTE_TEMPLATE:-$HOME/.config/daily-note/template.md}"
+today="${DAILY_NOTE_DATE:-$(date +%F)}"
+file="$notes_dir/${today:0:4}/$today.md"
+
+# Body of the "## ..." section whose heading contains $2, ignoring "## " inside code fences.
+section() {
+  awk -v key="$2" '
+    /^```/ { fence = !fence }
+    !fence && /^## / { inside = index($0, key) > 0; next }
+    inside { print }
+  ' "$1"
+}
+
+trim_blank_edges() {
+  sed -e '/./,$!d' | tac | sed -e '/./,$!d' | tac
+}
+
+carried_items() {
+  { section "$1" "Top 3"; section "$1" "Carried over"; section "$1" "Today"; } |
+    awk '
+      /^[[:space:]]*- \[ \][[:space:]]*[^[:space:]]/ {
+        n = 0
+        if (match($0, / ↻[0-9]+[[:space:]]*$/)) {
+          tag = substr($0, RSTART, RLENGTH); gsub(/[^0-9]/, "", tag); n = tag + 0
+          $0 = substr($0, 1, RSTART - 1)
+        }
+        sub(/^[[:space:]]+/, "")
+        sub(/[[:space:]]+$/, "")
+        if (!seen[$0]++) printf "%s ↻%d\n", $0, n + 1
+      }'
+}
+
+# Drop checked items with their nested lines (links, sub-notes) and empty "- [ ]" placeholders.
+open_items() {
+  section "$1" "$2" | awk '
+    { match($0, /^[[:space:]]*/); indent = RLENGTH }
+    skip && /[^[:space:]]/ && indent > skip_indent { next }
+    { skip = 0 }
+    /^[[:space:]]*- \[[xX]\]/ { skip = 1; skip_indent = indent; next }
+    /^[[:space:]]*- \[ \][[:space:]]*$/ { next }
+    { print }
+  ' | trim_blank_edges
+}
+
+or_placeholder() {
+  local body
+  body="$(cat)"
+  if [[ -n $body ]]; then printf '%s\n' "$body"; else printf -- '- [ ] \n'; fi
+}
+
+create_note() {
+  mkdir -p "$(dirname "$file")"
+  local prev carried="" backlog="" learn=""
+  prev="$(find "$notes_dir" -mindepth 2 -maxdepth 2 -name '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].md' |
+    awk -F/ -v t="$today.md" '$NF < t' | sort | tail -n1)"
+
+  if [[ -n $prev ]]; then
+    carried="$(carried_items "$prev")"
+    backlog="$(open_items "$prev" "Backlog")"
+    learn="$(open_items "$prev" "Learn")"
+  fi
+  [[ -n $carried ]] || carried="<!-- nothing carried over -->"
+
+  local tmp
+  tmp="$(mktemp)"
+  printf '%s\n' "$carried" >"$tmp.carried"
+  or_placeholder <<<"$backlog" >"$tmp.backlog"
+  or_placeholder <<<"$learn" >"$tmp.learn"
+
+  awk -v title="$(date -d "$today" '+%A, %-d %b %Y · W%V')" -v base="$tmp" '
+    function dump(f,   line) { while ((getline line < f) > 0) print line; close(f) }
+    { gsub(/\{\{TITLE\}\}/, title) }
+    $0 == "{{CARRIED}}" { dump(base ".carried"); next }
+    $0 == "{{BACKLOG}}" { dump(base ".backlog"); next }
+    $0 == "{{LEARN}}"   { dump(base ".learn");   next }
+    { print }
+  ' "$template" >"$tmp"
+  mv "$tmp" "$file"
+  rm -f "$tmp".carried "$tmp".backlog "$tmp".learn
+}
+
+# Insert "### HH:MM" at the end of the Notes section (adding the section if missing)
+# and print the line number of the blank line under it, for nvim to jump to.
+add_quick_entry() {
+  local tmp
+  tmp="$(mktemp)"
+  awk -v ts="$(date +%H:%M)" -v lnfile="$tmp.line" '
+    function entry() { print "### " ts; print ""; cur = out + 2; print ""; out += 3; done = 1 }
+    /^```/ { fence = !fence }
+    !fence && /^## / {
+      if (in_notes && !done) entry()
+      in_notes = index($0, "Notes") > 0
+    }
+    { print; out++ }
+    END {
+      if (!done) {
+        if (!in_notes) { print ""; print "## 📝 Notes"; out += 2 }
+        print ""; out++; entry()
+      }
+      print cur > lnfile
+    }
+  ' "$file" >"$tmp"
+  mv "$tmp" "$file"
+  cat "$tmp.line"
+  rm -f "$tmp.line"
+}
+
+[[ -f $file ]] || create_note
+
+case "${1:-}" in
+  --quick)
+    exec nvim "+$(add_quick_entry)" -c 'startinsert' "$file"
+    ;;
+  --toggle)
+    addr="$(hyprctl clients -j | jq -r --arg t "leaf: $today.md" '.[] | select(.title == $t) | .address' | head -n1)"
+    if [[ -n $addr ]]; then
+      hyprctl dispatch "hl.dsp.focus({ window = \"address:$addr\" })" >/dev/null 2>&1 ||
+        hyprctl dispatch focuswindow "address:$addr" >/dev/null
+    else
+      exec omarchy-launch-tui --app-id=TUI.float daily-note
+    fi
+    ;;
+  --create-only) ;;
+  *)
+    exec leaf -w "$file"
+    ;;
+esac
